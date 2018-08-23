@@ -9,3 +9,11 @@ strong{
 a {
   color: #00B7FF;
 }
+
+
+	.button-red {
+		border-width: 20px;
+		border-style: outset;
+		border-color: red;
+		background-color:red;
+	}

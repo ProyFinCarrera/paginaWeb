@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <% include ../views/head.ejs %>
+<style>
+    html {
+    background: #111111;
+    height: 100%;
+    background: linear-gradient( #333, #000);
+}
+canvas {
+    display: none;
+}
+video, img, #startbutton {
+    display: block;
+    float: left;
+    border: 10px solid #fff;
+    border-radius: 10px;
+}
+#startbutton {
+    background: green;
+    border: none;
+    color: #fff;
+    margin: 100px 20px 20px 20px;
+    padding: 10px 20px;
+    font-size: 20px;
+}
+#container {
+    overflow: hidden;
+    width: 880px;
+    margin: 20px auto;
+}
+</style>
+</head>
+<body>
+    
+ <video id="video" src="blob:https://www.onlinemictest.com/9e7d9bd6-b6d8-4850-9787-5ded8d403048" width="432" height="505">
+ <p id="webcam-info" style="font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: normal; font-stretch: normal; font-size: 12pt; line-height: normal; font-family: &quot;Open Sans&quot;, sans-serif; text-align: center; padding: 8px; position: relative; top: 198px; color: rgb(238, 238, 238); display: none;"></p>
+
+<canvas id="canvas"></canvas>
+
+</video>
+
+
+<button id="startbutton">Take photo</button>
+<canvas id="canvas"></canvas>
+https://cucopc.es/2016/06/09/raspberry-pi-reconocimiento-facial-opencv/
+<img src="http://placekitten.com/g/200/150" id="photo" alt="photo">
+         <script type="text/javascript">
+
+  (function() {
+
+  var streaming = false,
+      video        = document.querySelector('#video'),
+      cover        = document.querySelector('#cover'),
+      canvas       = document.querySelector('#canvas'),
+      photo        = document.querySelector('#photo'),
+      startbutton  = document.querySelector('#startbutton'),
+      width = 200,
+      height = 0;
+
+  navigator.getMedia = ( navigator.getUserMedia || 
+                         navigator.webkitGetUserMedia ||
+                         navigator.mozGetUserMedia ||
+                         navigator.msGetUserMedia);
+
+  navigator.getMedia(
+    { 
+      video: true, 
+      audio: false 
+    },
+    function(stream) {
+       
+      if (navigator.mozGetUserMedia) { 
+        video.mozSrcObject = stream;
+        
+      } else {
+        var vendorURL = window.URL || window.webkitURL;
+        video.src = vendorURL ? vendorURL.createObjectURL(stream) : stream;
+      }
+      
+      video.play();
+   
+    },
+    function(err) {
+      console.log("An error occured! " + err);
+    }
+  );
+
+  video.addEventListener('canplay', function(ev){
+     
+    if (!streaming) {
+      height = video.videoHeight / (video.videoWidth/width);
+      video.setAttribute('width', width);
+      video.setAttribute('height', height);
+      canvas.setAttribute('width', width);
+      canvas.setAttribute('height', height);
+      streaming = true;
+    }
+  }, false);
+  
+   function draw() {
+  var canvas = document.getElementById('canvas');
+  if (canvas.getContext){
+    var ctx = canvas.getContext('2d');
+
+    ctx.beginPath();
+    ctx.arc(75,75,50,0,Math.PI*2,true); // Círculo externo
+    ctx.moveTo(110,75);
+    ctx.arc(75,75,35,0,Math.PI,false);   // Boca (contra reloj)
+    ctx.moveTo(65,65);
+    ctx.arc(60,65,5,0,Math.PI*2,true);  // Ojo izquierdo
+    ctx.moveTo(95,65);
+    ctx.arc(90,65,5,0,Math.PI*2,true);  // Ojo derecho
+    ctx.stroke();
+  }
+}
+  function takepicture() {
+    canvas.width = width;
+    canvas.height = height;
+    canvas.getContext('2d').drawImage(video, 0, 0, width, height);
+    
+    var data = canvas.toDataURL('image/png');
+    photo.setAttribute('src', data);
+    
+    // apartir de aki mandar la foto para arriba la nuve.
+    console.log(photo)///
+   
+  }
+
+  startbutton.addEventListener('click', function(ev){
+      takepicture();
+    ev.preventDefault();
+  }, false);
+
+})();
+
+
+</script>
+
+   
+   
+   
+  </body>
+  
+  </html>

@@ -11,16 +11,33 @@ router.get('/admin', function(req, res, next) {
   res.render('admin', { title: 'Secure Access Control' });
 });
 
-/* GET getIn page. */
-router.get('/getIn', function(req, res, next) {
-  res.render('getIn', { title: 'Secure Access Control' });
+/* GET admin page. */
+router.get('/pruebas', function(req, res, next) {
+  res.render('pruebas', { title: 'Secure Access Control' });
 });
 
+/* GET newAdm page. */
+router.get('/newAdm', function(req, res, next) {
+  console.log("estoy aki")
+  res.render('newAdm', { title: 'Secure Access Control' });
+});
+
+/* GET newUser page. */
+router.get('/newUser', function(req, res, next) {
+  console.log("estoy aki")
+  res.render('newUser', { title: 'Secure Access Control' });
+});
 
 /* GET menuAdm page. */
 router.get('/menuAdm', function(req, res, next) {
   console.log(req);
   res.render('menuAdm', { title: 'Secure Access Control' });
+});
+
+
+/* GET getIn page. */
+router.get('/getIn', function(req, res, next) {
+  res.render('getIn', { title: 'Secure Access Control' });
 });
 
 // Verify footprint and GET menuAdm page.

@@ -6,17 +6,26 @@
     <!-- Custom styles for this template -->
     <link href="/stylesheets/style.css" rel="stylesheet">
   </head>
-  <body >
+  <body>
     <main>
       <section class="jumbotron text-center">
         <form  class="container" role="form" accion="/verify" method="GET">
-          <div class="form-group">
-            <button type="submit" class="btn btn-primary my-2"  name="optVerif" value="footprint">Verify footprint</button>
+          <div class="row">
+            <button class="btn btn-secondary my-2 col-sm-4" type="button" id="btnCheckF">Check footprint</button>
+            <p id="pCheckFText" class="col-sm-7" ></p>
+            <div id="divCheckFRed" class="col-sm-1 button-red"></div>
           </div>
-          <div class="form-group">
-            <button type="submit" class="btn btn-secondary my-2" name="optVerif" value="face">Verify face</button>             
+          <div class="row form-group">
+            <button class="btn btn-secondary my-2 col-sm-4" type="button" disabled="true" id="btnCheckI">Check Image</button>
+                 <p id="pCheckIText" class="col-sm-7" ></p>
+                <div id="divCheckIRed" class="col-sm-1 button-red"></div>
           </div>
+          <div class="row form-group">
+            <button class="btn btn-primary my-2 col-sm-4" type="submit" disabled="true" id="btnOpenDoor">Open the Door</button>
+          </div>
+          </form>
       </section>
     </main>
+    <script src="/javascripts/getIn.js"></script>
   </body>
 </html>
