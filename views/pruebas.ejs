@@ -11,11 +11,17 @@
 canvas {
     display: none;
 }
-video, img, #startbutton {
+img, #startbutton {
     display: block;
     float: left;
     border: 10px solid #fff;
     border-radius: 10px;
+}
+video {
+   display: block;
+    float: left;
+    border: 10px solid #fff;
+    border-radius: 50px;
 }
 #startbutton {
     background: green;
@@ -36,16 +42,11 @@ video, img, #startbutton {
     
  <video id="video" src="blob:https://www.onlinemictest.com/9e7d9bd6-b6d8-4850-9787-5ded8d403048" width="432" height="505">
  <p id="webcam-info" style="font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: normal; font-stretch: normal; font-size: 12pt; line-height: normal; font-family: &quot;Open Sans&quot;, sans-serif; text-align: center; padding: 8px; position: relative; top: 198px; color: rgb(238, 238, 238); display: none;"></p>
-
-<canvas id="canvas"></canvas>
-
-</video>
-
-
-<button id="startbutton">Take photo</button>
-<canvas id="canvas"></canvas>
-https://cucopc.es/2016/06/09/raspberry-pi-reconocimiento-facial-opencv/
-<img src="http://placekitten.com/g/200/150" id="photo" alt="photo">
+ <canvas id="canvas"></canvas>
+ </video>
+ <button id="startbutton">Take photo</button> 
+ <canvas id="canvass"></canvas>
+ <img src="http://placekitten.com/g/200/150" id="photo" alt="photo">
          <script type="text/javascript">
 
   (function() {
@@ -88,8 +89,9 @@ https://cucopc.es/2016/06/09/raspberry-pi-reconocimiento-facial-opencv/
   );
 
   video.addEventListener('canplay', function(ev){
-     
+      draw();
     if (!streaming) {
+      
       height = video.videoHeight / (video.videoWidth/width);
       video.setAttribute('width', width);
       video.setAttribute('height', height);
@@ -118,7 +120,10 @@ https://cucopc.es/2016/06/09/raspberry-pi-reconocimiento-facial-opencv/
   function takepicture() {
     canvas.width = width;
     canvas.height = height;
+    
     canvas.getContext('2d').drawImage(video, 0, 0, width, height);
+    
+    draw();
     
     var data = canvas.toDataURL('image/png');
     photo.setAttribute('src', data);

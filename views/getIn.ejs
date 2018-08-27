@@ -5,27 +5,51 @@
     <% include ../views/head.ejs %>
     <!-- Custom styles for this template -->
     <link href="/stylesheets/style.css" rel="stylesheet">
+    <link href="/stylesheets/video.css" rel="stylesheet">
   </head>
-  <body>
+  <body class="container">
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+      <a class="navbar-brand" href="#"><%= title %></a>
+    </nav>
     <main>
       <section class="jumbotron text-center">
-        <form  class="container" role="form" accion="/verify" method="GET">
-          <div class="row">
+        <form  role="form" accion="/verify" method="GET">
+          <div class="row mb-3">
             <button class="btn btn-secondary my-2 col-sm-4" type="button" id="btnCheckF">Check footprint</button>
-            <p id="pCheckFText" class="col-sm-7" ></p>
+            <p id="pCheckFText" class="col-sm-6" ></p>
             <div id="divCheckFRed" class="col-sm-1 button-red"></div>
+            <div class="col-sm-1"></div>
           </div>
-          <div class="row form-group">
-            <button class="btn btn-secondary my-2 col-sm-4" type="button" disabled="true" id="btnCheckI">Check Image</button>
-                 <p id="pCheckIText" class="col-sm-7" ></p>
-                <div id="divCheckIRed" class="col-sm-1 button-red"></div>
-          </div>
-          <div class="row form-group">
-            <button class="btn btn-primary my-2 col-sm-4" type="submit" disabled="true" id="btnOpenDoor">Open the Door</button>
-          </div>
-          </form>
+          <div class="row mb-3">
+                 <div class="col-sm-6"> 
+                    <div class="row"> 
+                      <video class="col-sm-12" id="video" src="blob:https://www.onlinemictest.com/9e7d9bd6-b6d8-4850-9787-5ded8d403048" muted autoplay>
+                         Tu navegador no es compatible con la etiqueta video de HTML5.
+                         <canvas id="canvas"></canvas>
+                      </video>     
+                      
+                    </div>
+                    <div class="row"> 
+                       <div class="col-sm-4"></div>
+                       <button id="btnTakePhoto" type="button" class="btn btn-success col-sm-4" disabled>Take photo</button> 
+                       <div class="col-sm-4"></div>
+                    </div>
+                 </div>
+                 <div class="col-sm-6">
+                   <img class="img-responsive"  src="images/face.png"  id="photo" alt="photo">
+                 </div>
+            </div>
+            <div class="row mb-3">
+             <button class="col-sm-4 btn btn-secondary my-2" type="button" id="btnCheckI" disabled>Check image</button>
+             <p class="col-sm-6" id="pCheckIText"></p>
+             <div class="col-sm-1 button-red" id="divCheckIRed"></div>
+             <div class="col-sm-1"></div>
+            </div>
+           <button class="btn btn-primary col-sm-6" type="button" id="btnOpenDoor" disabled>Open the door</button>
+        </form>
       </section>
     </main>
+    <script src="/javascripts/video.js"></script>
     <script src="/javascripts/getIn.js"></script>
   </body>
 </html>

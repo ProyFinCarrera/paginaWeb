@@ -25,7 +25,7 @@ btnAddData.addEventListener('click',()=>{
     
 
 
-    setTimeout("location.reload()", 5000); // Medri el tiempo para poner esta recaga
+    //setTimeout("location.reload()", 5000); // Medri el tiempo para poner esta recaga
     // Poner  un contador cuando presione estoy para refrescar la pagina si pasa x tiempo.
     // Comprobar que la persona esta. hacer funcion.
 
