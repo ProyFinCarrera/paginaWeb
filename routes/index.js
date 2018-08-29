@@ -45,44 +45,161 @@ router.get('/getIn', function(req, res, next) {
   res.render('getIn', { title: 'Secure Access Control' });
 });
 
-// Verify footprint and GET menuAdm page.
-router.get('/verify', function(req, res, next) {
+/* Post getIn page. */
+router.post('/info', function(req, res, next) {
+});
+
+// Save footprint and GET menuAdm page.
+router.get('/saveFootprint', function(req, res, next) {
+  console.log("Estoy en saVeFootprint");  
   var PythonShell = require('python-shell');
   var pyshell = null;
-  console.log(req.query.optVerif )
-  
-    pyshell = new PythonShell('./bin/verifyFootprint.py');
+  var dataC=null;
+ 
+  pyshell = new PythonShell('sudo python2 ./../bin/saveFootprint.py');
+  pyshell.on('message', function (message) {
+      // received a message sent from the Python script (a simple "print" statement)
+      console.log(message);
+      dataC=message;
+   });
+   // end the input stream and allow the process to exit
+   pyshell.end(function (err,code,signal) {
+     /// if (err) throw err;
+     console.log('The exit err: ' + err);
+     console.log('The exit code was: ' + code);
+     console.log('The exit signal was: ' + signal);
+     //console.log('The opcion: ' + opcion);
+     console.log('finished');
+     var  message="";
+     switch (code) {
+	case 1:
+	    message = "The fingerprint sensor could not be initialized";
+	    break;
+        case 2:
+	    message  = "Match found!!! Impossible to save. Are you already registered";
+	    break;
+	default:
+	    message  = "Correct Save!!!";		
+	    break;
+      }   
+	// dataC dato cifrado.
+        console.log("dataC : "+dataC);
+        res.send({"code":code,"text":message,"dataC":dataC});     
+   });
+   pyshell = null;
+});
+
+// Verify footprint.
+router.get('/verifyFootprint', function(req, res, next) {
+  var PythonShell = require('python-shell');
+  var pyshell = null;
+  console.log("Estoy en verify");
+  // console.log(req.query.optVerif )
+  pyshell = new PythonShell('sudo python2 ./../bin/verifyFootprint.py');
     
   // // if(req.query.optVerif==="footprint" ){
   // //   pyshell = new PythonShell('./bin/verifyFootprint.py');
   // // } else{
   // //   pyshell = new PythonShell('./bin/verifyFace.py');
   // // }
-  // var opcion = 0;  // Según lo que ocurra en el script de python este valor tendar un numero.
+   var opcion = 0;  // Según lo que ocurra en el script de python este valor tendar un numero.
   
-  // //  envía un mensaje a la secuencia de comandos de Python a través de stdin
-  // pyshell.send('Valores que recibe python');  // Datos que se le mandan al script.
-  // pyshell.on('message', function (message) {
-  //   // received a message sent from the Python script (a simple "print" statement)
-  //   console.log(message);
-  //     if(message == "a"){
-  //       console.log("Estoy dentro")
-  //       opcion=20;
-  //     }
-  // });
-  // // end the input stream and allow the process to exit
-  // pyshell.end(function (err,code,signal) {
-  //   if (err) throw err;
-  //   console.log('The exit err: ' + err);
-  //   console.log('The exit code was: ' + code);
-  //   console.log('The exit signal was: ' + signal);
-  //   console.log('The opcion: ' + opcion);
-  //   console.log('finished');
-    
-  // });
-  // //pyshell = null;
-  // res.render('getIn', { title: 'Secure Access Control' });
+  //  envía un mensaje a la secuencia de comandos de Python a través de stdin
+  pyshell.send('Valores que recibe python');  // Datos que se le mandan al script.
+  pyshell.on('message', function (message) {
+    // received a message sent from the Python script (a simple "print" statement)
+     console.log(message);
+     // if(message == "a"){
+       //  console.log("Estoy dentro")
+        // opcion=20;
+      // }
+   });
+   // end the input stream and allow the process to exit
+   pyshell.end(function (err,code,signal) {
+     /// if (err) throw err;
+     console.log('The exit err: ' + err);
+     console.log('The exit code was: ' + code);
+     console.log('The exit signal was: ' + signal);
+     //console.log('The opcion: ' + opcion);
+     console.log('finished');
+     var  message="";
+     switch (code) {
+	case 1:
+	    message = "The fingerprint sensor could not be initialized";
+	    break;
+        case 2:
+	    message  = "No match found!!! Repit";
+	    break;
+	default:
+	    message  = "Correct verification!!!";		
+	    break;
+     }
+     res.send({"code":code,"text":message});
+   });
+   pyshell = null;
 });
 
+// Verify footprint and GET menuAdm page.
+router.get('/verifyImage', function(req, res, next) {
+  var PythonShell = require('python-shell');
+  var pyshell = null;
+console.log(req.idPhoto);
+  console.log("Estoy en verify Image");
+  // console.log(req.query.optVerif )
+  pyshell = new PythonShell('sudo python2 ./../bin/verifyFace.py');
+  pyshell.send('Valores que recibe python');  // Datos que se le mandan al script.
+  pyshell.on('message', function (message) {
+    // received a message sent from the Python script (a simple "print" statement)
+     console.log(message);
+   });
+   // end the input stream and allow the process to exit
+   pyshell.end(function (err,code,signal) {
+     /// if (err) throw err;
+     console.log('The exit err: ' + err);
+     console.log('The exit code was: ' + code);
+     console.log('The exit signal was: ' + signal);
+     //console.log('The opcion: ' + opcion);
+     console.log('finished');
+     var  message="";
+     switch (code) {
+	case 1:
+	    message = "The fingerprint sensor could not be initialized";
+	    break;
+        case 2:
+	    message  = "No match found!!! Repit";
+	    break;
+	default:
+	    message  = "Correct verification!!!";		
+	    break;
+      }   
+        res.send({"code":code,"text":message});
+     
+   });
+   pyshell = null;
+});
 
+router.post('/verifyImage', function(req, res, next) {
+	console.log("Cargando la imagne")
+     console.log(req.query.data['file']);
+
+var object = {};
+req.query.forEach(function(value, key){
+    object[key] = value;
+});
+var json = JSON.stringify(object);
+//console.lo%27file%27g(json);
+//var formData = new FormData(req.query.data);
+         
+});
+function FormDataToJSON(FormElement){    
+    var formData = new FormData(FormElement);
+    var ConvertedJSON= {};
+    for (const [key, value]  of formData.entries())
+    {
+        ConvertedJSON[key] = value;
+console.log(value);
+    }
+
+    return ConvertedJSON
+}
 module.exports = router;

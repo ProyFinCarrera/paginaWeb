@@ -27,8 +27,9 @@ const divCheckFRed = document.getElementById("divCheckFRed");
 const pCheckFText = document.getElementById("pCheckFText");
 const divCheckIRed = document.getElementById("divCheckIRed");
 const pCheckIText = document.getElementById("pCheckIText");
-    
 
+// buscar la foto
+const imgPhoto = document.getElementById("imgPhoto");
 
 function clear(){
     console.log("Clear")
@@ -36,7 +37,7 @@ function clear(){
     btnCheckI.disabled=true;
     btnTakePhoto.disabled=true;
     btnOpenDoor.disabled=true;
-    photo.setAttribute('src', "images/face.png");
+    imgPhoto.setAttribute('src', "images/face.png");
     
     // Put red buttons
     divCheckFRed.style.borderColor="red";
@@ -48,44 +49,49 @@ function clear(){
     pCheckIText.innerHTML = '';
     
 }
+///////////////////////////////////////
+var HttpClient = function() {
+    this.get = function(aUrl, aCallback) {
+        var anHttpRequest = new XMLHttpRequest();
+        anHttpRequest.onreadystatechange = function() {  
+            if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200){
+                 aCallback(anHttpRequest.response);
+            }
+	 
+       }
+       anHttpRequest.open( "GET", aUrl,false );            
+       anHttpRequest.send();	
+    }
+}
+/////////////////////////////////////////////////////
+
+
 
 btnCheckF.addEventListener('click',()=>{
     console.log("Evento accionado boton add data");
-    
-    
-    
-
-
     // setTimeout("clear()", 5000); // Medri el tiempo para poner esta recaga
     // Poner  un contador cuando presione estoy para refrescar la pagina si pasa x tiempo.
     // Comprobar que la persona esta. hacer funcion.
 
-    function httpGetAsync(theUrl, callback)
-{
-    var xmlHttp = new XMLHttpRequest();
-    xmlHttp.onreadystatechange = function() { 
-        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-            callback(xmlHttp.responseText);
-    }
-    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
-    xmlHttp.send(null);
-}
-    var a="";
-    var url="https://proy-ultimo-alu0100813272.c9users.io/verify";
-    httpGetAsync(url,a);
-    
-    
-    
-    pCheckFText.innerHTML = 'Todo correcto!!';
-    
-    divCheckFRed.style.borderColor="green";
-    divCheckFRed.style.backgroundColor="green";
-    
-    // si esta la persona la imagen ya estar solo 
-    btnCheckF.disabled = true;
-    
-    btnTakePhoto.disabled = false;
-    
+//    var client = new HttpClient();
+//    client.get('/verifyFootprint', function(response) {
+       // do something with response
+ //       var content = JSON.parse(response);      
+ //       pCheckFText.innerHTML =content['text'];
+ //       if(content['code'] == "0"){
+	//    divCheckFRed.style.borderColor="green";
+//	    divCheckFRed.style.backgroundColor="green";
+//	    btnCheckF.disabled = true;
+//	    btnTakePhoto.disabled = false;
+  //      }
+   // });
+//////////////////quitar estoooo
+   divCheckFRed.style.borderColor="green";
+	    divCheckFRed.style.backgroundColor="green";
+	    btnCheckF.disabled = true;
+	    btnTakePhoto.disabled = false;
+///////////////////////////////////
+
 },true);
 
  btnTakePhoto.addEventListener('click',()=>{
@@ -93,19 +99,29 @@ btnCheckF.addEventListener('click',()=>{
  });
 
 btnCheckI.addEventListener('click',()=>{
-    console.log("Evento accionado boton add Footprint");
-  
-    
+    console.log("Evento accionado boton add Image");
+    //strDrawableB64 = imgPhoto;
+   // strDrawableB64.substring(strDrawableB64.indexOf(",")+1);
+
+
+    var client = new HttpClient();
+   // console.log(imgPhoto.src)
+    // envoi de la fotoo
+    client.get('/verifyImage', function(response) {
+       // do something with response
+       
+    });
+   
      // Hacer funcional la parate de la huella.
     
     
-    pCheckIText.innerHTML = 'Todo correcto!!';
+    //pCheckIText.innerHTML = 'Todo correcto!!';
     
-    divCheckIRed.style.borderColor="green";
-    divCheckIRed.style.backgroundColor="green";
+    //divCheckIRed.style.borderColor="green";
+    //divCheckIRed.style.backgroundColor="green";
     
     // Imagne no esta desbloqueo. sino solo desbloque el registro.
-    btnCheckI.disabled=true;
-    btnTakePhoto.disabled=true;
-    btnOpenDoor.disabled=false;
+   // btnCheckI.disabled=true;
+   // btnTakePhoto.disabled=true;
+    //btnOpenDoor.disabled=false;
 },true);

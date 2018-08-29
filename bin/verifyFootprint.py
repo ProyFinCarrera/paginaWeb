@@ -1,17 +1,13 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-PyFingerprint
-Copyright (C) 2015 Bastian Raschke <bastian.raschke@posteo.de>
-All rights reserved.
-
+PyFingerprint. Search for a finger
 """
-import time
+from Crypto.Cipher import AES
+from io import open 
+import hashlib
+from Crypto.Hash import SHA256
 from pyfingerprint.pyfingerprint import PyFingerprint
-
-print("I am Verify footprint.")
-## Enrolls new finger
-##
 
 ## Tries to initialize the sensor
 try:
@@ -19,59 +15,83 @@ try:
 
     if ( f.verifyPassword() == False ):
         raise ValueError('The given fingerprint sensor password is wrong!')
-
 except Exception as e:
     print('The fingerprint sensor could not be initialized!')
     print('Exception message: ' + str(e))
     exit(1)
 
-## Gets some sensor information
-print('Currently used templates: ' + str(f.getTemplateCount()) +'/'+ str(f.getStorageCapacity()))
+def takeSha(characterics):
+    hash = SHA256.new(characterics)
+    text = hash.hexdigest()
+    return str(text).encode('utf-8')
 
-## Tries to enroll new finger
+## leo la clave desde un archivo.txt
+def readClave(nameArchive):
+    archive = open(nameArchive, "r") 
+    text = archive.read()
+    archive.close()
+    return text
+
+def takeAES(characterics):
+    clave = readClave("clave.txt")
+    obj = AES.new('This is a key123', AES.MODE_CBC, 'This is an IV456')
+    return obj.encrypt(characterics)
+
+def desAES(characterics):
+    clave = readClave("clave.txt")
+    obj = AES.new('This is a key123', AES.MODE_CBC, 'This is an IV456')
+    return obj.decrypt(characterics)
+## Tries to search the finger and calculate hash
 try:
-    print('Waiting for finger...')
-
+    ## print('Waiting for finger...')
     ## Wait that finger is read
     while ( f.readImage() == False ):
         pass
-
     ## Converts read image to characteristics and stores it in charbuffer 1
     f.convertImage(0x01)
-
-    ## Checks if finger is already enrolled
+    ## Searchs template
     result = f.searchTemplate()
+
     positionNumber = result[0]
+    accuracyScore = result[1]
 
-    if ( positionNumber >= 0 ):
-        print('Template already exists at position #' + str(positionNumber))
-        exit(0)
+    if ( positionNumber == -1 ):
+        print('No match found!')
+        exit(2)
+    else:
+        print('Found template at position #' + str(positionNumber))
+        print('The accuracy score is: ' + str(accuracyScore))
+	
+    print("Intengo buscar la imagen y la gustro en un archivo") 
+    ####################### Search Imagen en firebase.
 
-    print('Remove finger...')
-    time.sleep(2)
+    ## Loads the found template to charbuffer 1
+    f.loadTemplate(positionNumber, 0x01)
 
-    print('Waiting for same finger again...')
+    ## Downloads the characteristics of template loaded in charbuffer 1
+   ## Downloads the characteristics of template loaded in charbuffer 1
+    characterics = str(f.downloadCharacteristics(0x01)).encode('utf-8')
+    
+    # Paso genro shas
+    messageSha = takeSha(characterics)
+    print(messageSha)
+    
+    # Tranformo con el algoritmo Aeas.
+    messageAES = takeAES(messageSha)
+    print(messageAES)##EStoy es lo que hay k mandar.
+    ####################busco la imagen messageAes.png en firebase###########################################
 
-    ## Wait that finger is read again
-    while ( f.readImage() == False ):
-        pass
 
-    ## Converts read image to characteristics and stores it in charbuffer 2
-    f.convertImage(0x02)
+    ################################################################
+    # takeShas y desigrado son iguales
+    
+    descifrado = desAES(messageAES)
+    print(descifrado)
 
-    ## Compares the charbuffers
-    if ( f.compareCharacteristics() == 0 ):
-        raise Exception('Fingers do not match')
+    # Nota si el shas que se genrea l huella Tengo k encriptar sha
 
-    ## Creates a template
-    f.createTemplate()
-
-    ## Saves template at new position number
-    positionNumber = f.storeTemplate()
-    print('Finger enrolled successfully!')
-    print('New template position #' + str(positionNumber))
 
 except Exception as e:
-    print('Operation failed!')
     print('Exception message: ' + str(e))
     exit(1)
+
