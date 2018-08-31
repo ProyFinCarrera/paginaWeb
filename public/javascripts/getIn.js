@@ -35,9 +35,9 @@ function clear(){
     console.log("Clear")
     btnCheckF.disabled= false;
     btnCheckI.disabled=true;
-    btnTakePhoto.disabled=true;
+    // btnTakePhoto.disabled=true;
     btnOpenDoor.disabled=true;
-    imgPhoto.setAttribute('src', "images/face.png");
+    // imgPhoto.setAttribute('src', "images/face.png");
     
     // Put red buttons
     divCheckFRed.style.borderColor="red";
@@ -60,7 +60,7 @@ var HttpClient = function() {
 	 
        }
        anHttpRequest.open( "GET", aUrl,false );            
-       anHttpRequest.send();	
+       anHttpRequest.send(null);	
     }
 }
 /////////////////////////////////////////////////////
@@ -73,55 +73,69 @@ btnCheckF.addEventListener('click',()=>{
     // Poner  un contador cuando presione estoy para refrescar la pagina si pasa x tiempo.
     // Comprobar que la persona esta. hacer funcion.
 
-//    var client = new HttpClient();
-//    client.get('/verifyFootprint', function(response) {
-       // do something with response
- //       var content = JSON.parse(response);      
- //       pCheckFText.innerHTML =content['text'];
- //       if(content['code'] == "0"){
-	//    divCheckFRed.style.borderColor="green";
+    var client = new HttpClient();
+    client.get('/verifyFootprint', function(response) {
+      // do something with response
+       var content = JSON.parse(response);      
+       pCheckFText.innerHTML =content['text'];
+       if(content['code'] == "0"){
+            divCheckFRed.style.borderColor="green";
+	    divCheckFRed.style.backgroundColor="green";
+	    btnCheckF.disabled = true;
+	    btnCheckI.disabled = false;
+        }
+   });
+//////////////////quitar estoooo
+ //         divCheckFRed.style.borderColor="green";
 //	    divCheckFRed.style.backgroundColor="green";
 //	    btnCheckF.disabled = true;
 //	    btnTakePhoto.disabled = false;
-  //      }
-   // });
-//////////////////quitar estoooo
-   divCheckFRed.style.borderColor="green";
-	    divCheckFRed.style.backgroundColor="green";
-	    btnCheckF.disabled = true;
-	    btnTakePhoto.disabled = false;
 ///////////////////////////////////
 
 },true);
 
- btnTakePhoto.addEventListener('click',()=>{
-     btnCheckI.disabled=false;
- });
 
+
+const persona=null;
+const sistem=null;
 btnCheckI.addEventListener('click',()=>{
-    console.log("Evento accionado boton add Image");
-    //strDrawableB64 = imgPhoto;
-   // strDrawableB64.substring(strDrawableB64.indexOf(",")+1);
-
-
+    console.log("Evento accionado boton add Image");   
     var client = new HttpClient();
-   // console.log(imgPhoto.src)
-    // envoi de la fotoo
     client.get('/verifyImage', function(response) {
-       // do something with response
+       // do something with response  
+       var content = JSON.parse(response);      
+       pCheckIText.innerHTML =content['text'];
+      btnOpenDoor.disabled = false;	////////////////////////////////////quitarlo
+      switch (content['code']) {
+        case "0":
+              divCheckIRed.style.borderColor="green";
+	      divCheckIRed.style.backgroundColor="green";
+	      btnCheckI.disabled = true;
+	      btnOpenDoor.disabled = false;
+              persona = content['pesona'];
+              sistem = content['sistem'];	
+        case "2":
+	    clear();
+	    break;
+	default:  
+	    break;
+      }   
        
     });
-   
-     // Hacer funcional la parate de la huella.
-    
-    
-    //pCheckIText.innerHTML = 'Todo correcto!!';
-    
-    //divCheckIRed.style.borderColor="green";
-    //divCheckIRed.style.backgroundColor="green";
-    
-    // Imagne no esta desbloqueo. sino solo desbloque el registro.
-   // btnCheckI.disabled=true;
-   // btnTakePhoto.disabled=true;
-    //btnOpenDoor.disabled=false;
 },true);
+
+
+btnOpenDoor.addEventListener('click',()=>{
+    console.log("Evento accionado boton Open Door");
+    var fecha = new Date();
+    // busco contraseña y le mando los dato para ariiba
+    //Persona es variable que tieon la perosn par registra
+    //sitema k es
+    var message = "'{" + persona+":{"+ fecha +":"+ sistem + "}}'"
+   
+    subirDatos(message);
+ 
+    
+    // Vovel al inicio
+    clear();
+ },true);

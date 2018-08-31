@@ -74,7 +74,7 @@ function subirDatos(){
     // crar json.
     var json={"datos":[{"nombre" :''},{"apellido":''},{"ciudad":''}]};
     var obj = JSON.parse(json);
-console.log(obj);
+    console.log(obj);
     var uploadTAsk = storageRef.push(json);     
     console.log("Respuesta" + uploadTAsk);
 }
@@ -106,8 +106,42 @@ btnAddFootprint.addEventListener('click',()=>{
     }); 
 },true);
 
+
+///////////////////////////////////////
+var HttpClient = function() {
+    this.get = function(aUrl, aCallback) {
+        var anHttpRequest = new XMLHttpRequest();
+        anHttpRequest.onreadystatechange = function() {  
+            if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200){
+                 aCallback(anHttpRequest.response);
+            }
+	 
+       }
+       anHttpRequest.open( "GET", aUrl,false );            
+       anHttpRequest.send(null);	
+    }
+}
+/////////////////////////////////////////////////////
+
+
 btnAddImage.addEventListener('click',()=>{
-     console.log("Evento accionado boton Image");
+    
+    var client = new HttpClient();
+    client.get('/saveImage', function(response) {
+      // do something with response
+       var content = JSON.parse(response);      
+       pCheckFText.innerHTML =content['text'];
+       if(content['code'] == "0"){
+            divCheckFRed.style.borderColor="green";
+	    divCheckFRed.style.backgroundColor="green";
+	    btnCheckF.disabled = true;
+	    btnCheckI.disabled = false;
+        }
+   });
+
+
+
+    console.log("Evento accionado boton Image");
     var divImageRed = document.getElementById("divImageRed");
     var pImageText = document.getElementById("pImageText");
     console.log("dato en imagen: " + nameImage)

@@ -1,10 +1,6 @@
 (function startVideo() {
-   var streaming = false,
       video        = document.querySelector('#video'),
-      cover        = document.querySelector('#cover'),
       canvas       = document.querySelector('#canvas'),
-      photo        = document.querySelector('#imgPhoto'),
-      startbutton  = document.querySelector('#btnTakePhoto');
   navigator.getMedia = ( navigator.getUserMedia || 
                          navigator.webkitGetUserMedia ||
                          navigator.mozGetUserMedia ||
@@ -51,58 +47,5 @@
     ctx.stroke();
   }
 }
-  function takepicture() {
-    canvas.width = photo.width;
-    canvas.height = photo.height;
-    canvas.getContext('2d').drawImage(video, 0, 0, photo.width, photo.height);
-    var data = canvas.toDataURL('images');
-    photo.setAttribute('src', data);
-    
-    // apartir de aki mandar la foto para arriba la nuve.
-    console.log(photo)///
-   
-  }
 
-  btnTakePhoto.addEventListener('click', function(ev){
-      takepicture();
-      ev.preventDefault();
-  }, false);
- var btnCheckImagen  = document.querySelector('#btnCheckImagen');/// ai Imagen btnCheckI? par inde
-btnCheckI.addEventListener('click',()=>{
-    console.log("Evento accionado boton add Image");
-    //strDrawableB64 = imgPhoto;
-   // strDrawableB64.substring(strDrawableB64.indexOf(",")+1);
-
-
-    var client = new HttpClient();
-   // console.log(imgPhoto.src)
-    // envoi de la fotoo
-
-   client.post('/verifyImage', function(response) {
-       // do something with response
-		console.log(response);
-       
-    });
-    
-},true);
-
-///////////////////////////////////////
-var HttpClient = function() {
-    this.post = function(aUrl,aCallback) {
-        var anHttpRequest = new XMLHttpRequest();
-        anHttpRequest.onreadystatechange = function() {  
-            if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200){
-                 aCallback(anHttpRequest.response);
-            }
-	 
-       }
-       var formData = new FormData();
-       formData.append("afile", imgPhoto.file);
-       console.log(formData);
-
-       anHttpRequest.open( "POST", aUrl+ "?data=" +"{\'file\':"+formData+"}",true );          
-       anHttpRequest.send(formData);
-	
-    }
-}
 })();

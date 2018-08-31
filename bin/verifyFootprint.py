@@ -6,6 +6,7 @@ PyFingerprint. Search for a finger
 from Crypto.Cipher import AES
 from io import open 
 import hashlib
+import os
 from Crypto.Hash import SHA256
 from pyfingerprint.pyfingerprint import PyFingerprint
 
@@ -27,18 +28,19 @@ def takeSha(characterics):
 
 ## leo la clave desde un archivo.txt
 def readClave(nameArchive):
-    archive = open(nameArchive, "r") 
+    subjectpath = os.path.join(nameArchive)
+    archive = open(subjectpath , "r") 
     text = archive.read()
     archive.close()
     return text
 
 def takeAES(characterics):
-    clave = readClave("clave.txt")
+    #clave = readClave("clave.txt")
     obj = AES.new('This is a key123', AES.MODE_CBC, 'This is an IV456')
     return obj.encrypt(characterics)
 
 def desAES(characterics):
-    clave = readClave("clave.txt")
+    #clave = readClave("clave.txt")
     obj = AES.new('This is a key123', AES.MODE_CBC, 'This is an IV456')
     return obj.decrypt(characterics)
 ## Tries to search the finger and calculate hash
@@ -80,7 +82,7 @@ try:
     messageAES = takeAES(messageSha)
     print(messageAES)##EStoy es lo que hay k mandar.
     ####################busco la imagen messageAes.png en firebase###########################################
-
+    
 
     ################################################################
     # takeShas y desigrado son iguales

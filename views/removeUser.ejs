@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ../views/head.ejs %>
+    <script src="https://www.gstatic.com/firebasejs/5.4.0/firebase.js"></script>
+    <script>
+        // Initialize Firebase
+        var config = {
+            apiKey: "AIzaSyAWe_eDwVTwISgCcCDy5PPxW4bZlq6sHCQ",
+            authDomain: "tfg-findegrado.firebaseapp.com",
+            databaseURL: "https://tfg-findegrado.firebaseio.com",
+            projectId: "tfg-findegrado",
+            storageBucket: "tfg-findegrado.appspot.com",
+            messagingSenderId: "281469807949"
+        };
+        firebase.initializeApp(config);
+    </script>
+    <!-- Custom styles for this template -->
+</head>
+<body>
+  <% include ../views/navAdm.ejs %>
+  <div  class="container">
+      <form class="form-signin">
+      <h1 class="h3 mb-3 font-weight-normal">Remove User</h1>
+      <label for="inputEmail" class="sr-only">Email address</label>
+      <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
+      <label for="inputConfEmail" class="sr-only">Confirm email</label>
+      <input type="email" id="inputConfEmail" class="form-control" placeholder="Confirm email" required>
+      <button onclick="removeUser()" class="btn btn-lg btn-primary btn-block" type="submit">Remove</button>
+      <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
+    </form>
+  </div>
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+  <script src="/javascripts/deletes.js"></script>
+</body>
+</html>

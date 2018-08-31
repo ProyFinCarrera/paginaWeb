@@ -16,6 +16,16 @@ router.get('/pruebas', function(req, res, next) {
   res.render('pruebas', { title: 'Secure Access Control' });
 });
 
+/* GET removeUser page. */
+router.get('/removeUser', function(req, res, next) {
+  res.render('removeUser', { title: 'Secure Access Control' });
+});
+
+/* GET removeAdmin page. */
+router.get('/removeAdm', function(req, res, next) {
+  res.render('removeAdm', { title: 'Secure Access Control' });
+});
+
 /* GET newAdm page. */
 router.get('/newAdm', function(req, res, next) {
   console.log("estoy aki")
@@ -139,14 +149,57 @@ router.get('/verifyFootprint', function(req, res, next) {
    pyshell = null;
 });
 
-// Verify footprint and GET menuAdm page.
+// Verify Image and GET menuAdm page.
 router.get('/verifyImage', function(req, res, next) {
   var PythonShell = require('python-shell');
   var pyshell = null;
-console.log(req.idPhoto);
+  // console.log(req.idPhoto);
+  
   console.log("Estoy en verify Image");
-  // console.log(req.query.optVerif )
-  pyshell = new PythonShell('sudo python2 ./../bin/verifyFace.py');
+
+  pyshell = new PythonShell('python2 ./../bin/face/verifyFace.py');
+  pyshell.send('Valores que recibe python');  // Datos que se le mandan al script.
+  pyshell.on('message', function (message) {
+    // received a message sent from the Python script (a simple "print" statement)
+     console.log(message);
+   });
+   // end the input stream and allow the process to exit
+   pyshell.end(function (err,code,signal) {
+     /// if (err) throw err;
+     console.log('The exit err: ' + err);
+     console.log('The exit code was: ' + code);
+     console.log('The exit signal was: ' + signal);
+     //console.log('The opcion: ' + opcion);
+     console.log('finished');
+     var  message="";
+     switch (code) {
+	case 1:
+	    message = "Error!!! No foud verify image";
+	    break;
+        case 2:
+	    message  = "No match whith Footprint!!!";
+	    break;
+	default:
+	    message  = "Correct verification!!!";		
+	    break;
+      }   
+	persona = "persona identificada";
+ 	sistem = "Poner la codificacion de aparato k drei mac pro ejemplo "
+ 
+        res.send({"code":code,"text":message,"persona":persona,"sistem":sistem});
+     
+   });
+   pyshell = null;
+});
+// Verify Image and GET menuAdm page.
+router.get('/saveImage', function(req, res, next) {
+  var PythonShell = require('python-shell');
+  var pyshell = null;
+  // console.log(req.idPhoto);
+  
+  console.log("Estoy en verify Image");
+
+  pyshell = new PythonShell('python2 ./../bin/face/capture.py '+ "dios");
   pyshell.send('Valores que recibe python');  // Datos que se le mandan al script.
   pyshell.on('message', function (message) {
     // received a message sent from the Python script (a simple "print" statement)
@@ -178,28 +231,4 @@ console.log(req.idPhoto);
    pyshell = null;
 });
 
-router.post('/verifyImage', function(req, res, next) {
-	console.log("Cargando la imagne")
-     console.log(req.query.data['file']);
-
-var object = {};
-req.query.forEach(function(value, key){
-    object[key] = value;
-});
-var json = JSON.stringify(object);
-//console.lo%27file%27g(json);
-//var formData = new FormData(req.query.data);
-         
-});
-function FormDataToJSON(FormElement){    
-    var formData = new FormData(FormElement);
-    var ConvertedJSON= {};
-    for (const [key, value]  of formData.entries())
-    {
-        ConvertedJSON[key] = value;
-console.log(value);
-    }
-
-    return ConvertedJSON
-}
 module.exports = router;

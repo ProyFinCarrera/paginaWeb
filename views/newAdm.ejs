@@ -20,7 +20,7 @@
 <body>
   <% include ../views/navAdm.ejs %>
   <div class="container">
-      <form class="form-signin">
+      <form class="form-signin" action="/">
       <h1 class="h3 mb-3 font-weight-normal">New Administrator </h1>
       <label for="inputEmail" class="sr-only">Email address</label>
       <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
@@ -30,8 +30,7 @@
       <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
       <label for="inputConfPassword" class="sr-only">Confirm password</label>
       <input type="password" id="inputConfPassword" class="form-control" placeholder="Confirm Password" required>
-      <button onclick="registrar()" class="btn btn-lg btn-primary btn-block" type="submit">Register Administrator</button>
-      <p><a class="btn btn-lg btn-secondary btn-block" href="/">Return</a></p>
+      <button onclick="registrar()" class="btn btn-lg btn-primary btn-block" type="submit">Register</button>
       <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
     </form>
   </div>
