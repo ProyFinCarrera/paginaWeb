@@ -105,8 +105,8 @@ router.get('/verifyFootprint', function(req, res, next) {
   var pyshell = null;
   console.log("Estoy en verify");
   // console.log(req.query.optVerif )
-  pyshell = new PythonShell('sudo python2 ./../bin/verifyFootprint.py');
-    
+  pyshell = new PythonShell('python2 ./../bin/verifyFootprint.py');
+
   // // if(req.query.optVerif==="footprint" ){
   // //   pyshell = new PythonShell('./bin/verifyFootprint.py');
   // // } else{
@@ -157,11 +157,13 @@ router.get('/verifyImage', function(req, res, next) {
   
   console.log("Estoy en verify Image");
 
-  pyshell = new PythonShell('python2 ./../bin/face/verifyFace.py');
-  pyshell.send('Valores que recibe python');  // Datos que se le mandan al script.
+  pyshell = new PythonShell('sudo python2 ./../bin/face/verifyFace.py');
+     
+  //pyshell.send('Valores que recibe python');  // Datos que se le mandan al script.
   pyshell.on('message', function (message) {
     // received a message sent from the Python script (a simple "print" statement)
-     console.log(message);
+console.log("Estoy dsafdsfdsfy");    
+ console.log(message);
    });
    // end the input stream and allow the process to exit
    pyshell.end(function (err,code,signal) {

@@ -16,7 +16,21 @@
         messagingSenderId: "281469807949"
       };
       firebase.initializeApp(config);
-      
+function subirImagen(){
+    
+    var fichero = document.getElementById("imagen");
+    console.log(fichero.files[0])
+     var imagenSubir = fichero.files[0];
+     console.log(imagenSubir);
+     console.log(imagenSubir.name)
+     storageRef = firebase.storage().ref("imagenes/" + imagenSubir.name ) // directorio raiz
+    // storageRef = firebase.storage.ref()// hijo del direcctorio raiz
+     var uploadTAsk = storageRef.put(imagenSubir)
+     
+     console.log("Estoy en subir imagen");
+     console.log(uploadTAsk)
+   // console.log("Respuesta" + uploadTAsk)
+}
     </script>
  
 </head>
@@ -72,7 +86,7 @@
                 </div>
             </div>
               <div class="row form-group">    
-                  <button class="btn btn-secondary btn-lg btn-block col-sm-4" type="button" id="btnAddData" >Add Personal Data</button>
+                  <button class="btn btn-secondary btn-lg btn-block col-sm-4" onsubmit="false;" type="submit" id="btnAddData" >Add Personal Data</button>
                   <p id="pDataText" class="col-sm-6" ></p>
                   <div id="divDataRed" class="col-sm-1 button-red"></div>
                   <div class="col-sm-1"></div>
@@ -81,7 +95,7 @@
             <hr class="mb-4">
             <h4 class="mb-3">2. Insert footprint.</h4>
             <div class="row"> 
-                <button class="btn btn-secondary btn-lg btn-block col-sm-4" disabled="true" type="button" id="btnAddFootprint">Add Footprint</button>
+                <button class="btn btn-secondary btn-lg btn-block col-sm-4"  type="button" id="btnAddFootprint">Add Footprint</button>
                 <p id="pFootprintText" class="col-sm-6" ></p>
                 <div id="divFootprintRed" class="col-sm-1 button-red"></div>
                 <div class="col-sm-1"></div>
@@ -104,18 +118,18 @@
                     </div>
                  </div>
                  <div class="col-sm-6">
-                   <img class="img-responsive" src="images/face.png" id="imgPhoto" alt="photo">
+                   <img class="img-responsive" src="images/face.png" id="photo" alt="photo">
                  </div>
             </div>
             <div class="row">    
-                <button class="btn btn-secondary btn-lg btn-block col-sm-4 " type="button"  id="btnAddImage">Add Image</button>
+                <button class="btn btn-secondary btn-lg btn-block col-sm-4 " type="button" id="btnAddImage">Add Image</button>
                 <p id="pImageText"class="col-sm-6" ></p>
                 <div id="divImageRed" class="col-sm-1 button-red"></div>
                 <div class="col-sm-1"></div>
             </div>
             <hr class="mb-4">
             <h4 class="mb-3">4. Registration .</h4>
-            <button class="btn btn-primary btn-lg btn-block"  type="submit" id="btnRegister" >Register user</button>
+            <button class="btn btn-primary btn-lg btn-block" onclick="subirImagen()" type="submit" id="btnRegister" >Register user</button>
         </div>
       </div>
     <footer class="my-5 pt-5 text-muted text-center text-small">
@@ -133,7 +147,7 @@
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 
   <script src="/javascripts/newUser.js"></script>
-  <script src="/javascripts/videoR.js"></script>
+  <script src="/javascripts/video.js"></script>
 
 </body>
 </html>

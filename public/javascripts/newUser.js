@@ -52,10 +52,6 @@ btnAddData.addEventListener('click',()=>{
 
  
     subirDatos();
-    
-    
-    
-    
     pDataText.innerHTML = 'Todo correcto!!';
     
     divDataRed.style.borderColor="green";
@@ -72,11 +68,37 @@ function subirDatos(){
     storageRef = firebase.database().ref(); // directorio raiz	
     console.log("Estoy Subinedo Datos.");
     // crar json.
-    var json={"datos":[{"nombre" :''},{"apellido":''},{"ciudad":''}]};
-    var obj = JSON.parse(json);
-    console.log(obj);
-    var uploadTAsk = storageRef.push(json);     
-    console.log("Respuesta" + uploadTAsk);
+    //var json={"datos":[{"nombre" :''},{"apellido":''},{"ciudad":''}]};
+    // var json="{datos}";
+    //var obj = JSON.parse(json);
+    //console.log(obj);
+    // "{'nombre':" + firstName.value + "}";
+   
+    //desde acá pueden usar la referencia nuevoUsuario para setear los valores
+    //  var json = [{"fdsaf":"casa"}];
+    var id = email.value.replace(".", "_");
+    console.log(id);
+    var json={};
+    json.email = id;
+    json.nombre = firstName.value;
+    json.apellidos = lastName.value;
+
+    json.puesto = workPosition.value;
+
+    console.log(otherInfo.value);
+    json.otraInfo = otherInfo.value;
+    console.log(json);
+    
+    console.log("Estoy Subinedo Datos.2");    
+    // Consulta si existe email
+    var uploadTAsk = storageRef.child("usuarios").child(id).on('value', function(snapshot) {
+
+console.log(snapshot.val);
+var uploadTAsk = storageRef.child("usuarios").child(id).set(json);
+  
+updateStarCount(postElement, snapshot.val());
+});
+
 }
 
 

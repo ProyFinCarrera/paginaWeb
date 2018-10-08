@@ -10,7 +10,7 @@ if not os.path.isdir(path):
     os.mkdir(path)
 (im_width, im_height) = (92, 112)
 haar_cascade = cv2.CascadeClassifier(fn_haar)
-webcam = cv2.VideoCapture(0)
+webcam = cv2.VideoCapture(1)
 
 count = 0
 while count < 10:
@@ -27,7 +27,7 @@ while count < 10:
         face_resize = cv2.resize(face, (im_width, im_height))
         pin=sorted([int(n[:n.find('.')]) for n in os.listdir(path)
                if n[0]!='.' ]+[0])[-1] + 1
-        cv2.imwrite('%s/%s.png' % (path, pin), face_resize)
+        cv2.imwrite('%s/%s.pgm' % (path, pin), face_resize)
         # cv2.rectangle(im, (x, y), (x + w, y + h), (0, 255, 0), 3)
         # cv2.putText(im, fn_name, (x - 10, y - 10), cv2.FONT_HERSHEY_PLAIN,1,(0, 255, 0))
         count += 1

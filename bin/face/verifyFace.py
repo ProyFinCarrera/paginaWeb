@@ -1,8 +1,8 @@
-#!/usr/bin/python3
+#!/usr/bin/python2
 import cv2, sys, numpy, os
 size = 4
 fn_haar = 'haarcascade_frontalface_alt.xml'
-fn_dir = 'att_faces/orl_faces'
+fn_dir = '/'
 
 # Part 1: Creando fisherRecognizer
 print('Formando...')
@@ -29,36 +29,39 @@ model.train(images, lables)
 
 # Part 2: Utilizar fisherRecognizer en funcionamiento la camara
 haar_cascade = cv2.CascadeClassifier(fn_haar)
-webcam = cv2.VideoCapture(0)
-while True:
+webcam = cv2.VideoCapture(1)
+cont=0;
+print("antes del wil")
+while cont<50:
     (rval, frame) = webcam.read()
-    frame = cv2.flip(frame,1,0)
+    frame=cv2.flip(frame,1,0)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     mini = cv2.resize(gray, (gray.shape[1] / size, gray.shape[0] / size))
     faces = haar_cascade.detectMultiScale(mini)
+    #faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+
     for i in range(len(faces)):
         face_i = faces[i]
         (x, y, w, h) = [v * size for v in face_i]
         face = gray[y:y + h, x:x + w]
         face_resize = cv2.resize(face, (im_width, im_height))
 
-        # Intentado reconocer la carafn_haarz
+        # Intentado reconocer la cara
         prediction = model.predict(face_resize)
-        cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)#()
+        #cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
 
         # Escribiendo el nombre de la cara reconocida
         # [1]
         if prediction[1]<500:
-            cv2.putText(frame, '%s - %.0f' % (names[prediction[0]],prediction[1]), (x-10, y-10), cv2.FONT_HERSHEY_PLAIN,1,(0, 255, 0))#()
+           #cv2.putText(frame,'%s - %.0f' % (names[prediction[0]],prediction[1]),
+           #(x-10, y-10), cv2.FONT_HERSHEY_PLAIN,1,(0, 255, 0))
             # La variable cara tendra el nombre de la persona reconocida  
-            nombre = str(names[prediction[0]])
-            print(nombre)
-
-
-
-    cv2.imshow('OpenCV', frame)#()
+           cara = '%s' % (names[prediction[0]])
+           print(cara)
+    
+    # cv2.imshow('OpenCV', frame)
+    cont+=1
     key = cv2.waitKey(10)
    
     if key == 27:
         break
-
