@@ -1,20 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+
+<head>
     <% include ../views/head.ejs %>
-  </head>
-  <body >
+</head>
+
+<body>
     <main>
-      <section class="jumbotron text-center">
-        <div class="container">
-          <h1 class="jumbotron-heading">Welcome to <%= title %></h1>
-          <p class="lead text-muted">This is a final project of the degree made by the student <strong>Jairo González Lemus</strong>. In which will be used the technologies studied in the subjects of the computer engineering degree taught at <strong>the University of La Laguna</strong>.</p>
-          <p>
-            <a href="/getIn" class="btn btn-primary my-2">Get In</a>
-            <a href="/admin" class="btn btn-secondary my-2">Administrator</a>
-          </p>
-        </div>
-      </section>
+        <section class="jumbotron text-center">
+            <div class="container">
+                <h1 class="jumbotron-heading">Welcome to
+                    <%= title %>
+                </h1>
+                <p class="lead text-muted">This is a final project of the degree made by the student <strong>Jairo González Lemus</strong>. In which will be used the technologies studied in the subjects of the computer engineering degree taught at <strong>the University of La Laguna</strong>.</p>
+                <p>
+                    <a href="/getIn" class="btn btn-primary my-2">Get In</a>
+                    <a href="/admin" class="btn btn-secondary my-2">Administrator</a>
+                </p>
+            </div>
+        </section>
+        <script type="text/javascript">
+        const send = document.getElementById("send");
+        send.addEventListener('click', () => {
+            makePost();
+        })
+
+        function makePost() {
+            var client = new HttpClient();
+            let dir = "/getIn" + Math.random();
+            var client = new HttpClient();
+            client.post(dir, function(response) {
+                // console.log(response);
+
+                //alert(response);
+
+            }, false);
+        }
+        var HttpClient = function() {
+            this.post = function(aUrl, aCallback) {
+                var anHttpRequest = new XMLHttpRequest();
+                anHttpRequest.onreadystatechange = function() {
+                    if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200 ||
+                        anHttpRequest.status == 404) {
+                        aCallback(anHttpRequest.response);
+                    }
+
+                }
+                anHttpRequest.open("POST", aUrl, false);
+                anHttpRequest.send(null);
+            }
+        }
+        </script>
     </main>
-  </body>
+</body>
+
 </html>

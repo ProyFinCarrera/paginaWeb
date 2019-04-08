@@ -7,10 +7,12 @@
 var app = require('../app');
 var debug = require('debug')('ctrlaccess:server');
 var http = require('http');
-
+var fs = require('fs');
+//var https = require('https');
 /**
  * Get port from environment and store in Express.
  */
+const host = 'localhost';
 
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
@@ -18,13 +20,28 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
+ var server = http.createServer(app);
 
-var server = http.createServer(app);
+// var server = https.createServer({
+//     key: fs.readFileSync('./bin/ssl/my_cert.key'),
+//     cert: fs.readFileSync('./bin/ssl/my_cert.crt'),
+//     ca: fs.readFileSync ( './bin/ssl/my_cert.csr' )
+// }, app)
 
+
+// http.createServer(app).listen(80);
+// app.use(function(req, res, next) {
+//     if (req.secure) {
+//         next();
+//     } else {
+//         res.redirect('https://' + req.headers.host + req.url);
+//     }
+// });
 /**
  * Listen on provided port, on all network interfaces.
  */
 
+//server.listen(host ,port);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);

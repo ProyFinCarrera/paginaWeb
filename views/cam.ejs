@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Cámara Web con HTML5</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+    <script type="text/javascript">
+        function hasGetUserMedia() {
+            navigator.getUserMedia = navigator.getUserMedia || // Opera
+                navigator.webkitGetUserMedia || // Chrome, Safari
+                navigator.mozGetUserMedia || // Mocilla nightly
+                navigator.msGetUserMedia;
+            if (navigator.getUserMedia) {
+                return true
+            }
+            return false;
+        } // fin de hasGetUserMedia();
+        function hasURL() {
+            window.URL = window.URL || window.webkitURL
+                || window.mozURL || window.msURL;
+            if (window.URL && window.URL.createObjectURL) {
+                return true;
+            }
+            return false;
+        } // fin de hasURL();
+        function error(e) {
+            alert("Fallo en la aplicación. "+e);
+        } // fin de error();
+        function setStream(stream) {
+            var webcam = document.getElementById("webcam");
+            webcam.src = window.URL.createObjectURL(stream);
+            webcam.play();
+        } // fin de getStream();
+        function onLoad () {
+            if (!hasGetUserMedia() || !hasURL()) {
+                alert("Tu navegador no soporta getUserMedia()");
+            } else {
+                navigator.getUserMedia(
+                    {video: true, audio: false},
+                    setStream,
+                    error
+                );
+            }
+        } // fin de onLoad();
+    </script>
+  </head>
+  <body onload="onLoad()">
+      <video id="webcam">
+          Tu navegador no es compatible con la etiqueta video de HTML5.
+      </video>
+  </body>
+</html>

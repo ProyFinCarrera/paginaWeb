@@ -1,11 +1,28 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    padding: 50px;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+
 }
 
-strong{
-   color: black;
+strong {
+    color: black;
 }
+
 a {
-  color: #00B7FF;
+    color: #00B7FF;
+}
+
+hr {
+    width: 100%;
+    color: #8D8A8A;
+    height: 1px;
+    background-color: #8D8A8A;
+}
+
+#btn1 {
+    white-space: normal;
+}
+
+#letrero {
+    height: 50px;
 }

@@ -1,68 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title><%= title %></title>
+
+<head>
+    <title>
+        <%= title %>
+    </title>
     <% include ../views/head.ejs %>
     <!-- Custom styles for this template -->
-    <script src="https://www.gstatic.com/firebasejs/5.4.0/firebase.js"></script>
-    <script>
-      // Initialize Firebase
-      var config = {
-        apiKey: "AIzaSyAWe_eDwVTwISgCcCDy5PPxW4bZlq6sHCQ",
-        authDomain: "tfg-findegrado.firebaseapp.com",
-        databaseURL: "https://tfg-findegrado.firebaseio.com",
-        projectId: "tfg-findegrado",
-        storageBucket: "tfg-findegrado.appspot.com",
-        messagingSenderId: "281469807949"
-      };
-      firebase.initializeApp(config);
-      //coneccion a firebase y mandarpara ariiba
-      function subirDatos(json){
-            console.log("Estoy Subinedo Datos.");
-	    storageRef = firebase.database().ref(); // directorio raiz	
-	    // obj JSON
-	    var obj = JSON.parse(json)
-	    var uploadTAsk = storageRef.push(json);     
-	    console.log("Respuesta" + uploadTAsk);    
-       }
-    </script>
     <link href="/stylesheets/style.css" rel="stylesheet">
     <link href="/stylesheets/video.css" rel="stylesheet">
-  </head>
-  <body class="container">
+</head>
+
+<body class="container">
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-      <a class="navbar-brand" href="#"><%= title %></a>
+        <a class="navbar-brand" href="#">
+            <%= title %></a>
+        <form action="/" method="GET">
+            <button type="submit" class="btn btn-outline-light" id="btnClose">
+                <span class="iconify" data-icon="octicon-sign-out" data-inline="false"></span>
+            </button>
+            <form>
     </nav>
     <main>
-      <section class="jumbotron text-center">
-          <div class="row mb-3">
-            <button class="btn btn-secondary my-2 col-sm-4" type="button" id="btnCheckF">Check footprint</button>
-            <p id="pCheckFText" class="col-sm-6" ></p>
-            <div id="divCheckFRed" class="col-sm-1 button-red"></div>
-            <div class="col-sm-1"></div>
-          </div>
-          <!--div class="row mb-3">
-               <div class="col-sm-2"></div>
-               <video class="col-sm-8" id="video" src="blob:https://www.onlinemictest.com/9e7d9bd6-b6d8-4850-9787-5ded8d403048" muted autoplay>                   Tu navegador no es compatible con la etiqueta video de HTML5.
-               <canvas id="canvas"></canvas>
-               </video>
-               <div class="col-sm-2"></div>     
-            </div-->
-            <div  class="row mb-3">
-             <button class="col-sm-4 btn btn-secondary my-2" type="button" id="btnCheckI" >Check image</button>
-             <p class="col-sm-6" id="pCheckIText"></p>
-             <div class="col-sm-1 button-red" id="divCheckIRed"></div>
-             <div class="col-sm-1"></div>
+        <section class="jumbotron text-center">
+            <div class="row mb-3">
+                <div class="col-sm-10"></div>
+                <div id="divCheckFRed" class="col-sm-1 button-red"></div>
             </div>
-           <button class="btn btn-primary col-sm-6" type="button" id="btnOpenDoor" disabled>Open the door</button>
+            <div class="row mb-3">
+                <div class="col-sm-2"></div>
 
-      </section>
+                <img class="col-sm-8" id="myImg" action="./cam" alt="No se puede reproducir el vi" />
+
+                <div class="col-sm-2"></div>
+            </div>
+            <div id="letrero" class="row mb-3">
+                <p id="pCheckFText" class="col-sm-12"></p>
+            </div>
+        </section>
     </main>
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     <script src="/javascripts/getIn.js"></script>
-    <!--script src="/javascripts/video.js"></script-->
-    
-  </body>
+</body>
+
 </html>

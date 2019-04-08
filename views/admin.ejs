@@ -1,21 +1,25 @@
 <!Doctype html>
 <html lang="en">
-  <head>
-   <% include ../views/head.ejs %>
-   <link href="/stylesheets/admin.css" rel="stylesheet">
-  </head>
-  <body class="text-center">
-    <form class="form-signin" action="menuAdm" method="GET">
-      <h1 class="h3 mb-3 font-weight-normal">Administrator only</h1>
-      <label for="inputEmail" class="sr-only">Email address</label>
-      <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
-      <label for="inputPassword" class="sr-only">Password</label>
-      <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
-      <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-      <p><a class="btn btn-lg btn-secondary btn-block" href="/">Return</a></p>
-      <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
+
+<head>
+    <% include ../views/head.ejs %>
+    <link href="/stylesheets/admin.css" rel="stylesheet">
+</head>
+
+<body class="text-center">
+    <form class="form-signin" id="formSign">
+        <h1 class="h3 mb-3 font-weight-normal">Administrator only</h1>
+        <label for="inputEmail" class="sr-only">Email address</label>
+        <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required atofocus>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+        <button id="btnSignIn" class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <p><a class="btn btn-lg btn-secondary btn-block" href="/">Return</a></p>
+        <p class="mt-5 mb-3 text-muted">&copy; 2017-2018</p>
     </form>
     <script src="https://www.gstatic.com/firebasejs/5.4.0/firebase.js"></script>
-    <!--script src="/javascripts/firebase.js"></script-->
-  </body>
+    <script src="/javascripts/firebase.js"></script>
+    <script src="/javascripts/admin.js"></script>
+</body>
+
 </html>
