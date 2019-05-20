@@ -7,7 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('ctrlaccess:server');
 var http = require('http');
-var fs = require('fs');
+var fs = require('fs'); //required for file serving
 //var https = require('https');
 /**
  * Get port from environment and store in Express.
@@ -40,6 +40,36 @@ app.set('port', port);
 /**
  * Listen on provided port, on all network interfaces.
  */
+const io = require('socket.io')(server);
+//trying to serve the image file from the server
+const video = io.of ( '/video' );
+video.on('connection', function(socket){
+  console.log("client:"+ socket.id);
+  setInterval(() => {
+     fs.readFile(__dirname + '/../public/video/cam1.jpg', function(err, buf){
+
+     video.emit('new_image', { image: true, buffer: buf.toString('base64')}); //imprimiendo el id del cliente conectado 
+     console.log('image file is initialized');
+  })
+
+},100)
+  
+  //);
+
+// socket.on('image', function(socket){
+//    console.log(socket);
+//   fs.readFile(__dirname + '/../public/video/cam1.jpg', function(err, buf){
+//     video.emit('new_image', { image: true, buffer: buf.toString('base64')});
+//     video.disconte
+//   });
+//});
+
+ });
+
+
+
+
+
 
 //server.listen(host ,port);
 server.listen(port);
