@@ -27,18 +27,19 @@ class FaceDetector:
     """Method that paints a rectangle where there is a face.""" 
     def detect(self,img):
         prepared_img = self.__prepare_img(img)
-        faces = self.__haar_cascade.detectMultiScale(prepared_img ,scaleFactor=1.05,minNeighbors=5,minSize = (60, 60))
+        faces = self.__haar_cascade.detectMultiScale(prepared_img ,scaleFactor=1.05,minNeighbors=5,minSize = (50, 60))
         tam =len(faces)
         print(tam)
         if tam>0:
             face_i = faces[0]
             (x, y, w, h) =(faces[0][0]+10,faces[0][1]+10,faces[0][2]-20,faces[0][3]-10)
+            #(x, y, w, h) =(faces[0][0],faces[0][1],faces[0][2],faces[0][3])
             face = prepared_img[y:y + h, x:x + w]
             face_resize = self.__prepare_face(face)
             # Dibujamos un rectangulo en las coordenadas del rostro
             img=cv2.rectangle(img, (x*self.__size, y*self.__size), (x*self.__size + w*self.__size, y*self.__size + h*self.__size), (0, 255, 0), 3)
-            return (True,face)
-        return (False,False)
+            return (True,face_resize,x*self.__size,y*self.__size)
+        return (False,False,0,0)
     """Method that creates a new image so that the algorithms of detection are more efficient."""
     def __prepare_img(self,img):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

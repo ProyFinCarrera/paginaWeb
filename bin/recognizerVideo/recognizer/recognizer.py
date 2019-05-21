@@ -24,9 +24,9 @@ class Recognizer:
 			exit(1)
 	"""Method that gives a percentage of recognition and also says if it is recognized or not."""
 	def recognize(self,img,face,x,y):
-		#predict the image using our face recognizer 
-		#label, confidence = self.__model.predict(face)
+		reconoce = True
 		prediction = self.__model.predict(face)
+		print(prediction[1])
 		if prediction[1] < 500:
 			pr = '%s - %.0f' % (self.__names[prediction[0]], prediction[1])
 			punto = (x - 10, y - 10)
@@ -42,6 +42,7 @@ class Recognizer:
 		else:
 			cv2.putText(img, 'Desconocido', (x - 10, y - 10),
 				cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0))
+		return reconoce
 	"""Method to create a list of images and a list of corresponding names"""
 	def __create_list_img_names(self):
 		(self.__images,  self.__lables,self.__names, id) = ([], [], {},0)
