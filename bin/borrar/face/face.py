@@ -11,7 +11,7 @@ import numpy
 import sys
 
 #print(os.path.abspath(os.path.realpath(sys.argv[0]))) 
-print os.path.abspath(os.path.realpath(__file__))
+#print os.path.abspath(os.path.realpath(__file__))
 #pathAntes = os.path( "/face/" + os.path.dirname(sys.argv[0]))
 #print(pathAntes)
 
@@ -173,7 +173,7 @@ class Face:
             for subdir in dirs:
                 names[id] = subdir
                 subjectpath = os.path.join(self.fn_dir, subdir)
-                print subjectpath
+                print( subjectpath)
                 for filename in os.listdir(subjectpath):
                     path = subjectpath + '/' + filename
                     lable = id

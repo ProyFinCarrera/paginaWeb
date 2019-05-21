@@ -4,35 +4,35 @@
 # Class: FaceDetector.
 import os
 import cv2
-import numpy
+#https://becominghuman.ai/face-detection-using-opencv-with-haar-cascade-classifiers-941dbb25177
 
-pathDir = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
+path_dir = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 
 class FaceDetector:
+    """Class that detects in an image if there is a face.
+    the default configuration file is haarcascade_fromtalface_default.xml
+    size = porcentra that we will make the image smaller for algorithm optimization."""
     def __init__(self, dir_haarcascade="haarcascade_frontalface_default.xml", size=4, size_face_w=92, size_face_h=112):
-    	"""Class that detects in an image if there is a face.
-    	the default configuration file is haarcascade_fromtalface_default.xml
-    	size = porcentra that we will make the image smaller for algorithm optimization."""
     	try:
             self.__tam_face = (size_face_w,size_face_h)
             self.__size = size
-            self.__dir_haarcascade = os.path.join(pathDir,dir_haarcascade)
+            self.__dir_haarcascade = os.path.join(path_dir,dir_haarcascade)
             print(self.__dir_haarcascade)
             self.__haar_cascade = cv2.CascadeClassifier(self.__dir_haarcascade)
             if self.__haar_cascade.empty():
-                raise ValueError("No Exi")
+                raise ValueError("No Exist file haarcascade.")
     	except Exception as e:
     		print('Error loaded FaceDetector: ' + str(e))
     		exit(1)
     """Method that paints a rectangle where there is a face.""" 
-    def run(self,img):
+    def detect(self,img):
         prepared_img = self.__prepare_img(img)
         faces = self.__haar_cascade.detectMultiScale(prepared_img ,scaleFactor=1.05,minNeighbors=5,minSize = (60, 60))
         tam =len(faces)
         print(tam)
         if tam>0:
             face_i = faces[0]
-            (x, y, w, h) =(faces[0][0],faces[0][1],faces[0][2],faces[0][3])
+            (x, y, w, h) =(faces[0][0]+10,faces[0][1]+10,faces[0][2]-20,faces[0][3]-10)
             face = prepared_img[y:y + h, x:x + w]
             face_resize = self.__prepare_face(face)
             # Dibujamos un rectangulo en las coordenadas del rostro
@@ -60,8 +60,9 @@ class FaceDetector:
 if __name__ == "__main__":
     print("Exmple processs")
     aux = FaceDetector()
-    img = cv2.imread("3rostros.jpg")
-    rt ,face = aux.run(img)
+    #img = cv2.imread("3rostros.jpg")
+    img = cv2.imread("1rostro.jpg")
+    rt ,face = aux.detect(img)
     cv2.imshow('image',img)
     if rt:
         cv2.imshow("Face",face)
