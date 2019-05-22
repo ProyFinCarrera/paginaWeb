@@ -49,7 +49,7 @@ video.on('connection', function(socket){
      fs.readFile(__dirname + '/../public/video/video.jpg', function(err, buf){
 
      video.emit('new_image', { image: true, buffer: buf.toString('base64')}); //imprimiendo el id del cliente conectado 
-     console.log('image file is initialized');
+     //console.log('image file is initialized');
   })
 
 },100)

@@ -5,7 +5,9 @@
 # 1. Class to do face verification with opencv.
 # Finguer. Search for a finger
 import time
-from pyfingerprint.pyfingerprint import PyFingerprint
+#from pyfingerprint.pyfingerprint import PyFingerprint
+import PyFingerprint
+
 import hashlib
 
 class Footprint:
@@ -70,9 +72,9 @@ class Footprint:
         # Tries to delete the template of the finger
         try:
             for i in range(100):
-                print self.fingerprint.deleteTemplate(i)
+                print(self.fingerprint.deleteTemplate(i))
 
-            print str(self.fingerprint.getTemplateCount())
+            print (str(self.fingerprint.getTemplateCount()))
 
         except Exception as e:
             print('Operation failed!')
@@ -111,7 +113,7 @@ class Footprint:
             if(result):
                 characterics = str(
                     self.fingerprint.downloadCharacteristics(0x01))
-                print hashlib.sha256(characterics.encode('utf-8')).hexdigest()
+                print( hashlib.sha256(characterics.encode('utf-8')).hexdigest())
                 return (result, characterics.encode('utf-8'))
 
             return (result, -1)
@@ -123,4 +125,4 @@ class Footprint:
 aux = Footprint();
 # aux.clear_all();
 # print aux.save_footprint();
-print aux.verify_footprint()
+print( aux.verify_footprint())

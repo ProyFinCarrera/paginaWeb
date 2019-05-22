@@ -30,7 +30,10 @@ try:
             if rval:
                 #frame = cv2.flip(frame,1,0)
                 aux = video.video_img(frame)
-            
+                #print(aux)
+                if aux:
+                    print("Encendia lector de huellas")
+                    video.set_cont_cero()
             # cv2.imshow("face",frame)
             #print(aux)
             

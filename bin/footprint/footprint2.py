@@ -55,14 +55,14 @@ class Footprint:
     def recognize(self, vect):
         finger = self.on()
 
-        print finger
+        print(finger)
         aux = hashlib.sha256(finger).hexdigest()
-        print aux
+        print(aux)
         # Saves template at new position number
         pos = self.__fingerprint.storeTemplate()
         
         ## Downloads the characteristics of template loaded in charbuffer 1
-        print pos
+        print(pos)
         characterics = self.__fingerprint.downloadCharacteristics(0x01)
 
         # finger_old = vect +
@@ -74,7 +74,7 @@ class Footprint:
         # self.__fingerprint.uploadCharacteristics(0x01, vect1) # esta el dedo en pa posicion1
         self.__fingerprint.uploadCharacteristics(0x02, vect1)
         aux = self.__fingerprint.compareCharacteristics()
-        print aux
+        print(aux)
 
     def clear_all_footprint(self):
         self.__fingerprint.clearDatabase()
@@ -86,7 +86,7 @@ class Footprint:
                 self.__fingerprint.convertImage(0x01)
 
                 # Creates a template
-                print self.__fingerprint.createTemplate()
+                print(self.__fingerprint.createTemplate())
                 # Saves template at new position number
                 # pos = self.__fingerprint.storeTemplate()
                 # print pos
@@ -124,14 +124,14 @@ class Footprint:
         self.__fingerprint.loadTemplate(5, 0x01)
         self.__fingerprint.loadTemplate(22, 0x02)
         aux = self.__fingerprint.compareCharacteristics()
-        print aux
+        print(aux)
 
     def testdos(self, vect):
         self.__fingerprint.uploadCharacteristics(0x01, vect)
         # self.__fingerprint.loadTemplate(5, 0x01)
         self.__fingerprint.loadTemplate(22, 0x02)
         aux = self.__fingerprint.compareCharacteristics()
-        print aux
+        print(aux)
 
 
 nuevo = Footprint()
@@ -142,7 +142,7 @@ vect = [3, 1, 94, 33, 123, 0, 224, 62, 128, 30, 0, 30, 0, 30, 0, 30, 0, 14, 0, 1
         0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 1, 98, 24, 126, 0, 255, 254, 255, 254, 224, 62, 128, 30, 0, 30, 0, 14, 0, 14, 0, 14, 0, 6, 0, 6, 0, 6, 128, 6, 128, 2, 128, 6, 192, 6, 192, 6, 192, 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 69, 142, 167, 126, 12, 149, 16, 54, 57, 150, 103, 94, 27, 161, 168, 30, 53, 165, 144, 30, 22, 175, 143, 254, 107, 176, 207, 94, 56, 50, 13, 254, 83, 50, 12, 126, 27, 67, 77, 150, 77, 19, 40, 223, 30, 150, 103, 95, 59, 26, 145, 31, 66, 47, 13, 159, 101, 183, 6, 119, 66, 193, 202, 87, 53, 194, 75, 55, 92, 66, 197, 247, 84, 63, 74, 188, 75, 64, 73, 28, 37, 36, 167, 26, 87, 184, 72, 218, 37, 162, 16, 216, 92, 183, 71, 120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 # nuevo.test()
 #nuevo.testdos(vect)
-print "fin"
+print( "fin")
 # nuevo.testTres()
 #nuevo.recognize(vect)
 # nuevo.dowload()

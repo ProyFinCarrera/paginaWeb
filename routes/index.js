@@ -251,32 +251,32 @@ router.get('/graphics', function(req, res, next) {
 router.get('/getIn', function(req, res, next) {
     // Initialize verification process
     res.render('getIn', { title: titleApp });
-    // res.render('getIn', { title: titleApp });
-    // var PythonShell = require('python-shell');
-    // pyshell = new PythonShell('sudo ls');
-    // //pyshell = new PythonShell('sudo python ./../bin/main.py');
-    // pyshell.on('message', function(message) {
+    res.render('getIn', { title: titleApp });
+    var PythonShell = require('python-shell');
+    //pyshell = new PythonShell('sudo ls');
+    pyshell = new PythonShell('sudo python ./../bin/main.py');
+    pyshell.on('message', function(message) {
+        // received a message sent from the Python script (a simple "print" statement)
+        console.log(message);
+        dataC = message;
+    });
+
+
+    // pyshell.on('message', function (message) {
     //     // received a message sent from the Python script (a simple "print" statement)
     //     console.log(message);
-    //     dataC = message;
     // });
-
-
-    // // pyshell.on('message', function (message) {
-    // //     // received a message sent from the Python script (a simple "print" statement)
-    // //     console.log(message);
-    // // });
-    // //  // end the input stream and allow the process to exit
-    // pyshell.end(function(err, code, signal) {
-    //     /// if (err) throw err;
-    //     console.log('The exit err: ' + err);
-    //     console.log('The exit code was: ' + code);
-    //     console.log('The exit signal was: ' + signal);
-    //     //console.log('The opcion: ' + opcion);
-    //     console.log('finished');
-    //     var message = "";
-    // });
-    // pyshell = null;
+    //  // end the input stream and allow the process to exit
+    pyshell.end(function(err, code, signal) {
+        /// if (err) throw err;
+        console.log('The exit err: ' + err);
+        console.log('The exit code was: ' + code);
+        console.log('The exit signal was: ' + signal);
+        //console.log('The opcion: ' + opcion);
+        console.log('finished');
+        var message = "";
+    });
+    pyshell = null;
 });
 
 /* GET infoR page. */

@@ -31,8 +31,8 @@ class RecognizerVideo:
 
             self.__det = faceDetector.FaceDetector()
             self.__rec = recognizer.Recognizer()
-            self.__cont = 0;
-            self.__max = 20;
+            self.__cont = 0
+            self.__max = 20
             if self.__cap.isOpened():
                 print("VideoCapture loades")
             else:
@@ -65,18 +65,23 @@ class RecognizerVideo:
         rt ,face,x,y = self.__det.detect(frame)
         if rt:
             cv2.imwrite(self.__temp_face, face)
+            #self.save_face("yoclaro")
             rec = self.__rec.recognize(frame,face,x,y)
+            print(self.__cont)
             if rec:
-                self.__cont=+1
+                self.__cont+=1
             else:
-                self.__cont=0
+                print("Cerooooooooooo")
+                self.set_cont_cero()
         cv2.imwrite(self.__save_img , frame)
-        #cv2.imshow("Dentto",frame)
+        cv2.imshow("Dentto",frame)
         if self.__cont == self.__max:
             return True
         else:
             return False
 
+    def set_cont_cero(self):
+        self.__cont=0
 
     def save_face(self,name):
         try:
