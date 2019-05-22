@@ -17,7 +17,7 @@ class FaceDetector:
             self.__tam_face = (size_face_w,size_face_h)
             self.__size = size
             self.__dir_haarcascade = os.path.join(path_dir,dir_haarcascade)
-            print(self.__dir_haarcascade)
+            # print(self.__dir_haarcascade)
             self.__haar_cascade = cv2.CascadeClassifier(self.__dir_haarcascade)
             if self.__haar_cascade.empty():
                 raise ValueError("No Exist file haarcascade.")
@@ -27,9 +27,10 @@ class FaceDetector:
     """Method that paints a rectangle where there is a face.""" 
     def detect(self,img):
         prepared_img = self.__prepare_img(img)
+        # cv2.imshow("imagen pre",prepared_img)
         faces = self.__haar_cascade.detectMultiScale(prepared_img ,scaleFactor=1.05,minNeighbors=5,minSize = (50, 60))
         tam =len(faces)
-        print(tam)
+        # print(tam)
         if tam>0:
             face_i = faces[0]
             (x, y, w, h) =(faces[0][0]+10,faces[0][1]+10,faces[0][2]-20,faces[0][3]-10)
@@ -44,13 +45,14 @@ class FaceDetector:
     def __prepare_img(self,img):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         gray_min = self.__resize_img(gray)
-        gray_c = self.__prepare_constrate(gray_min)
-        return gray_c
+        # gray_c = self.__prepare_constrate(gray_min) #no tiens buena funcionalida
+        return  gray_min
     """Contraste de ecualización adaptable del histograma"""
     def __prepare_constrate(self,img):
-    	clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
-    	cl1 = clahe.apply(img)
-    	return cl1
+        clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))# 2 y (88)
+        cl1 = clahe.apply(img)
+        # equ = cv2.equalizeHist(img) negro lo pone mas blanco pero no rula
+        return cl1
     """Method that reduces the image self.__size times"""
     def __resize_img(self, img):
         return cv2.resize(img,(int(img.shape[1] / self.__size),int(img.shape[0] / self.__size)))
@@ -63,7 +65,7 @@ if __name__ == "__main__":
     aux = FaceDetector()
     #img = cv2.imread("3rostros.jpg")
     img = cv2.imread("1rostro.jpg")
-    rt ,face = aux.detect(img)
+    rt ,face,x,y = aux.detect(img)
     cv2.imshow('image',img)
     if rt:
         cv2.imshow("Face",face)

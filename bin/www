@@ -46,7 +46,7 @@ const video = io.of ( '/video' );
 video.on('connection', function(socket){
   console.log("client:"+ socket.id);
   setInterval(() => {
-     fs.readFile(__dirname + '/../public/video/cam1.jpg', function(err, buf){
+     fs.readFile(__dirname + '/../public/video/video.jpg', function(err, buf){
 
      video.emit('new_image', { image: true, buffer: buf.toString('base64')}); //imprimiendo el id del cliente conectado 
      console.log('image file is initialized');

@@ -15,9 +15,9 @@ class Recognizer:
 			self.__path_faces= os.path.join(path_dir,os.path.join("att_faces","orl_faces"))
 			self.__create_list_img_names()
 			# OpenCV entrena un modelo a partir de las imagenes
-			# self.__model = cv2.face.LBPHFaceRecognizer_create()
-			self.__model = cv2.face.FisherFaceRecognizer_create()
-			# self.__model =  cv2.face.EigenFaceRecognizer_create()
+			self.__model = cv2.face.LBPHFaceRecognizer_create() #presicion 75 los dos carga rapido en ocuro descriptor
+			#self.__model = cv2.face.FisherFaceRecognizer_create() # 500 le ceuesta mi #tarda mas k el carajo yo 120 o 300 mi padrecon el padre 120 300 reconoxe tra en cargar
+			# self.__model =  cv2.face.EigenFaceRecognizer_create() #<1000 fotos oscur yo si me recono a mi pader no + Tarda en caon la grayyocrua con 300a 700 mi padre 9000
 			self.__model.train( self.__images,self.__lables)
 		except:
 			print('Error loaded FaceDetector: ')
@@ -26,8 +26,8 @@ class Recognizer:
 	def recognize(self,img,face,x,y):
 		reconoce = True
 		prediction = self.__model.predict(face)
-		print(prediction[1])
-		if prediction[1] < 500:
+		#print(prediction[1])
+		if prediction[1] <80:
 			pr = '%s - %.0f' % (self.__names[prediction[0]], prediction[1])
 			punto = (x - 10, y - 10)
 			font = cv2.FONT_HERSHEY_PLAIN
@@ -41,7 +41,7 @@ class Recognizer:
 			reconoce = True
 		else:
 			cv2.putText(img, 'Desconocido', (x - 10, y - 10),
-				cv2.FONT_HERSHEY_PLAIN, 1, (0, 255, 0))
+				cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0))
 		return reconoce
 	"""Method to create a list of images and a list of corresponding names"""
 	def __create_list_img_names(self):
@@ -50,7 +50,7 @@ class Recognizer:
 			for subdir in dirs:
 				self.__names[id] = subdir
 				subjectpath = os.path.join(self.__path_faces, subdir)
-				print(subjectpath)
+				# print(subjectpath)
 				for filename in os.listdir(subjectpath):
 					path = os.path.join(subjectpath ,filename)
 					lable = id

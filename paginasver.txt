@@ -1,0 +1,10 @@
+https://es.coursera.org/lecture/deteccion-objetos/l2-2-a-local-binary-patterns-IzZui
+https://docs.opencv.org/2.4/modules/contrib/doc/facerec/facerec_tutorial.html#local-binary-patterns-histograms (lbp)
+https://es.coursera.org/lecture/deteccion-objetos/l2-2-b-local-binary-patterns-variantes-lbp-uniforme-pzNbK
+https://es.coursera.org/lecture/deteccion-objetos/l2-2-c-histograma-lbp-por-bloques-8ahDw
+
+
+
+Gray minimisada es mejor para lb detecta mejor parece hacel lo dl hisotroi
+
+Poner una parta por k elegi esta y no otra configuracion en base d las preuba k e realizado y laesperimention y conocimiento ee intere.

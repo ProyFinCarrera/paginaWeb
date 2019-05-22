@@ -6,8 +6,10 @@ import os
 import cv2
 import threading
 import shutil # opercion file.
-from faceDetector import faceDetector
-from recognizer import recognizer
+from recognizerVideo.faceDetector import faceDetector
+from recognizerVideo.recognizer import recognizer
+#from faceDetector import *
+#from recognizer import *
 #https://becominghuman.ai/face-detection-using-opencv-with-haar-cascade-classifiers-941dbb25177
 
 path_dir = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
@@ -20,7 +22,13 @@ class RecognizerVideo:
         try:
             self.__temp_face = os.path.join(path_dir, os.path.join("recognizer", os.path.join("att_faces","%s.%s" % ("tem_face",ext))))
             self.__save_face =os.path.join(os.path.dirname( self.__temp_face),"orl_faces")
-            self.__cap = cv2.VideoCapture(0)
+            self.__save_img =os.path.join( os.path.join( os.path.join(os.path.dirname( os.path.dirname(path_dir)),"public"),"video"),"video.jpg")
+            self.__cap=""
+            if False:
+                self.__cap = cv2.VideoCapture(0)
+            else:
+                 self.__cap = cv2.VideoCapture()
+
             self.__det = faceDetector.FaceDetector()
             self.__rec = recognizer.Recognizer()
             self.__cont = 0;
@@ -28,30 +36,31 @@ class RecognizerVideo:
             if self.__cap.isOpened():
                 print("VideoCapture loades")
             else:
-                raise ValueError("No Exist file haarcascade.")
+                print("No loaded Video")
+                #raise ValueError("Video not loaded.")
         except Exception as e:
             print('Error loaded FaceDetector: ' + str(e))
             exit(1)
     """Method that paints a rectangle where there is a face.""" 
-    def video_on(self):
-        while True:
-            (rval, frame) = self.__cap.read()
-            frame = cv2.flip(frame,1,0)
-            rt ,face,x,y = self.__det.detect(frame)
-            if rt:
-                cv2.imwrite(self.__temp_face, face)
-                cv2.imshow("face",face)
-                self.__rec.recognize(frame,face,x,y)
+    # def video_on(self):
+    #     while True:
+    #         (rval, frame) = self.__cap.read()
+    #         frame = cv2.flip(frame,1,0)
+    #         rt ,face,x,y = self.__det.detect(frame)
+    #         if rt:
+    #             cv2.imwrite(self.__temp_face, face)
+    #             # cv2.imshow("face",face)
+    #             self.__rec.recognize(frame,face,x,y)
 
-                #self.save_face("pepito")
-            cv2.imshow("Ventana",frame) # ver image
-
-
-            if cv2.waitKey(10) == 27:
-               break
-        self.__cap.release()
+    #             # self.save_face("OscuraPadreGray")
+    #         cv2.imshow("Ventana",frame) # ver image
+    #         # print(self.__save_img)
+    #         cv2.imwrite(self.__save_img , frame)
+        #     if cv2.waitKey(10) == 27:
+        #        break
+        # self.__cap.release()
     """Method that paints a rectangle where there is a face.""" 
-    def video_img(self,rval,frame):
+    def video_img(self,frame):
         frame = cv2.flip(frame,1,0)
         rt ,face,x,y = self.__det.detect(frame)
         if rt:
@@ -61,6 +70,8 @@ class RecognizerVideo:
                 self.__cont=+1
             else:
                 self.__cont=0
+        cv2.imwrite(self.__save_img , frame)
+        #cv2.imshow("Dentto",frame)
         if self.__cont == self.__max:
             return True
         else:
@@ -116,4 +127,4 @@ class RecognizerVideo:
 
 if __name__ == "__main__":
     aux =RecognizerVideo()
-    aux.video_on()
+    #aux.video_on()

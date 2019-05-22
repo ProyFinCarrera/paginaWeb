@@ -3,11 +3,15 @@
 # Creado por: Jairo Gonzalez Lemus alu0100813272@ull.edu.es
 # Ejemplo: cojo archivo
 #from face import face
+
 import subprocess
 import sys
 import threading
 import cv2
 import os
+import sys
+from recognizerVideo import recognizerVideo
+
 
 pathDir = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 pid = str(os.getpid())
@@ -19,8 +23,20 @@ try:
         raise ValueError('The program is in process')
     else:
         open(pidfile, "w").write(pid)
-        while True:
-            print("ejecuto program")
+        video  = recognizerVideo.RecognizerVideo()
+        cap = cv2.VideoCapture(0)
+        while cap.isOpened():
+            rval,frame = cap.read()
+            if rval:
+                #frame = cv2.flip(frame,1,0)
+                aux = video.video_img(frame)
+            
+            # cv2.imshow("face",frame)
+            #print(aux)
+            
+            if cv2.waitKey(10) == 27:
+                break
+        cap.release()
 
 except Exception as e:
     print('Exception message: ' + str(e))
