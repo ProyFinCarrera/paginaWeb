@@ -74,29 +74,7 @@ function verifyOn(url) {
         }
     })
 }
-/* GET DeleteUser page. */
-router.post('/delUserAd', function(req, res, next) {
-    admin.auth().getUserByEmail("a@fdas.com")
-        .then(function(userRecord) {
-            // See the UserRecord reference doc for the contents of userRecord.
-            admin.auth().deleteUser(userRecord.uid)
-                .then(function() {
-                    console.log("Successfully deleted user");
-                    // 200 OK
-                    res.status(200).send("Successfully deleted user");
-                })
-                .catch(function(error) {
-                    console.log("Error deleting user:", error);
-                    // Error 404 Not found
-                    res.status(404).send(error.message);
-                });
-        })
-        .catch(function(error) {
-            console.log("Error deleting user:", error);
-            // Error 404 Not found
-            res.status(404).send(error.message);
-        });
-});
+
 /* GET DeleteUser page. */
 router.get('/removeUser', function(req, res, next) {
     let url = req.headers.referer;
@@ -120,66 +98,88 @@ router.get('/removeUser', function(req, res, next) {
         });
 });
 
-
-function listAllUsers(nextPageToken) {
-    admin.auth().listUsers(1000, nextPageToken)
-        .then(function(listUsersResult) {
-            var users = new Array();
-            listUsersResult.users.forEach(function(userRecord) {
-
-                console.log("user", userRecord.toJSON().email);
-
-                users.push(userRecord.toJSON().email)
-
-
-
-            });
-
-            if (listUsersResult.pageToken) {
-                // List next batch of users.
-                //res.render('deleteAdm', { title: titleApp, iam: 'root', emailUser: users });
-                //console.log("user", listUsersResult.pageToken);
-                listAllUsers(listUsersResult.pageToken)
-
-            }
-
+/* GET DeleteUser page. */
+router.get('/delUserAd', function(req, res, next) {
+    admin.auth().getUserByEmail(req.cookies.deleted)
+        .then(function(userRecord) {
+            res.clearCookie("deleted");
+            // See the UserRecord reference doc for the contents of userRecord.
+            admin.auth().deleteUser(userRecord.uid)
+                .then(function() {
+                    console.log("Successfully deleted admin user");
+                    // 200 OK
+                    res.status(200).send("Successfully deleted user");
+                })
+                .catch(function(error) {
+                    console.log("Error deleting user:", error);
+                    // Error 404 Not found
+                    res.status(404).send(error.message);
+                });
         })
         .catch(function(error) {
-            console.log("Error listing users:", error);
+            console.log("Error deleting user:", error);
+            // Error 404 Not found
+            res.status(404).send(error.message);
         });
+});
+
+//Promise Start listing users from the beginning, 1000 at a time.v
+function listAllUsers(nextPageToken) {
+    return new Promise(function(resolve, reject) {
+        // List batch of users, 1000 at a time.
+        admin.auth().listUsers(1000, nextPageToken)
+            .then(function(listUsersResult) {
+                const users = new Array();
+                listUsersResult.users.forEach(function(userRecord) {
+                    //console.log("user", userRecord.toJSON().email);
+                    if ("root@gmail.com" != userRecord.toJSON().email) {
+                        users.push(userRecord.toJSON().email)
+                    }
+                    resolve(users)
+                });
+
+                if (listUsersResult.pageToken) {
+                    resolve(listAllUsers(listUsersResult.pageToken))
+                }
+            })
+            .catch(function(error) {
+                console.log("Error listing users:", error);
+                reject(error)
+            });
+    })
 }
-
-
 
 /* GET deleteAdmin page. */
 router.get('/deleteAdm', function(req, res, next) {
+    //(admin.auth().getUserByEmail())
+    listAllUsers().then(function(users) {
+        console.log(users)
+        let url = req.headers.referer;
+        verifyOn(url).then(function(valor) {
+                console.log("Inf: Verify page correct");
+                if (req.cookies.email == 'root@gmail.com') {
+                    res.render('deleteAdm', { title: titleApp, iam: 'root', emailUser: users });
+                } else {
+                    res.render('error', {
+                        title: titleApp,
+                        message: "You do not have permission to receive content",
+                        error: { status: 401, stack: "Unauthorized" }
+                    });
+                }
 
-    //(admin.auth().getUserByEmail()
-    // Start listing users from the beginning, 1000 at a time.
-    //listAllUsers();
-
-    let url = req.headers.referer;
-    verifyOn(url).then(function(valor) {
-            console.log("Inf: Verify page correct");
-            if (req.cookies.email == 'root@gmail.com') {
-                //console.log(users)
-                users = { "email": "jaior" }
-                res.render('deleteAdm', { title: titleApp, iam: 'root', emailUser: users });
-            } else {
-                users = { "email": "jaior" }
-                res.render('deleteAdm', { title: titleApp, iam: 'other', emailUser: users });
-            }
-        })
-        .catch(function() {
-            console.log("Inf: Verify page incorrect");
-            // 401 Unauthorized: no tienes permiso para recibir ese contenido.
-            res.render('error', {
-                title: titleApp,
-                message: "You do not have permission to receive content",
-                error: { status: 401, stack: "Unauthorized" }
+            })
+            .catch(function() {
+                console.log("Inf: Verify page incorrect");
+                // 401 Unauthorized: no tienes permiso para recibir ese contenido.
+                res.render('error', {
+                    title: titleApp,
+                    message: "You do not have permission to receive content",
+                    error: { status: 401, stack: "Unauthorized" }
+                });
             });
-        });
+    })
 });
+
 /* GET newAdm page. */
 router.get('/newAdm', function(req, res, next) {
     let url = req.headers.referer;
@@ -189,7 +189,13 @@ router.get('/newAdm', function(req, res, next) {
             if (req.cookies.email == 'root@gmail.com') {
                 res.render('newAdm', { title: titleApp, iam: 'root' });
             } else {
-                res.render('newAdm', { title: titleApp, iam: 'other' });
+                console.log("Inf: Verify page incorrect");
+                // 401 Unauthorized: no tienes permiso para recibir ese contenido.
+                res.render('error', {
+                    title: titleApp,
+                    message: "You do not have permission to receive content",
+                    error: { status: 401, stack: "Unauthorized" }
+                });
             }
         })
         .catch(function() {
@@ -335,11 +341,11 @@ router.get('/infoR', function(req, res, next) {
 /* Save footprint and GET menuAdm page. */
 router.get('/saveFootprint', function(req, res, next) {
     console.log("Estoy en saVeFootprint");
-    
+
     console.log(req.cookies.newUser)
     var user = req.cookies.newUser;
-    var dataC=null;
-     var PythonShell = require('python-shell');
+    var dataC = null;
+    var PythonShell = require('python-shell');
     //pyshell = new PythonShell('sudo python ./../bin/s.py');
     // pyshell = new PythonShell('sudo python ./../bin/main.py');
     pyshell = new PythonShell('sudo python bin/savefootprint.py adsf');

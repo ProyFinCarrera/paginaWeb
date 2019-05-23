@@ -16,7 +16,7 @@
     firestore.settings(settings);
 
     const btnClose = document.getElementById("btnClose");
-    
+
     btnClose.addEventListener('click', () => {
         deleteAllCookies();
         //console.log("uffffff");
@@ -41,5 +41,6 @@
             document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
         }
     }
+    
 
 }());

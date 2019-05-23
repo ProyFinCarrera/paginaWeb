@@ -4,6 +4,10 @@ body {
 
 }
 
+main {
+    height: 40em;
+}
+
 strong {
     color: black;
 }
