@@ -1,6 +1,6 @@
 (function(req, res) {
     var HttpClient = function() {
-        this.get = function(aUrl, aCallback) {
+        this.post = function(aUrl, aCallback) {
             var anHttpRequest = new XMLHttpRequest();
             anHttpRequest.onreadystatechange = function() {
                 if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200 ||
@@ -9,7 +9,7 @@
                 }
 
             }
-            anHttpRequest.open("GET", aUrl, false);
+            anHttpRequest.open("Post", aUrl, false);
             anHttpRequest.send(null);
         }
     }
@@ -26,7 +26,7 @@
         if (resol == true) {
             document.cookie = "deleted=" + clave1.value;
             let client = new HttpClient();
-            client.get('/delUserAd', function(response) {
+            client.post('/delUserAd', function(response) {
                 if (response['code'] == "200") {
                     clave2.remove(clave2.selectedIndex);
                 }

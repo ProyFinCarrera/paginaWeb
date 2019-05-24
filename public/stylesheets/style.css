@@ -23,6 +23,11 @@ hr {
     background-color: #8D8A8A;
 }
 
+#picture {
+     width: 5em;
+    height: 5em;
+}
+
 #btn1 {
     white-space: normal;
 }

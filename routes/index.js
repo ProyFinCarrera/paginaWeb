@@ -60,7 +60,7 @@ function verifyOn(url) {
     return new Promise(function(resolve, reject) {
         if (url != undefined) {
             let page = takePageName(url);
-            var arrPag = ['menuAdm', 'graphics', 'newAdm', 'deleteAdm', 'newUser', 'removeUser'];
+            var arrPag = ['menuAdm', 'graphics', 'newAdm', 'deleteAdm', 'newUser', 'deleteUser'];
             console.info("Verify on dentro : " + arrPag.includes(page)); // true
             let aux = arrPag.includes(page); // true o false.
             console.info("Verify on dentro aux: " + aux);
@@ -75,16 +75,16 @@ function verifyOn(url) {
     })
 }
 
-/* GET DeleteUser page. */
-router.get('/removeUser', function(req, res, next) {
+/* GET userDelete page. */
+router.get('/deleteUser', function(req, res, next) {
     let url = req.headers.referer;
     verifyOn(url)
         .then(function(valor) {
             console.log("Inf: Verify page correct");
             if (req.cookies.email == 'root@gmail.com') {
-                res.render('removeUser', { title: titleApp, iam: 'root' });
+                  res.render('deleteUser', { title: titleApp, iam: 'root'});
             } else {
-                res.render('removeUser', { title: titleApp, iam: 'other' });
+                  res.render('deleteUser', { title: titleApp, iam: 'other'});
             }
         })
         .catch(function() {
@@ -99,7 +99,7 @@ router.get('/removeUser', function(req, res, next) {
 });
 
 /* GET DeleteUser page. */
-router.get('/delUserAd', function(req, res, next) {
+router.post('/delUserAd', function(req, res, next) {
     admin.auth().getUserByEmail(req.cookies.deleted)
         .then(function(userRecord) {
             res.clearCookie("deleted");
@@ -124,7 +124,7 @@ router.get('/delUserAd', function(req, res, next) {
 });
 
 //Promise Start listing users from the beginning, 1000 at a time.v
-function listAllUsers(nextPageToken) {
+function listAllAdmUsers(nextPageToken) {
     return new Promise(function(resolve, reject) {
         // List batch of users, 1000 at a time.
         admin.auth().listUsers(1000, nextPageToken)
@@ -139,7 +139,7 @@ function listAllUsers(nextPageToken) {
                 });
 
                 if (listUsersResult.pageToken) {
-                    resolve(listAllUsers(listUsersResult.pageToken))
+                    resolve(listAllAdmUsers(listUsersResult.pageToken))
                 }
             })
             .catch(function(error) {
@@ -152,8 +152,8 @@ function listAllUsers(nextPageToken) {
 /* GET deleteAdmin page. */
 router.get('/deleteAdm', function(req, res, next) {
     //(admin.auth().getUserByEmail())
-    listAllUsers().then(function(users) {
-        console.log(users)
+    listAllAdmUsers().then(function(users) {
+        //console.log(users)
         let url = req.headers.referer;
         verifyOn(url).then(function(valor) {
                 console.log("Inf: Verify page correct");
@@ -211,12 +211,16 @@ router.get('/newAdm', function(req, res, next) {
 /* GET newUser page. */
 router.get('/newUser', function(req, res, next) {
     let url = req.headers.referer;
+
     verifyOn(url)
         .then(function(valor) {
             console.log("Inf: Verify page correct");
+            //videoOn()
             if (req.cookies.email == 'root@gmail.com') {
+               
                 res.render('newUser', { title: titleApp, iam: 'root' });
             } else {
+                
                 res.render('newUser', { title: titleApp, iam: 'other' });
             }
         })
@@ -257,7 +261,11 @@ router.get('/graphics', function(req, res, next) {
 router.get('/getIn', function(req, res, next) {
     // Initialize verification process
     res.render('getIn', { title: titleApp });
-    res.render('getIn', { title: titleApp });
+    //videoOn();
+  
+});
+function videoOn(){
+  //res.render('getIn', { title: titleApp });
     var PythonShell = require('python-shell');
     //pyshell = new PythonShell('sudo ls');
     pyshell = new PythonShell('sudo python ./../bin/main.py');
@@ -283,7 +291,8 @@ router.get('/getIn', function(req, res, next) {
         var message = "";
     });
     pyshell = null;
-});
+
+}
 
 /* GET infoR page. */
 router.get('/infoR', function(req, res, next) {
