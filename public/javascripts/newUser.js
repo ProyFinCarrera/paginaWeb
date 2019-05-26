@@ -21,7 +21,8 @@
     const btnAddFootprint = document.getElementById("btnAddFootprint");
     const btnAddImage = document.getElementById("btnAddImage");
     const btnTakePhotos = document.getElementById("btnTakePhotos");
-    
+    const btnDeleteSelect = document.getElementById("btnDeleteSelect");
+   
     // Cath Formulario
     const form1 = document.getElementById("form1");
     const form2 = document.getElementById("form2");
@@ -41,18 +42,50 @@
         }
     }
 
+    // Client Post
+    var HttpClient = function() {
+        this.post = function(aUrl, aCallback) {
+            var anHttpRequest = new XMLHttpRequest();
+            anHttpRequest.onreadystatechange = function() {
+                if (anHttpRequest.readyState == 4 && anHttpRequest.status == 200) {
+                    aCallback(anHttpRequest.response);
+                }
+            }
+            anHttpRequest.open("POST", aUrl, false);
+            anHttpRequest.send();
+        }
+    }
+
     // Listener
     form1.addEventListener('submit', addData, false);
     form2.addEventListener('submit', addFootprint, false);
-    form3.addEventListener('submit', addImages, false);
+    //form3.addEventListener('submit', addImages, false);
+
+
+    btnAddImage.addEventListener('click', addImages, false);
     btnTakePhotos.addEventListener('click',takephotos,false);
     
-    function takephotos(){
+     btnDeleteSelect.addEventListener('click', deleteSelect,false);
+   
+function deleteSelect(){
+         console.log("Eliminarrrrr")
         
-        document.cookie = "nombre=" + firstName.value;
+         let aux = []
+         let nodo;
+                 for(nodo=1;nodo<=20;nodo++){
+         var myNode = document.getElementById(nodo+".jpg");
+                if(myNode.checked){
+                    aux.push(myNode.value)
+                }
+             }
+            console.log(aux)
+ var myJSON = JSON.stringify(aux);
+         //var obj = JSON.parse(json);
+
+         document.cookie = "data=" +  aux;
 
         var client = new HttpClient();
-        client.get('/saveImage', function(response) {
+        client.post('/deleteSelect', function(response) {
             // do something with response
             // var content = JSON.parse(response);
             // pCheckFText.innerHTML = content['text'];
@@ -62,14 +95,123 @@
             //     btnCheckF.disabled = true;
             //     btnCheckI.disabled = false;
             // }
+            console.log(response)
+            //socket.emit("give_pictures", {});
+        });
+        console.log("Evento accionado boton Image");
+
+}
+   
+   const socket = io('http://localhost:3000/video');
+    var ctx = document.getElementById('canvas').getContext('2d');
+
+    socket.on("new_image", function(info) {
+        let img = new Image();
+        if (info.image) {
+            img.src = 'data:image/jpeg;base64,' + info.buffer;
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0);
+                socket.emit("image", { image: "ok" })
+                img = null
+            }
+
+        }
+    });
+
+
+    //  socket.emit("give_imgs",{image:"ok"}) 
+    socket.on("rec_img", function(images) {
+        console.log(images);
+        var myNode = document.getElementById("cont_img");
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.firstChild);
+        }    
+
+        images.forEach(function(img) {
+
+            let divI = document.createElement("div")
+            divI.setAttribute("class","form-check form-check-inline")
+            
+            let label = document.createElement("label")
+            label.setAttribute("class", "form-check-label")
+            label.setAttribute("for", "inlineCheckbox1")
+
+            let input = document.createElement("input")
+            input.setAttribute("class", "form-check-input")
+            input.setAttribute("type", "checkbox")
+            input.setAttribute("value",img)
+            input.setAttribute("id",img)
+            //input.setAttribute("checked",true)
+            
+          
+            let image = document.createElement("img");
+            image.setAttribute("src", img+"?"+Math.random());
+            image.setAttribute("class", "mw-100 img-responsive")
+            image.setAttribute("id", "picture")
+            
+            label.appendChild(input)
+            divI.appendChild(label)
+            divI.appendChild(image)
+            //let divF = document.getElementById("cont_father");
+           // var div = document.getElementById("cont_img");
+            //var el = document.getElementById('cont_img');
+            //el.removeChild();
+            myNode.appendChild(divI);
+
+        })
+        console.log("todo listo")
+    })
+      function takephotos(){
+        console.log("HAcer fotos")
+        document.cookie = "nombre=" + firstName.value;
+
+        var client = new HttpClient();
+        client.post('/take_photos', function(response) {
+            // do something with response
+            // var content = JSON.parse(response);
+            // pCheckFText.innerHTML = content['text'];
+            // if (content['code'] == "0") {
+            //     divCheckFRed.style.borderColor = "green";
+            //     divCheckFRed.style.backgroundColor = "green";
+            //     btnCheckF.disabled = true;
+            //     btnCheckI.disabled = false;
+            // }
+            console.log(response)
+            socket.emit("give_pictures", {});
         });
         console.log("Evento accionado boton Image");
     }
+   // socket.emit("give_pictures", {});
+
+    function deleteImg() {
+        if (!imagen) {
+            alert("El elemento selecionado no existe");
+        } else {
+            padre = imagen.parentNode;
+            padre.removeChild(imagen);
+        }
+    }
     // Function
     function addImages(event) {
-        event.preventDefault();
-        setTimeout(upPicture, 50);
-        pImageText.innerHTML = "";
+        //event.preventDefault();
+        console.log("TErminar")
+        //document.cookie = "nombre=" + firstName.value;
+
+        var client = new HttpClient();
+        client.post('/confir_photos', function(response) {
+            // do something with response
+            // var content = JSON.parse(response);
+            // pCheckFText.innerHTML = content['text'];
+            // if (content['code'] == "0") {
+            //     divCheckFRed.style.borderColor = "green";
+            //     divCheckFRed.style.backgroundColor = "green";
+            //     btnCheckF.disabled = true;
+            //     btnCheckI.disabled = false;
+            // }
+            console.log(response)
+             socket.emit("give_pictures", {});
+        });
+        console.log("Evento accionado botonasimagne");
     }
 
     function addFootprint(event) {

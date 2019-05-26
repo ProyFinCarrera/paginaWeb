@@ -83,10 +83,15 @@ video.on('connection', function(socket) {
         })
 
     }, 100)
-
+socket.on("give", function(img) {
+      
+  fs.readFile(dir, function(err, buf) {
+            video.emit('new_image', { image: true, buffer: buf.toString('base64') }); //imprimiendo el id del cliente conectado 
+            //console.log('image file is initialized');
+        })
+})
 
     // video.emit("rec_img", img) // directorio con todas la s imagens
-
     socket.on("give_pictures", function(img) {
         var aux = []
         fs.readdirSync(dir_picture).forEach(file => {

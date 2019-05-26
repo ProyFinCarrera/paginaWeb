@@ -13,14 +13,15 @@ from recognizerVideo.recognizer import recognizer
 #https://becominghuman.ai/face-detection-using-opencv-with-haar-cascade-classifiers-941dbb25177
 
 path_dir = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
-ext ="pgm"
+# self.__temp_face = os.path.join(path_dir, os.path.join("recognizer", os.path.join("att_faces","%s.%s" % ("tmp_face",ext))))
+ext ="jpg"
 class RecognizerVideo:
     """Class that detects in an image if there is a face.
     the default configuration file is haarcascade_fromtalface_default.xml
     size = porcentra that we will make the image smaller for algorithm optimization."""
     def __init__(self):
         try:
-            self.__temp_face = os.path.join(path_dir, os.path.join("recognizer", os.path.join("att_faces","%s.%s" % ("tem_face",ext))))
+            self.__temp_face = os.path.join(path_dir, os.path.join("recognizer", os.path.join("att_faces","tmp_face")))
             self.__save_face =os.path.join(os.path.dirname( self.__temp_face),"orl_faces")
             self.__save_img =os.path.join( os.path.join( os.path.join(os.path.dirname( os.path.dirname(path_dir)),"public"),"video"),"video.jpg")
             self.__cap=""
@@ -32,6 +33,7 @@ class RecognizerVideo:
             self.__det = faceDetector.FaceDetector()
             self.__rec = recognizer.Recognizer()
             self.__cont = 0
+            self.__cont_photos = 1
             self.__max = 20
             if self.__cap.isOpened():
                 print("VideoCapture loades")
@@ -64,8 +66,15 @@ class RecognizerVideo:
         frame = cv2.flip(frame,1,0)
         rt ,face,x,y = self.__det.detect(frame)
         if rt:
-            cv2.imwrite(self.__temp_face, face)
+            #cv2.imwrite(self.__temp_face, face)
             #self.save_face("yoclaro")
+            save  =os.path.join( self.__temp_face, "%d.%s" % (self.__cont_photos,ext)  )
+            if(self.__cont_photos < self.__max):
+                self.__cont_photos+=1
+            else:
+                self.__cont_photos=1
+            
+            cv2.imwrite(save , face)
             rec = self.__rec.recognize(frame,face,x,y)
             print(self.__cont)
             if rec:
@@ -73,7 +82,8 @@ class RecognizerVideo:
             else:
                 print("Cerooooooooooo")
                 self.set_cont_cero()
-        cv2.imwrite(self.__save_img , frame)
+
+        cv2.imwrite(self.__save_img,frame)
         cv2.imshow("Dentto",frame)
         if self.__cont == self.__max:
             return True

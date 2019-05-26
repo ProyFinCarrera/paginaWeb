@@ -100,21 +100,18 @@
                                 Take photos</button>
                         </div>
                     </div>
-
                     <form action="" method="post" target="_blank">
-                        <p>
-                            <div id="cont_img" class="col-6 mb-3">
-                               <!--  <div class="form-check form-check-inline">
+                        <div id="cont_father" class="col-6 mb-3">
+                            <div id="cont_img">
+                                <!--  <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1"><img class="mw-100 img-responsive" id="picture" src="images/face.png" >
                                     <label class="form-check-label" for="inlineCheckbox1"></label>
-                                </div> -->                             
-
-                        
+                                </div> -->
                             </div>
-                            <p>
-                                <input type="submit" value="Eliminar Marcados">
-                                <input type="reset" value="Guardar Marcados">
-                            </p>
+                        </div>
+                        <p>
+                             <button class="btn btn-secondary btn-lg btn-block my-button" type="button" id="btnDeleteSelect">Delete Select</button>
+                        </p>
                     </form>
                 </div>
                 <div class="row">
@@ -137,69 +134,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
     <script src="https://www.gstatic.com/firebasejs/5.4.0/firebase.js"></script>
     <script src="/javascripts/firebase.js"></script>
+    <script src="/socket.io/socket.io.js"> </script>
     <script src="/javascripts/newUser.js"></script>
     <!--script src="/javascripts/video.js"></script-->
-    <script src="/socket.io/socket.io.js"> </script>
-    <script>
-    var socket = io('http://localhost:3000/video');
-    var ctx = document.getElementById('canvas').getContext('2d');
-
-    socket.on("new_image", function(info) {
-        let img = new Image();
-        if (info.image) {
-            img.src = 'data:image/jpeg;base64,' + info.buffer;
-            img.onload = function() {
-                ctx.drawImage(img, 0, 0);
-                socket.emit("image", { image: "ok" })
-                img = null
-            }
-
-        }
-    });
-    //  socket.emit("give_imgs",{image:"ok"}) 
-    socket.on("rec_img", function(images) {
-        console.log(images);
-        images.forEach(function(img) {
-            let divI = document.createElement("div")
-            divI.setAttribute("class","form-check form-check-inline")
-            
-            let label = document.createElement("label")
-            label.setAttribute("class", "form-check-label")
-            label.setAttribute("for", "inlineCheckbox1")
-
-            let input = document.createElement("input")
-            input.setAttribute("class", "form-check-input")
-            input.setAttribute("type", "checkbox")
-             input.setAttribute("checked",true)
-            
-          
-            let image = document.createElement("img");
-            image.setAttribute("src", img);
-            image.setAttribute("class", "mw-100 img-responsive")
-            image.setAttribute("id", "picture")
-            
-            label.appendChild(input)
-            divI.appendChild(label)
-            divI.appendChild(image)
-           
-            var div = document.getElementById("cont_img");
-            div.appendChild(divI);
-        })
-
-
-        console.log("todo listo")
-    })
-    socket.emit("give_pictures", {});
-
-    function deleteImg() {
-        if (!imagen) {
-            alert("El elemento selecionado no existe");
-        } else {
-            padre = imagen.parentNode;
-            padre.removeChild(imagen);
-        }
-    }
-    </script>
 </body>
 
 </html>

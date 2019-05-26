@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var admin = require('firebase-admin');
+var path = require('path');
+var fs = require('fs');
 var serviceAccount = require('./serviceAccountKey.json');
 var titleApp = 'Secure Access Control'
 /* Initialize connection with firebase */
@@ -82,9 +84,9 @@ router.get('/deleteUser', function(req, res, next) {
         .then(function(valor) {
             console.log("Inf: Verify page correct");
             if (req.cookies.email == 'root@gmail.com') {
-                  res.render('deleteUser', { title: titleApp, iam: 'root'});
+                res.render('deleteUser', { title: titleApp, iam: 'root' });
             } else {
-                  res.render('deleteUser', { title: titleApp, iam: 'other'});
+                res.render('deleteUser', { title: titleApp, iam: 'other' });
             }
         })
         .catch(function() {
@@ -217,10 +219,10 @@ router.get('/newUser', function(req, res, next) {
             console.log("Inf: Verify page correct");
             //videoOn()
             if (req.cookies.email == 'root@gmail.com') {
-               
+
                 res.render('newUser', { title: titleApp, iam: 'root' });
             } else {
-                
+
                 res.render('newUser', { title: titleApp, iam: 'other' });
             }
         })
@@ -262,10 +264,11 @@ router.get('/getIn', function(req, res, next) {
     // Initialize verification process
     res.render('getIn', { title: titleApp });
     //videoOn();
-  
+
 });
-function videoOn(){
-  //res.render('getIn', { title: titleApp });
+
+function videoOn() {
+    //res.render('getIn', { title: titleApp });
     var PythonShell = require('python-shell');
     //pyshell = new PythonShell('sudo ls');
     pyshell = new PythonShell('sudo python ./../bin/main.py');
@@ -525,5 +528,247 @@ router.get('/saveImage', function(req, res, next) {
     // });
     // pyshell = null;
 });
+// Post
+router.post('/deleteSelect', function(req, res, next) {
+    //console.log(req.cookies.data)
+    var rest = req.cookies.data.split(",");
+    console.log(rest)
+    // delete(path_file_face, path_dir_tmp, function(err) {
+    //     console.log(err)
+    // })
+
+    let path_dir_tmp = __dirname
+    path_dir_tmp = path.join(path_dir_tmp, "..")
+    path_dir_tmp = path.join(path_dir_tmp, "public")
+    path_dir_tmp = path.join(path_dir_tmp, "video")
+    path_dir_tmp = path.join(path_dir_tmp, "images")
+    var datos = 0
+    for (datos = 0; datos < rest.length; datos++) {
+        console.log(rest[datos])
+        delete_path = path.join(path_dir_tmp, rest[datos])
+        console.log(delete_path)
+        fs.unlink(delete_path, (err) => {
+            if (err) throw err;
+            console.log("Borro")
+        });
+        
+    }
+    renameAll()
+    res.send({ "code": "Borre todo" });
+});
+// Post
+router.post('/take_photos', function(req, res, next) {
+    //console.log(__dirname)
+    let path_dir_tmp = __dirname
+    path_dir_tmp = path.join(path_dir_tmp, "..")
+    path_dir_tmp = path.join(path_dir_tmp, "public")
+    path_dir_tmp = path.join(path_dir_tmp, "video")
+    path_dir_tmp = path.join(path_dir_tmp, "images")
+    // console.log(path_dir_tmp)
+    let path_file_face = __dirname
+    path_file_face = path.join(path_file_face, "..")
+    path_file_face = path.join(path_file_face, "bin")
+    path_file_face = path.join(path_file_face, "recognizerVideo")
+    path_file_face = path.join(path_file_face, "recognizer")
+    path_file_face = path.join(path_file_face, "att_faces")
+    path_file_face = path.join(path_file_face, "tmp_face")
+    // path_file_face = path.join(path_file_face, "tmp_face.jpg")
+    //console.log(path_file_face)
+    //mira cantidad de fotos y mover x fotos
+    let cont = 0
+    fs.readdirSync(path_dir_tmp).forEach(file => {
+        cont += 1
+    })
+    ///console.log(cont)
+    take_photos((20-cont), path_file_face, path_dir_tmp, function(err) {
+        // console.log(err)
+    })
+    res.send({ "code": "Perfecto take_photos" });
+});
+
+
+function renameAll() {
+
+    console.log(__dirname)
+    let path_dir_tmp = __dirname
+    path_dir_tmp = path.join(path_dir_tmp, "..")
+    path_dir_tmp = path.join(path_dir_tmp, "public")
+    path_dir_tmp = path.join(path_dir_tmp, "video")
+    path_dir_tmp = path.join(path_dir_tmp, "images")
+
+    let aux = 0;
+    fs.readdirSync(path_dir_tmp).forEach(file => {
+        aux += 1
+        console.log(file);
+        auxf = aux + ".jpg"
+        fs.rename(file, path.join(path_dir_tmp, auxf), function(err) {
+            if (err) {
+                if (err.code === 'EXDEV') {
+                    copy();
+                } else {
+                    callback();
+                    // callback(err);
+                }
+                return;
+            }
+            // callback("Archivo move");
+            callback();
+        });
+    });
+}
+// auxaaa()
+
+
+function take_photos(cant_photo, file, dir_img, callback) {
+    //console.log("dentro de foho")
+    //console.log(file)
+    var paso;
+    for (paso = 1; paso <= cant_photo; paso++) {
+        let f = paso.toString() + ".jpg"
+        let dir = path.join(dir_img, f)
+        //console.log( dir)
+        fs.rename(file, path.join(dir_img, f), function(err) {
+            if (err) {
+                if (err.code === 'EXDEV') {
+                    copy();
+                } else {
+                    callback();
+                    // callback(err);
+                }
+                return;
+            }
+            // callback("Archivo move");
+            callback();
+        });
+    }
+
+
+    function copy() {
+        var readStream = fs.createReadStream(oldPath);
+        var writeStream = fs.createWriteStream(newPath);
+
+        readStream.on('error', callback);
+        writeStream.on('error', callback);
+
+        readStream.on('close', function() {
+            // fs.unlink(oldPath, callback); // delete todo.
+        });
+
+        readStream.pipe(writeStream);
+    }
+}
+// Post
+router.post('/confir_photos', function(req, res, next) {
+
+    // console.log(__dirname)
+    let path_dir_tmp = __dirname
+    path_dir_tmp = path.join(path_dir_tmp, "..")
+    path_dir_tmp = path.join(path_dir_tmp, "public")
+    path_dir_tmp = path.join(path_dir_tmp, "video")
+    path_dir_tmp = path.join(path_dir_tmp, "images")
+    //console.log(path_dir_tmp)
+    let path_dir_save = __dirname
+    path_dir_save = path.join(path_dir_save, "..")
+    path_dir_save = path.join(path_dir_save, "bin")
+    path_dir_save = path.join(path_dir_save, "recognizerVideo")
+    path_dir_save = path.join(path_dir_save, "recognizer")
+    path_dir_save = path.join(path_dir_save, "att_faces")
+    path_dir_save = path.join(path_dir_save, "orl_faces")
+    // console.log(path_dir_save)
+    // coger la galleta y pasarla pro move
+    move("otro_masasas", path_dir_tmp, path_dir_save, function(err) {
+        //console.log(err)
+    })
+    res.send({ "code": "Perfecto confirmacion de foto" });
+
+});
+
+function moveA(dir_oldPath, newPath, callback) {
+
+
+    //console.log(dir_oldPath)
+    // console.log(newPath)
+    fs.readdir(dir_oldPath, (err, files) => {
+        if (err) throw err;
+
+        for (const file of files) {
+            fs.rename(path.join(dir_oldPath, file), path.join(newPath, file), function(err) {
+                if (err) {
+                    if (err.code === 'EXDEV') {
+                        copy();
+                    } else {
+                        // callback(err);
+                        callback(err);
+                    }
+                    return;
+                }
+                //  callback("Archivo move");
+                callback();
+            });
+
+        }
+    });
+
+
+    function copy() {
+        var readStream = fs.createReadStream(oldPath);
+        var writeStream = fs.createWriteStream(newPath);
+
+        readStream.on('error', callback);
+        writeStream.on('error', callback);
+
+        readStream.on('close', function() {
+            // fs.unlink(oldPath, callback); // delete todo.
+        });
+
+        readStream.pipe(writeStream);
+    }
+}
+
+function move(name, dir_oldPath, newPath, callback) {
+    newPath = path.join(newPath, name)
+    if (!fs.existsSync(newPath)) {
+        fs.mkdirSync(newPath); //fs.mkdirSync(newPath, 0744);
+    }
+
+    //console.log(dir_oldPath)
+    //console.log(newPath)
+    fs.readdir(dir_oldPath, (err, files) => {
+        if (err) throw err;
+
+        for (const file of files) {
+            fs.rename(path.join(dir_oldPath, file), path.join(newPath, file), function(err) {
+                if (err) {
+                    if (err.code === 'EXDEV') {
+                        copy();
+                    } else {
+                        //callback(err);
+                        callback();
+                    }
+                    return;
+                }
+
+                // callback("Archivo move");
+                callback();
+            });
+
+        }
+    });
+
+
+    function copy() {
+        var readStream = fs.createReadStream(oldPath);
+        var writeStream = fs.createWriteStream(newPath);
+
+        readStream.on('error', callback);
+        writeStream.on('error', callback);
+
+        readStream.on('close', function() {
+            // fs.unlink(oldPath, callback); // delete todo.
+        });
+
+        readStream.pipe(writeStream);
+    }
+}
 
 module.exports = router;
