@@ -69,14 +69,14 @@ class RecognizerVideo:
             #cv2.imwrite(self.__temp_face, face)
             #self.save_face("yoclaro")
             save  =os.path.join( self.__temp_face, "%d.%s" % (self.__cont_photos,ext)  )
-            save2  =os.path.join( self.__temp_face, "%d%s.%s" % (self.__cont_photos,"aa",ext)  )
+            #save2  =os.path.join( self.__temp_face, "%d%s.%s" % (self.__cont_photos,"aa",ext)  )
             if(self.__cont_photos < self.__max):
                 self.__cont_photos+=1
             else:
                 self.__cont_photos=1
             
             cv2.imwrite(save , face)
-            cv2.imwrite(save2,frame)
+            #cv2.imwrite(save2,frame)
             rec = self.__rec.recognize(frame,face,x,y)
             print(self.__cont)
             if rec:

@@ -12,6 +12,8 @@ from firebase_admin import firestore
 from uuid import getnode as get_mac
 
 
+
+pathDir = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 def my_mac():
     mac = get_mac()
     mac_aux = ':'.join(('%012X' % mac)[i:i + 2]for i in range(0, 12, 2))
@@ -20,9 +22,9 @@ def my_mac():
 
 class MyFirebase:
     def __init__(self):
-        # path = os.path.abspath('serviceAccountKey.json')
+        path = os.path.join(pathDir, 'serviceAccountKey.json')#os.path.abspath('serviceAccountKey.json')
 
-        path = os.path.abspath('myfirebase/serviceAccountKey.json')
+        #path = os.path.abspath('myfirebase/serviceAccountKey.json')
         # print(path)
         file = open(path, 'r')
         with file as f:
@@ -47,29 +49,30 @@ class MyFirebase:
 
     # Search data with nameF equals NameF and datoC equals val.
     def search_data_in_users(self, data, val):
-        print "Antes"
+        print("Antes")
         users_collection = self.db_fire.collection(u'passVerification')
-        print "Antes"
+        print ("Antes")
         snapshot = users_collection.where(data, u"==", val).get()
         for n in snapshot:
             s = n.to_dict()
-            print s
+            print(s)
         return -1
 
     # Search data with nameF equals NameF and datoC equals val.
     def search_dates(self, data, val):
-        print "Antes"
+        print("Antes")
         users_collection = self.db_fire.collection(u'passVerification')
-        print "Antes"
+        print("Antes")
         snapshot = users_collection.where(data, u"==", val).get()
         for n in snapshot:
             s = n.to_dict()
-            print s
+            print(s)
         return -1
 
     def upload_footprint(self, id_footprint, email):
-        mac = my_mac().decode('utf-8')
+        #mac = my_mac().decode('utf-8')
         #mac = my_mac().encode('hex')
+        #m
 
         doc = self.search_id_user(email)
         # Update
@@ -108,7 +111,7 @@ class MyFirebase:
         # time.time()
         up = json.dumps(json_d)
         up = json.loads(up)
-        print
+        #print()
         up_data[u'emailId'] = up[u'emailId']
         up_data[u'firstName'] = up[u'firstName']
         upload = self.db_fire.collection(u'passVerification').document()
@@ -129,16 +132,15 @@ class MyFirebase:
         }
         up = json.dumps(json_d)
         up = json.loads(up)
-        print
+        print()
         up_data[u'emailId'] = up[u'emailId']
         up_data[u'firstName'] = up[u'firstName']
         upload = self.db_fire.collection(u'passVerification').document()
         upload.set(up_data)
         return up_data
 
-
-# aux = MyFirebase()
-# aux.upload_footprint(u'id_footprint', u'soy_yo000@hotmail.com')
+aux = MyFirebase()
+aux.upload_footprint(u'id_footprint', u'soy_yo000@hotmail.com')
 
 # json_uno = {u'emailId': u"user1@gmail.com",
 #             u'firstName': u'user1'}

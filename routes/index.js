@@ -739,7 +739,7 @@ function take_photos(cant_photos, cant_newPath, dir_oldPath, newPath, callback) 
 }
 // Post
 router.post('/confir_photos', function(req, res, next) {
-
+    let name = req.cookies.nombre
     // console.log(__dirname)
     let path_dir_tmp = __dirname
     path_dir_tmp = path.join(path_dir_tmp, "..")
@@ -754,15 +754,51 @@ router.post('/confir_photos', function(req, res, next) {
     path_dir_save = path.join(path_dir_save, "recognizer")
     path_dir_save = path.join(path_dir_save, "att_faces")
     path_dir_save = path.join(path_dir_save, "orl_faces")
-    // console.log(path_dir_save)
-    // coger la galleta y pasarla pro move
-    move("otro_masasas", path_dir_tmp, path_dir_save, function(err) {
+
+    let nameFile = req.cookies.nombre +"_" +req.cookies.newUser.split('@')[0]
+    res.cookie('nameFile',  nameFile);
+    move(nameFile, path_dir_tmp, path_dir_save, function(err) {
         //console.log(err)
     })
-    res.send({ "code": "Perfecto confirmacion de foto" });
-
+    res.send({ "info": "Save Photos" });
 });
 
+
+
+function sendNamePhotoFirebase(name, callback) {
+
+    sendNamePhotoFirebase("holaaa", function() {
+    console.log("lo mande")
+})
+
+    var db = admin.firestore();
+    var docRef = db.collection('users').doc('alovelace');
+    var setAda = docRef.set({
+        first: 'Ada',
+        last: 'Lovelace',
+        born: 1815
+    });
+    //    var setDoc = admin.firestore().collection('users')
+    // Get a database reference to our blog
+    // var db = admin.database();
+    // var ref = db.ref("/database/firestore/");
+
+    // var usersRef = ref.child("users");
+    // usersRef.set({
+    //   alanisawesome: {
+    //     date_of_birth: "June 23, 1912",
+    //     full_name: "Alan Turing"
+    //   },
+    //   gracehop: {
+    //     date_of_birth: "December 9, 1906",
+    //     full_name: "Grace Hopper"
+    //   }
+    //});
+    //     setDoc.collection('users').doc("9bzzY0zxnsPibuXtpyFl").update({
+    //   "nickname": name
+    // });
+
+}
 // function moveA(dir_oldPath, newPath, callback) {
 
 
@@ -815,9 +851,10 @@ function move(name, dir_oldPath, newPath, callback) {
     //console.log(newPath)
     fs.readdir(dir_oldPath, (err, files) => {
         if (err) throw err;
-        
+
         for (const file of files) {
-             let newfile=  file +"pgm"
+            //let newfile = file + ".pgm" // este camio no rula
+            let newfile = file
             fs.rename(path.join(dir_oldPath, file), path.join(newPath, newfile), function(err) {
                 if (err) {
                     if (err.code === 'EXDEV') {
