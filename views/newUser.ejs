@@ -15,9 +15,8 @@
     <% } %>
     <div class="jumbotron">
         <div class="text-center">
-            <h2>Insertar un nuevo usuario en el sistema</h2>
-            <p class="lead">Para poder insertar un nuevo usuario en el sitema seguir paso a paso el proceso y presional alfinal registras. Tiene un tiempo limitado sino volvera a tener que relizar el
-                proceso.</p>
+            <h2>Insert a new user into the system</h2>
+            <p class="lead">In order to insert a new user into the system, follow the process step by step and press the alfinal register.  You have a limited time to complete the process.</p>
         </div>
         <div class="row">
             <h4 class="col-4 mb-3">1. Personal information.</h4>
@@ -88,46 +87,40 @@
                 <div class="row">
                     <div class="col-6 mb-3">
                         <div class="row">
-                            <!---video class="col-12" id="video" src="blob:https://www.onlinemictest.com/9e7d9bd6-b6d8-4850-9787-5ded8d403048" muted autoplay>
-                Tu navegador no es compatible con la etiqueta video de HTML5.
-                <canvas id="canvas"></canvas>
-              </video-->
                             <canvas class="col-sm-8" id="canvas" width="640" height="480" alt="No se puede reproducir el vi"></canvas>
                         </div>
-                        <div class="row">
-                            <div class="col-4"></div>
-                            <button id="btnTakePhotos" type="button" class="btn btn-success my-button align-self-center col-4">
+                           <div class="row">
+                            <button id="btnTakePhotos" type="button" class="btn btn-success my-button align-self-left col-3">
                                 Take photos</button>
+                            <button class="btn btn-success my-button align-self-right col-3" type="button" id="btnDeleteSelect">Delete Select</button>
                         </div>
                     </div>
-                    <form action="" method="post" target="_blank">
-                        <div id="cont_father" class="col-6 mb-3">
-                            <div id="cont_img">
-                                <!--  <div class="form-check form-check-inline">
+                    <div id="cont_father" class="col-6 mb-3">
+                       
+                        <div class="row" id="cont_img"  width="640" height="480">
+                            <!--  <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1"><img class="mw-100 img-responsive" id="picture" src="images/face.png" >
                                     <label class="form-check-label" for="inlineCheckbox1"></label>
                                 </div> -->
-                            </div>
                         </div>
-                        <p>
-                             <button class="btn btn-secondary btn-lg btn-block my-button" type="button" id="btnDeleteSelect">Delete Select</button>
-                        </p>
-                    </form>
+                      
+                    </div>
                 </div>
-                <div class="row">
-                    <button class="btn btn-secondary btn-lg btn-block my-button col-4" type="button" id="btnAddImage">Add Image</button>
-                    <p id="pImageText" class="col-6"></p>
-                    <div id="divImageRed" class="col-1 button-red"></div>
-                    <div class="col-1"></div>
-                </div>
-            </form>
         </div>
         <div class="row">
-            <hr class="col-11 mb-4">
+            <button class="btn btn-secondary btn-lg btn-block my-button col-4" type="button" id="btnAddImage">Add Image</button>
+            <p id="pImageText" class="col-6"></p>
+            <div id="divImageRed" class="col-1 button-red"></div>
+            <div class="col-1"></div>
         </div>
-        <footer class="my-5 pt-5 text-muted text-center text-small">
-            <p class="mb-1">&copy; 2017-2018 Company Name</p>
-        </footer>
+        </form>
+    </div>
+    <div class="row">
+        <hr class="col-11 mb-4">
+    </div>
+    <footer class="my-5 pt-5 text-muted text-center text-small">
+        <p class="mb-1">&copy; 2017-2018 Company Name</p>
+    </footer>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>

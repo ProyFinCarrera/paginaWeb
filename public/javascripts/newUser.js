@@ -22,7 +22,7 @@
     const btnAddImage = document.getElementById("btnAddImage");
     const btnTakePhotos = document.getElementById("btnTakePhotos");
     const btnDeleteSelect = document.getElementById("btnDeleteSelect");
-   
+
     // Cath Formulario
     const form1 = document.getElementById("form1");
     const form2 = document.getElementById("form2");
@@ -63,75 +63,88 @@
 
 
     btnAddImage.addEventListener('click', addImages, false);
-    btnTakePhotos.addEventListener('click',takephotos,false);
-    
-     btnDeleteSelect.addEventListener('click', deleteSelect,false);
-   
-function deleteSelect(){
-         console.log("Eliminarrrrr")
-        
-         let aux = []
-         let nodo;
-                 for(nodo=1;nodo<=20;nodo++){
-         var myNode = document.getElementById(nodo+".jpg");
-                if(myNode.checked){
+    btnTakePhotos.addEventListener('click', takephotos, false);
+
+    btnDeleteSelect.addEventListener('click', deleteSelect, false);
+
+    function deleteSelect() {
+        btnDeleteSelect.disabled = true
+        btnTakePhotos.disabled = true
+        console.log("Eliminarrrrr")
+
+        let aux = []
+        let nodo;
+        for (nodo = 1; nodo <= 20; nodo++) {
+            var myNode = document.getElementById(nodo + ".jpg");
+            if (myNode) {
+                if (myNode.checked) {
                     aux.push(myNode.value)
                 }
-             }
-            console.log(aux)
- var myJSON = JSON.stringify(aux);
-         //var obj = JSON.parse(json);
+            }
 
-         document.cookie = "data=" +  aux;
+        }
+        console.log(aux)
 
+        document.cookie = "datos=" + aux;
+        limpiar()
         var client = new HttpClient();
         client.post('/deleteSelect', function(response) {
-            // do something with response
-            // var content = JSON.parse(response);
-            // pCheckFText.innerHTML = content['text'];
-            // if (content['code'] == "0") {
-            //     divCheckFRed.style.borderColor = "green";
-            //     divCheckFRed.style.backgroundColor = "green";
-            //     btnCheckF.disabled = true;
-            //     btnCheckI.disabled = false;
-            // }
-            console.log(response)
-            //socket.emit("give_pictures", {});
+            var content = JSON.parse(response);
+            console.log(content.photos)
+            var clienta = new HttpClient();
+            clienta.post('/ordSelect', function(response) {
+
+                socket.emit("give_pictures", {});
+                btnDeleteSelect.disabled = false
+                btnTakePhotos.disabled = false
+            })
+
+
+
         });
         console.log("Evento accionado boton Image");
 
-}
-   
-   const socket = io('http://localhost:3000/video');
+    }
+ 
+    const socket = io('http://localhost:3000/video');
     var ctx = document.getElementById('canvas').getContext('2d');
-
+    //socket.emit('give',{})
     socket.on("new_image", function(info) {
         let img = new Image();
         if (info.image) {
+            //if(info.buffer.length>0000){
+                 if(( info.buffer[ info.buffer.length-5]=="/")||(info.buffer[ info.buffer.length-4]=="/")){
             img.src = 'data:image/jpeg;base64,' + info.buffer;
+            //console.log(info.buffer.length)
             img.onload = function() {
                 ctx.drawImage(img, 0, 0);
-                socket.emit("image", { image: "ok" })
+               // socket.emit('give', { image: "ok" })
                 img = null
             }
+          }
 
         }
     });
 
-
-    //  socket.emit("give_imgs",{image:"ok"}) 
-    socket.on("rec_img", function(images) {
-        console.log(images);
-        var myNode = document.getElementById("cont_img");
+    function limpiar() {
+        console.log("Estoy limpiando todo")
+        let myNode = document.getElementById("cont_img");
         while (myNode.firstChild) {
             myNode.removeChild(myNode.firstChild);
-        }    
+        }
+        var el = document.createElement('div');
+        myNode.appendChild(el);
+    }
 
+
+    socket.on("rec_img", function(images) {
+
+        console.log(images);
         images.forEach(function(img) {
 
             let divI = document.createElement("div")
-            divI.setAttribute("class","form-check form-check-inline")
-            
+            divI.setAttribute("class", "form-check form-check-inline")
+
             let label = document.createElement("label")
             label.setAttribute("class", "form-check-label")
             label.setAttribute("for", "inlineCheckbox1")
@@ -139,50 +152,57 @@ function deleteSelect(){
             let input = document.createElement("input")
             input.setAttribute("class", "form-check-input")
             input.setAttribute("type", "checkbox")
-            input.setAttribute("value",img)
-            input.setAttribute("id",img)
-            //input.setAttribute("checked",true)
-            
-          
+            input.setAttribute("value", img)
+            input.setAttribute("id", img)
+         
             let image = document.createElement("img");
-            image.setAttribute("src", img+"?"+Math.random());
+            image.setAttribute("src", img + "?" + Math.random());
             image.setAttribute("class", "mw-100 img-responsive")
             image.setAttribute("id", "picture")
-            
+
             label.appendChild(input)
             divI.appendChild(label)
             divI.appendChild(image)
-            //let divF = document.getElementById("cont_father");
-           // var div = document.getElementById("cont_img");
-            //var el = document.getElementById('cont_img');
-            //el.removeChild();
-            myNode.appendChild(divI);
+
+            var el = document.getElementById('cont_img');
+
+            el.appendChild(divI);
 
         })
-        console.log("todo listo")
     })
-      function takephotos(){
-        console.log("HAcer fotos")
-        document.cookie = "nombre=" + firstName.value;
 
+
+    function deleteCookies(n_cookie) {
+        var cookies = document.cookie.split(";");
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i];
+            var eqPos = cookie.indexOf("=");
+            var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+            if (name == n_cookie) {
+                document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+            }
+        }
+    }
+
+    function takephotos() {
+        btnTakePhotos.disabled = true
+        console.log("HAcer fotos")
+
+        limpiar()
         var client = new HttpClient();
         client.post('/take_photos', function(response) {
-            // do something with response
-            // var content = JSON.parse(response);
-            // pCheckFText.innerHTML = content['text'];
-            // if (content['code'] == "0") {
-            //     divCheckFRed.style.borderColor = "green";
-            //     divCheckFRed.style.backgroundColor = "green";
-            //     btnCheckF.disabled = true;
-            //     btnCheckI.disabled = false;
-            // }
-            console.log(response)
-            socket.emit("give_pictures", {});
+             var clienta = new HttpClient();
+            clienta.post('/ordSelect', function(response) {
+
+                socket.emit("give_pictures", {});
+                btnDeleteSelect.disabled = false
+                btnTakePhotos.disabled = false
+            })
+
         });
         console.log("Evento accionado boton Image");
     }
-   // socket.emit("give_pictures", {});
-
+   
     function deleteImg() {
         if (!imagen) {
             alert("El elemento selecionado no existe");
@@ -196,7 +216,7 @@ function deleteSelect(){
         //event.preventDefault();
         console.log("TErminar")
         //document.cookie = "nombre=" + firstName.value;
-
+        document.cookie = "nombre=" + firstName.value;
         var client = new HttpClient();
         client.post('/confir_photos', function(response) {
             // do something with response
@@ -209,7 +229,7 @@ function deleteSelect(){
             //     btnCheckI.disabled = false;
             // }
             console.log(response)
-             socket.emit("give_pictures", {});
+            socket.emit("give_pictures", {});
         });
         console.log("Evento accionado botonasimagne");
     }

@@ -59,7 +59,7 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-
+//const server2 = http.createServer(app).listen(3001);
 
 const io = require('socket.io')(server);
 //trying to serve the image file from the server
@@ -71,34 +71,45 @@ video.on('connection', function(socket) {
     dir = path.join(dir, "video")
     let dir_picture = path.join(dir, "images")
     //dir_picture = path.join(dir_picture, "")
-    console.log(dir_picture)
+    //console.log(dir_picture)
 
     dir = path.join(dir, "video.jpg")
 
-    console.log(dir)
-    setInterval(() => {
+    //console.log(dir)
+   setInterval(() => {
         fs.readFile(dir, function(err, buf) {
-            video.emit('new_image', { image: true, buffer: buf.toString('base64') }); //imprimiendo el id del cliente conectado 
-            //console.log('image file is initialized');
-        })
+            //console.log( buf.toString('base64').length)
+           
+            if ((buf.length > 10) && (
+                    (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
+                    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) { //80000
+                // if(buf.toString('base64').length!=0){//80000
+                     //console.log(buf.length)
+                // console.log( buf.toString('base64')[buf.toString('base64').length-1])
+                socket.broadcast.emit('new_image', { recognizer:false,image: true, buffer: buf.toString('base64') }); //imprimiendo el id del cliente conectado 
+                //console.log('image file is initialized');
+            }
 
-    }, 100)
-socket.on("give", function(img) {
-      
-  fs.readFile(dir, function(err, buf) {
-            video.emit('new_image', { image: true, buffer: buf.toString('base64') }); //imprimiendo el id del cliente conectado 
-            //console.log('image file is initialized');
         })
-})
+       }, 30)
+// si esxite el archvo tal manada d
+    // socket.on("disconet", function(img) {
+    //     console.log("Cliente desconcetado")
 
-    // video.emit("rec_img", img) // directorio con todas la s imagens
+    // })
+    // socket.on("give", function(img) {
+    //     fs.readFile(dir, function(err, buf) {
+    //        socket.broadcast.emit('new_image', { image: true, buffer: buf.toString('base64') }); //imprimiendo el id del cliente conectado 
+    //         //console.log('image file is initialized');
+    //     })
+    // })
+
     socket.on("give_pictures", function(img) {
-        var aux = []
-        fs.readdirSync(dir_picture).forEach(file => {
-            console.log(file);
-            aux.push(file)
+        fs.readdir(dir_picture, (err, files) => {
+            if (err) throw err;
+            video.emit("rec_img", files)
         });
-        video.emit("rec_img", aux)
+
     })
 });
 
