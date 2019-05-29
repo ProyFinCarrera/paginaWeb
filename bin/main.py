@@ -12,7 +12,8 @@ import os
 import sys
 from recognizerVideo import recognizerVideo
 
-
+# oscuro padre gray con 200 con sitem 2
+# oscuro yo gray con 60 con sistema 1
 pathDir = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 pid = str(os.getpid())
 pidfile = pathDir + "/tmp/mydaemon.pid"
@@ -23,20 +24,18 @@ try:
         raise ValueError('The program is in process')
     else:
         open(pidfile, "w").write(pid)
-        video  = recognizerVideo.RecognizerVideo()
+        video  = recognizerVideo.RecognizerVideo( maxiR=20, maxiF=20, selRecon=1)
         cap = cv2.VideoCapture(0)
         while cap.isOpened():
             rval,frame = cap.read()
             if rval:
-                #frame = cv2.flip(frame,1,0)
+                frame = cv2.flip(frame,1,0)
                 aux = video.video_img(frame)
-                #print(aux)
+                # print(aux)
                 if aux:
                     print("Encendia lector de huellas")
                     video.set_cont_cero()
-            # cv2.imshow("face",frame)
-            #print(aux)
-            
+            cv2.imshow("face",frame)            
             if cv2.waitKey(10) == 27:
                 break
         cap.release()
@@ -45,6 +44,7 @@ except Exception as e:
     print('Exception message: ' + str(e))
 finally:
     os.unlink(pidfile)
+    # eliminar la carpete peptio
 
 
 

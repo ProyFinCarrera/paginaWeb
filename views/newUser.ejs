@@ -16,7 +16,7 @@
     <div class="jumbotron">
         <div class="text-center">
             <h2>Insert a new user into the system</h2>
-            <p class="lead">In order to insert a new user into the system, follow the process step by step and press the register.  You have a limited time to complete the process.</p>
+            <p class="lead">In order to insert a new user into the system, follow the process step by step and press the register. You have a limited time to complete the process.</p>
         </div>
         <div class="row">
             <h4 class="col-4 mb-3">1. Personal information.</h4>
@@ -53,7 +53,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <button class="btn btn-secondary btn-lg btn-block col-4" type="submit" id="btnAddData">Add Data</button>
+                    <button class="btn btn-secondary my-button btn-lg btn-block col-4 my-button" type="submit" id="btnAddData">Add Data</button>
                     <p id="pDataText" class="col-6"></p>
                     <div id="divDataRed" class="col-1 button-red"></div>
                     <div class="col-1"></div>
@@ -64,12 +64,71 @@
             <hr class="col-11 mb-4">
         </div>
         <div class="row">
-            <h4 class="col-4 mb-3">2. Insert footprint.</h4>
+            <h4 class="col-4 mb-3">2. Insert photography.</h4>
+        </div>
+        <div class="row">
+            <form class="col-12 form-group" id="form3" role="form">
+                <div class="row">
+                    <div class="col-md-6 col-sm-12 mb-3">
+                        <div class="row">
+                            <div class="col-1"></div>
+                            <canvas class="col-sm-10" id="canvas" width="640" height="480" alt="No se puede reproducir el vi"></canvas>
+                            <div class="col-1"></div>
+                        </div>
+                        <div class="row mb-3"> </div>
+                        <div class="row">
+                            <div class="col-2"></div>
+                            <button id="btnTakePhotos" type="button" class="btn-sm btn-outline-success my-button col-3">
+                                Take photos</button>
+                            <div class="col-2"></div>
+                            <button class="btn-sm btn-outline-success  my-button col-3" type="button" id="btnDeleteSelect">Delete Select</button>
+                            <div class="col-2"></div>
+                        </div>
+                        <div class="row mb-5"> </div>
+                    </div>
+                    <div id="cont_father" class="col-md-6 col-sm-12 mb-3">
+                        <div class="row">
+                            <div class="row">
+                                <div class="col-1"></div>
+                                <div class="alert alert-info col-10">
+                                    <div class="container">
+                                        <h2>Operating steps</h2>
+                                        <ul class="list-group">
+                                            <li class="list-group-item">
+                                                Give to "Take photos" until having 20 images.</li>
+                                            <li class="list-group-item">Select the photo that you do not like and give it to delete it.Continue giving "Take pictures" to complete the 20 images.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="col-1"></div>
+                            </div>
+                            <div class="row" id="cont_img">
+                                <!--  <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1"><img class="mw-100 img-responsive" id="picture" src="images/face.png" >
+                                    <label class="form-check-label" for="inlineCheckbox1"></label>
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <button class="btn btn-secondary my-button btn-lg btn-block col-4 my-button" type="button" id="btnAddImage">Add Image</button>
+                    <p id="pImageText" class="col-6"></p>
+                    <div id="divImageRed" class="col-1 button-red"></div>
+                    <div class="col-1"></div>
+                </div>
+            </form>
+        </div>
+        <div class="row">
+            <hr class="col-11 mb-4">
+        </div>
+        <div class="row">
+            <h4 class="col-4 mb-3">3. Insert footprint.</h4>
         </div>
         <div class="row">
             <form class="col-12 form-group" id="form2" role="form">
                 <div class="row">
-                    <button class="btn btn-secondary btn-lg btn-block col-4" type="submit" id="btnAddFootprint">Add Footprint</button>
+                    <button class="btn btn-secondary my-button btn-lg btn-block col-4 my-button" type="submit" id="btnAddFootprint">Add Footprint</button>
                     <p id="pFootprintText" class="col-6"></p>
                     <div id="divFootprintRed" class="col-1 button-red"></div>
                     <div class="col-1"></div>
@@ -79,48 +138,9 @@
         <div class="row">
             <hr class="col-11 mb-4">
         </div>
-        <div class="row">
-            <h4 class="col-4 mb-3">3. Insert photography.</h4>
-        </div>
-        <div class="row">
-            <form class="col-12 form-group" id="form3" role="form">
-                <div class="row">
-                    <div class="col-6 mb-3">
-                        <div class="row">
-                            <canvas class="col-sm-8" id="canvas" width="640" height="480" alt="No se puede reproducir el vi"></canvas>
-                        </div>
-                           <div class="row">
-                            <button id="btnTakePhotos" type="button" class="btn btn-success my-button align-self-left col-3">
-                                Take photos</button>
-                            <button class="btn btn-success my-button align-self-right col-3" type="button" id="btnDeleteSelect">Delete Select</button>
-                        </div>
-                    </div>
-                    <div id="cont_father" class="col-6 mb-3">
-                       
-                        <div class="row" id="cont_img"  width="640" height="480">
-                            <!--  <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1"><img class="mw-100 img-responsive" id="picture" src="images/face.png" >
-                                    <label class="form-check-label" for="inlineCheckbox1"></label>
-                                </div> -->
-                        </div>
-                      
-                    </div>
-                </div>
-        </div>
-        <div class="row">
-            <button class="btn btn-secondary btn-lg btn-block my-button col-4" type="button" id="btnAddImage">Add Image</button>
-            <p id="pImageText" class="col-6"></p>
-            <div id="divImageRed" class="col-1 button-red"></div>
-            <div class="col-1"></div>
-        </div>
-        </form>
-    </div>
-    <div class="row">
-        <hr class="col-11 mb-4">
-    </div>
-    <footer class="my-5 pt-5 text-muted text-center text-small">
-        <p class="mb-1">&copy; 2017-2018 Company Name</p>
-    </footer>
+        <footer class="my-5 pt-5 text-muted text-center text-small">
+            <p class="mb-1">&copy; 2017-2018 Company Name</p>
+        </footer>
     </div>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>

@@ -4,144 +4,96 @@
 # Class: recognizerVideo
 import os
 import cv2
-import threading
-import shutil # opercion file.
-from recognizerVideo.faceDetector import faceDetector
-from recognizerVideo.recognizer import recognizer
-#from faceDetector import *
-#from recognizer import *
-#https://becominghuman.ai/face-detection-using-opencv-with-haar-cascade-classifiers-941dbb25177
 
-path_dir = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
-# self.__temp_face = os.path.join(path_dir, os.path.join("recognizer", os.path.join("att_faces","%s.%s" % ("tmp_face",ext))))
-ext ="jpg"
+if __name__ == "__main__":
+    from faceDetector import faceDetector
+    from recognizer import recognizer
+else:
+    from recognizerVideo.faceDetector import faceDetector
+    from recognizerVideo.recognizer import recognizer
+PATH_DIR = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
+PATH_VID = os.path.join(os.path.join(os.path.join(os.path.join(
+    os.path.dirname(os.path.dirname(PATH_DIR)), "public"), "video")))
+EXT = "jpg"
+
+
 class RecognizerVideo:
-    """Class that detects in an image if there is a face.
-    the default configuration file is haarcascade_fromtalface_default.xml
-    size = porcentra that we will make the image smaller for algorithm optimization."""
-    def __init__(self):
+    """ Class that counts the number followed by images in whic
+        the same face appears.
+        Attributes:
+            __temp_face (str): Folder where the faces are saved
+            __save_img (str): File where the image are save.
+            __det (:obj:`FaceDetector()`): Detects the face in the image.
+            __rec (:obj:`Recognizer()`, optional): Recognize the face.
+            __cont_face (int): Times the same face has been detected.
+            __cont_img (int): Number of photos of face that has been save.
+            __maxiR (int): Maximum recognition value to know that we are
+            facing that person.
+            __maxiF (int): Maximum number of files saved in the
+            __temp_face folder
+            selRecon(int): Option for the type of recognition.
+    """
+
+    def __init__(self, maxiR=20, maxiF=20, selRecon=1):
         try:
-            self.__temp_face = os.path.join(path_dir, os.path.join("recognizer", os.path.join("att_faces","tmp_face")))
-            self.__save_face =os.path.join(os.path.dirname( self.__temp_face),"orl_faces")
-            self.__save_img =os.path.join( os.path.join( os.path.join(os.path.dirname( os.path.dirname(path_dir)),"public"),"video"),"video.jpg")
-            self.__cap=""
-            if False:
-                self.__cap = cv2.VideoCapture(0)
-            else:
-                 self.__cap = cv2.VideoCapture()
-
+            self.__temp_face = os.path.join(PATH_DIR, os.path.join(
+                "recognizer", os.path.join("att_faces", "tmp_face")))
+            file = "%s.%s" % ("video", EXT)
+            self.__save_img = os.path.join(PATH_VID, file)
             self.__det = faceDetector.FaceDetector()
-            self.__rec = recognizer.Recognizer()
-            self.__cont = 0
-            self.__cont_photos = 1
-            self.__max = 20
-            if self.__cap.isOpened():
-                print("VideoCapture loades")
-            else:
-                print("No loaded Video")
-                #raise ValueError("Video not loaded.")
+            self.__rec = recognizer.Recognizer(selRecon=selRecon)
+            self.__cont_face = 0
+            self.__cont_img = 1
+            self.__maxiR = maxiR
+            self.__maxiF = maxiF
+            # print("Loaded RecognizerVideo")
         except Exception as e:
-            print('Error loaded FaceDetector: ' + str(e))
+            print('Error loaded FaceDetector: ')
             exit(1)
-    """Method that paints a rectangle where there is a face.""" 
-    # def video_on(self):
-    #     while True:
-    #         (rval, frame) = self.__cap.read()
-    #         frame = cv2.flip(frame,1,0)
-    #         rt ,face,x,y = self.__det.detect(frame)
-    #         if rt:
-    #             cv2.imwrite(self.__temp_face, face)
-    #             # cv2.imshow("face",face)
-    #             self.__rec.recognize(frame,face,x,y)
 
-    #             # self.save_face("OscuraPadreGray")
-    #         cv2.imshow("Ventana",frame) # ver image
-    #         # print(self.__save_img)
-    #         cv2.imwrite(self.__save_img , frame)
-        #     if cv2.waitKey(10) == 27:
-        #        break
-        # self.__cap.release()
-    """Method that paints a rectangle where there is a face.""" 
-    def video_img(self,frame):
-        frame = cv2.flip(frame,1,0)
-        rt ,face,x,y = self.__det.detect(frame)
+    def video_img(self, frame):
+        """ Class methods that recognize a person's face in an image
+            Args:
+                frame: Image where the face will be detected.
+            Returns:
+                True If you have detected a person self._max
+                followed., False otherwise.
+        """
+        rt, face, point = self.__det.detect(frame)
         if rt:
-            #cv2.imwrite(self.__temp_face, face)
-            #self.save_face("yoclaro")
-            save  =os.path.join( self.__temp_face, "%d.%s" % (self.__cont_photos,ext)  )
-            #save2  =os.path.join( self.__temp_face, "%d%s.%s" % (self.__cont_photos,"aa",ext)  )
-            if(self.__cont_photos < self.__max):
-                self.__cont_photos+=1
-            else:
-                self.__cont_photos=1
-            
-            cv2.imwrite(save , face)
-            #cv2.imwrite(save2,frame)
-            rec = self.__rec.recognize(frame,face,x,y)
-            print(self.__cont)
-            if rec:
-                self.__cont+=1
-            else:
-                print("Cerooooooooooo")
-                self.set_cont_cero()
+            self._save_face(face)
+            rec = self.__rec.recognize(frame, face, point)
+            self._repeated_times_recognized(rec)
+            # print(str(self.__cont_face) + " " + str(rec))
+        cv2.imwrite(self.__save_img, frame)  # safe imagen
+        return self._maximum_recognition()
 
-        cv2.imwrite(self.__save_img,frame)
-        cv2.imshow("Dentto",frame)
-        if self.__cont == self.__max:
+    def set_cont_cero(self):
+        """Class methods what it does is initialize the value of __cont a 0"""
+        self.__cont_face = 0
+
+    def _repeated_times_recognized(self, rec):
+        if rec:
+            self.__cont_face += 1
+        else:
+            self.set_cont_cero()
+
+    def _maximum_recognition(self):
+        if self.__cont_face == self.__maxiR:
             return True
         else:
             return False
 
-    def set_cont_cero(self):
-        self.__cont=0
+    def _save_face(self, face):
+        save = os.path.join(self.__temp_face, "%d.%s" %
+                            (self.__cont_img, EXT))
+        cv2.imwrite(save, face)
+        if(self.__cont_img < self.__maxiF):
+            self.__cont_img += 1
+        else:
+            self.__cont_img = 1
 
-    def save_face(self,name):
-        try:
-            path_save = os.path.join(self.__save_face,name)           
-            if os.path.isdir(path_save):
-                self.__rename_all(path_save)
-                num = len(os.listdir(path_save)) +1
-                path_save=os.path.join(path_save, "%d.%s" % (num,ext))
-                #img =cv2.imread(self.__temp_face)
-                #cv2.imwrite(path_save,img)
-                
-                shutil.copy(self.__temp_face, path_save )
-            else: 
-                os.mkdir(path_save)
-                path_save=os.path.join(path_save,"%d.%s" % (1,ext))
-                #img =cv2.imread(self.__temp_face)
-                #cv2.imwrite(path_save,img)
-                shutil.copy(self.__temp_face,path_save )
-        except:
-            print("No copy face")
-
-    def __rename_all(self,path):
-        onlyfiles =os.listdir(path)
-        onlyfiles = sorted(onlyfiles, key=lambda s: int(s.split('.')[0]))
-        num=0
-        for f in onlyfiles:
-            num+=1
-            os.rename(os.path.join(path,f),os.path.join(path,"%d.%s" % (num,ext)))
-
-    def save_faces(self,n_face,name):
-        for x in range(1, n_face):
-            self.save_face(name)
-
-    def delete_face(self,n_face,name):
-        try:
-            path_save = os.path.join(self.__save_face,name)   
-            os.remove(path_save)
-            self.__rename_all(os.path.dirname(path_save))
-        except:
-            print("No delete")
-
-    def delete_all(self,name):
-        try:
-            path_save = os.path.join(self.__save_face,name)   
-            shutil.rmtree(path_save)
-        except:
-            print("No delete all")
 
 if __name__ == "__main__":
-    aux =RecognizerVideo()
-    #aux.video_on()
+    aux = RecognizerVideo()
+    # aux.video_on()

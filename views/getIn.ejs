@@ -44,7 +44,7 @@
     <script src="/javascripts/getIna.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-    var socket = io('http://localhost:3000/video');
+    var socket = io('http://localhost:3000/video',{ reconnection: false });
     var ctx = document.getElementById('canvas').getContext('2d');
 
     socket.on("new_image", function(info) {

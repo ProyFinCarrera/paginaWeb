@@ -80,7 +80,6 @@ video.on('connection', function(socket) {
    setInterval(() => {
         fs.readFile(dir, function(err, buf) {
             //console.log( buf.toString('base64').length)
-           
             if ((buf.length > 10) && (
                     (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
                     (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) { //80000
@@ -92,7 +91,7 @@ video.on('connection', function(socket) {
             }
 
         })
-       }, 30)
+       }, 50)
 // si esxite el archvo tal manada d
     // socket.on("disconet", function(img) {
     //     console.log("Cliente desconcetado")
@@ -108,7 +107,8 @@ video.on('connection', function(socket) {
 
 
 
-        var user_id =  socket.id ;//socket.decoded_token.user;
+        var user_id =  socket.id;//socket.decoded_token.user;
+
 
         if(users[user_id] === undefined){
             users[user_id] = {"socket": socket};
@@ -138,8 +138,21 @@ video.on('connection', function(socket) {
 
     socket.on("give_pictures", function(img) {
         fs.readdir(dir_picture, (err, files) => {
+            let tam = files.length
             if (err) throw err;
-            video.emit("rec_img", files)
+               let ordFiles = files.sort((a, b) => {
+            let aa = parseInt(a.split("."));
+            let bb = parseInt(b.split("."));
+            //aa - bb
+            if (aa > bb) {
+                return 1;
+            }
+            if (aa < bb) {
+                return -1;
+            }
+            return 0;
+        })
+            video.emit("rec_img", ordFiles)
         });
 
     })

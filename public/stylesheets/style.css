@@ -23,6 +23,11 @@ hr {
     background-color: #8D8A8A;
 }
 
+.my-button{
+    white-space: normal;
+}
+
+
 #picture {
      width: 5em;
     height: 5em;
@@ -34,4 +39,16 @@ hr {
 
 #letrero {
     height: 50px;
+}
+
+
+
+.check {
+width:30px;
+height:30px;
+ background-color: #2196F3;
+
+border: 3px solid #2B92DD;
+font-color: #00C4F4;
+color: #2B92DD;
 }

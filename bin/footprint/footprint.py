@@ -5,17 +5,17 @@
 # 1. Class to do face verification with opencv.
 # Finguer. Search for a finger
 import time
-#from pyfingerprint.pyfingerprint import PyFingerprint
-import PyFingerprint
+from footprint.pyfingerprint import PyFingerprint
+#import PyFingerprint
 
 import hashlib
 
 class Footprint:
     def __init__(self):
-        # Tries to initialize the sensor
+        # Tries to initialize the sensor /dev/ttyUSB0
         try:
             self.fingerprint = PyFingerprint(
-                '/dev/ttyUSB0', 57600, 0xFFFFFFFF, 0x00000000)
+                'COM3', 57600, 0xFFFFFFFF, 0x00000000)
             if (self.fingerprint.verifyPassword):
                 print('Access to the device correct')
             else:
