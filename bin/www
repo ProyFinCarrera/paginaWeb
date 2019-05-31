@@ -73,26 +73,33 @@ video.on('connection', function(socket) {
     let dir_picture = path.join(dir, "images")
     //dir_picture = path.join(dir_picture, "")
     //console.log(dir_picture)
-
-    dir = path.join(dir, "video.jpg")
-
+    dir = path.join(dir, "video.webp")
+    let cont = 0;
     //console.log(dir)
-   setInterval(() => {
+    setInterval(() => {
         fs.readFile(dir, function(err, buf) {
             //console.log( buf.toString('base64').length)
-            if ((buf.length > 10) && (
-                    (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
-                    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) { //80000
-                // if(buf.toString('base64').length!=0){//80000
-                     //console.log(buf.length)
-                // console.log( buf.toString('base64')[buf.toString('base64').length-1])
-                socket.broadcast.emit('new_image', { recognizer:false,image: true, buffer: buf.toString('base64') }); //imprimiendo el id del cliente conectado 
+            //if ((buf.length > 10) && (
+            //      (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
+            //    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) { //80000
+            // if(buf.toString('base64').length!=0){//80000
+            //console.log(buf.length)
+            // console.log( buf.toString('base64')[buf.toString('base64').length-1])
+            //console.log(buf)
+            // console.log(buf.length)
+            if (buf.length > 0) {
+                //console.log(buf.length)
+                //console.log(buf.toString('base64'))
+                //cont += 1
+               // console.log("Num:" + cont)
+                socket.broadcast.emit('new_image', { recognizer: false, image: true, buffer: buf.toString('base64') }); //imprimiendo el id del cliente conectado 
                 //console.log('image file is initialized');
+                //}
             }
 
         })
-       }, 50)
-// si esxite el archvo tal manada d
+    },30)
+    // si esxite el archvo tal manada d
     // socket.on("disconet", function(img) {
     //     console.log("Cliente desconcetado")
 
@@ -107,51 +114,51 @@ video.on('connection', function(socket) {
 
 
 
-        var user_id =  socket.id;//socket.decoded_token.user;
+    var user_id = socket.id; //socket.decoded_token.user;
 
 
-        if(users[user_id] === undefined){
-            users[user_id] = {"socket": socket};
+    if (users[user_id] === undefined) {
+        users[user_id] = { "socket": socket };
+    } else {
+        console.log('Se ha connectado otro usuario ' + user_id);
+        ids_disconnect.push(users[user_id].socket.id);
+        users[user_id].socket.disconnect(true);
+        users[user_id] = { "socket": socket };
+    }
+
+    console.log("User Connect: " + user_id + " SocketID: " + socket.id);
+
+
+
+    //disconnect client
+    socket.on('disconnect', function() {
+        console.log('User Disconnect ' + user_id);
+        if (ids_disconnect.indexOf(socket.id) != -1) {
+            console.log('Disconnect Force: ' + user_id);
+            ids_disconnect.splice(ids_disconnect.indexOf(socket.id), 1)
         } else {
-            console.log('Se ha connectado otro usuario ' + user_id);
-            ids_disconnect.push(users[user_id].socket.id);
-            users[user_id].socket.disconnect(true);
-            users[user_id] = {"socket": socket};
+            delete users[user_id];
+            socket.disconnect(true)
+            users[user_id] = undefined; // <-------- Está es la linea que agregué
         }
-
-        console.log("User Connect: " + user_id + " SocketID: " + socket.id);
-
-
-
-        //disconnect client
-        socket.on('disconnect', function () {
-            console.log('User Disconnect ' + user_id);
-            if(ids_disconnect.indexOf(socket.id) != -1){
-                console.log('Disconnect Force: ' + user_id );
-                ids_disconnect.splice(ids_disconnect.indexOf(socket.id),1)
-            } else {
-                delete users[user_id];
-                socket.disconnect(true)
-                users[user_id] = undefined; // <-------- Está es la linea que agregué
-            }
-        });
+    });
 
     socket.on("give_pictures", function(img) {
         fs.readdir(dir_picture, (err, files) => {
             let tam = files.length
             if (err) throw err;
-               let ordFiles = files.sort((a, b) => {
-            let aa = parseInt(a.split("."));
-            let bb = parseInt(b.split("."));
-            //aa - bb
-            if (aa > bb) {
-                return 1;
-            }
-            if (aa < bb) {
-                return -1;
-            }
-            return 0;
-        })
+            let ordFiles = files.sort((a, b) => {
+                let aa = parseInt(a.split("."));
+                let bb = parseInt(b.split("."));
+                //aa - bb
+                if (aa > bb) {
+                    return 1;
+                }
+                if (aa < bb) {
+                    return -1;
+                }
+                return 0;
+            })
             video.emit("rec_img", ordFiles)
         });
 

@@ -85,26 +85,58 @@
     }
 
 
-   
 
-
+let cont=0
+let lista=[]
     //  { reconnection: false });
     var socket = io('http://localhost:3000/video', { reconnection: false });
-    var ctx = document.getElementById('canvas').getContext('2d');
-   // socket.emit("image", { image: "ok" })
+     var ctx = document.getElementById('canvas').getContext('2d');
+    socket.emit("image", { image: "ok" })
     socket.on("new_image", function(info) {
         let img = new Image();
         if (info.image) {
-            if ((info.buffer[info.buffer.length - 5] == "/") || (info.buffer[info.buffer.length - 4] == "/")) {
-                img.src = 'data:image/jpeg;base64,' + info.buffer;
+           // var ctx = document.getElementById('canvas');
+            //lista.push(info.buffer)
+           // console.log(lista.length)
+            //lista.push(info.buffer)
+            //if (lista.length == 10) {
+           // if ((info.buffer[info.buffer.length - 5] == "/") || (info.buffer[info.buffer.length - 4] == "/")) {
+               // for (x=0; x<lista.length;x++)
+               //img.src = 'data:image/jpeg;base64,' +  info.buffer ;
+
+               // img.src = "";
+               // ctx  = ctx.toDataURL('image/webp', 0.5);
+                 img.src = 'data:image/webp;base64,' +info.buffer;
+                 
                 img.onload = function() {
+                    
+                    //img.src = 'data:image/jpeg;base64,' + info.buffer;
+                    //console.log("Num:"+ info.n_img)
                     ctx.drawImage(img, 0, 0);
                     socket.emit("image", { image: "ok" })
-                    img = null
+                   //console.log(localStorage)
+                    // cont+=1
+                    //console.log("Num:" + cont)
+                    //if (localStorage){
+                         // Existe la caché
+                         //console.log("Borra cache")
+                         //console.log(localStorage)
+                         //localStorage.clear();
+                         aux = null
+                        // var father = document.getElementById("canvasp");
+                         //father.removeChild(ctx);
+                       // let canvas = document.createElement("canvas")
+                       // canvas.setAttribute("id", "canvas")
+                        //father.appendChild(canvas)
+                         // var nuevo.
+                    //}else{
+                        // No existe la caché
+                     //   console.log("sincahe")
+                    //}
                 }
-            }
-
+                
         }
+       // }
     });
 
     function clearDiv() {
@@ -113,7 +145,7 @@
         while (myNode.firstChild) {
             myNode.removeChild(myNode.firstChild);
         }
-       // var el = document.createElement('div');
+        // var el = document.createElement('div');
         //myNode.appendChild(el);
     }
 
@@ -163,11 +195,12 @@
         while (myNode.firstChild) {
             myNode.removeChild(myNode.firstChild);
         }
-       // var el = document.createElement('div');
+        // var el = document.createElement('div');
         //myNode.appendChild(el);
     }
- function deleteSelect() {
-      //  btnDeleteSelect.disabled = true
+
+    function deleteSelect() {
+        //  btnDeleteSelect.disabled = true
         //btnTakePhotos.disabled = true
         console.log("Eliminarrrrr")
 
@@ -194,8 +227,8 @@
             var clienta = new HttpClient();
             clienta.post('/ordSelect', function(response) {
                 //socket.emit("give_pictures", {});
-               setTimeout(waitGive(),5000);
-    
+                setTimeout(waitGive(), 5000);
+
             })
         });
         console.log("Evento accionado boton Image");
@@ -224,16 +257,17 @@
         client.post('/take_photos', function(response) {
             //var clienta = new HttpClient();
             // setTimeout(waitGive(), 3000);
-           // clienta.post('/ordSelect', function(response) {
-                setTimeout(waitGive(), 100);
+            // clienta.post('/ordSelect', function(response) {
+            setTimeout(waitGive(), 100);
             //})
         });
         console.log("Evento accionado boton Image");
     }
 
-function waitGive(){
-    socket.emit("give_pictures", {})
-}
+    function waitGive() {
+        socket.emit("give_pictures", {})
+    }
+
     function deleteImg() {
         if (!imagen) {
             alert("El elemento selecionado no existe");

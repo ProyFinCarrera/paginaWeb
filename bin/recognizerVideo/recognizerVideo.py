@@ -4,6 +4,7 @@
 # Class: recognizerVideo
 import os
 import cv2
+import threading
 
 if __name__ == "__main__":
     from faceDetector import faceDetector

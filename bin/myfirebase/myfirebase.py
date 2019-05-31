@@ -11,92 +11,123 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 from uuid import getnode as get_mac
 
-
-
-pathDir = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
+PATH_DIR = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
+# Function that returns the mac of the device where it is running.
 def my_mac():
     mac = get_mac()
     mac_aux = ':'.join(('%012X' % mac)[i:i + 2]for i in range(0, 12, 2))
     return mac_aux
 
+class Users(object):
+    """ Class that manages the users of the database.
+        The attributes of the parameter database are passed.
+    """
+    def __init__(self, emailId, firstName, lastName, dir_img, m_div):
+        self.emailId = emailId
+        self.firstName= firstName
+        self.lastName = lastName
+        self.dir_img = dir_img
+        self.m_div = m_div
+
+    def vect_characteristics(self):
+        """
+            Class method that consults the carecteristic vectors
+            Returns:
+                A document with all the characteristic vectors of the user.      
+        """
+        mac = my_mac()
+        return self.m_div[mac]
+
+    @staticmethod
+    def from_dict(source):
+        for doc in source:
+            data = doc.to_dict()
+            return Users(data['emailId'], data['firstName'] , data['lastName'], data['dir_img'], data['m_div'])
+
+    def to_dict(self):  
+        pass
+
+    def __repr__(self):
+        return u'Users( emailId={}, firstName={}, lastName={}, dir_photo={})'.format(
+            self.emailId, self.firstName, self.lastName, self.dir_photo)
 
 class MyFirebase:
+    """ Class that manages the connection to the database. I make consultation 
+        and store data necessary for the system."""
     def __init__(self):
-        path = os.path.join(pathDir, 'serviceAccountKey.json')#os.path.abspath('serviceAccountKey.json')
-
-        #path = os.path.abspath('myfirebase/serviceAccountKey.json')
-        # print(path)
+        path = os.path.join(PATH_DIR, 'serviceAccountKey.json')
         file = open(path, 'r')
         with file as f:
             self.conf = json.load(f)
-
         self.cred = credentials.Certificate(self.conf)
         self.db_admin = admin.initialize_app(self.cred, {
             "storageBucket": "tfg-findegrado.appspot.com",
             "databaseURL": "https://tfg-findegrado.firebaseio.com"
         })
         self.db_fire = firestore.client()
-    # Search data with nameF equals NameF and datoC equals val.
 
-    # def search_data(self, name_f, val):
-    #     users_collection = self.db_fire.collection(u'users')
-    #     snapshot = users_collection.where(u"nameF", u"==", name_f.decode(
-    #         "utf-8")).where(u"dataC", u"==", val).get()
-    #     for n in snapshot:
-    #         s = n.to_dict()
-    #         return s
-    #     return -1
+    def vect_charasteristics_doc(self, dir_img):
+        """ Class method that is responsible for downloading the 
+            document with all the characteristic vectors of the 
+            user's footprint.
+            Args:
+                dir_img: Name of the directory where the user's image is saved for recognition.
+            Returns:
+               A document, False otherwise.
+        """
+        try:
+            user = self.db_fire.collection("users").where(
+                u'dir_img', u'==', dir_img).limit(1).stream()
+            doc = Users.from_dict(user)
+            return doc.vect_characteristics();
+        except:
+            # print("Vectors characteristic not foud")
+            return False
 
-    # Search data with nameF equals NameF and datoC equals val.
-    def search_data_in_users(self, data, val):
-        print("Antes")
-        users_collection = self.db_fire.collection(u'passVerification')
-        print ("Antes")
-        snapshot = users_collection.where(data, u"==", val).get()
-        for n in snapshot:
-            s = n.to_dict()
-            print(s)
-        return -1
-
-    # Search data with nameF equals NameF and datoC equals val.
-    def search_dates(self, data, val):
-        print("Antes")
-        users_collection = self.db_fire.collection(u'passVerification')
-        print("Antes")
-        snapshot = users_collection.where(data, u"==", val).get()
-        for n in snapshot:
-            s = n.to_dict()
-            print(s)
-        return -1
-
-    def upload_footprint(self, id_footprint, email):
+    def upload_footprint(self, vect_characteristic , email):
+        """ Class method that loads the characteristic vector of 
+            the footprint in firebase.
+            Args:
+                verct_characteristic(str): Value of the characteristic 
+                vector of the footprint previously calculated.
+                email(str): Email to search the user.
+            Return:
+                True if you find a user, false otherwise.
+        """
         #mac = my_mac().decode('utf-8')
         #mac = my_mac().encode('hex')
-        #m
-
-        doc = self.search_id_user(email)
+        mac = my_mac()
+        # Reference to the document.
+        doc = self._search_id_user(email)
         # Update
-        camp = id_footprint + "." + mac
-        up_data = {camp: True}
-
+        camp =  "m_div" + "." + mac + "." + vect_characteristic
+        up_data = { camp: vect_characteristic }
         if(doc == -1):
-            print("No se ha encontrado usuario")
+            # print("User not foud")
+            return False
         else:
-            print("Usuario encontrado")
-            print(doc)
+            # print("Foud user")
             users_collection = self.db_fire.collection(u'users').document(doc)
             users_collection.update(up_data)
+            return True
 
-    def search_id_user(self, email):
+    def _search_id_user(self, email):
         user = self.db_fire.collection("users").where(
-            u"emailId", u"==", email.decode("utf-8")).get()
-        # id
+            u"emailId", u"==", email).stream()
         for doc in user:
             return (doc.id)
         return -1
-        # print(u'{} => {}'.format(doc.id, doc.to_dict()))
 
     def upload_date(self, json_d):
+        """Method that loads the dates and other values ​​to 
+           the passVerification collection.
+           Args:
+                json_d(doc) :  Document with the values ​​of 
+                emailId and firstname.
+            Returns:
+                True If it has been loaded in the collection, 
+                False otherwise.
+        """
         up_data = {
             u'timeStamps': time.time(),
             u'day': int(time.strftime('%d')),
@@ -118,44 +149,28 @@ class MyFirebase:
         upload.set(up_data)
         return up_data
 
-    def upload_date_test(self, json_d, day, month, year, hour, minute):
-        up_data = {
-            u'timeStamps': time.time(),
-            u'day': day,
-            u'month': month,
-            u'nameMonth': time.strftime('%B').decode('utf-8'),
-            u'nameDay': time.strftime('%A').decode('utf-8'),
-            u'year': int(time.strftime('%Y')),
-            u'hour': int(time.strftime('%H')),
-            u'minute': int(time.strftime('%M')),
-            u'mac': my_mac().decode('utf-8')
-        }
-        up = json.dumps(json_d)
-        up = json.loads(up)
-        print()
-        up_data[u'emailId'] = up[u'emailId']
-        up_data[u'firstName'] = up[u'firstName']
-        upload = self.db_fire.collection(u'passVerification').document()
-        upload.set(up_data)
-        return up_data
+    def upload_date_test(self):
+        """Method to perform a loading test in the database."""
+        json_uno = {u'emailId': u"user1@gmail.com", u'firstName': u'user1'}
+        json_dos = {u'emailId': u"user2@gmail.com", u'firstName': u'user2'}
+        json_tres = {u'emailId': u"user3@gmail.com", u'firstName': u'user3'}
+        json_cuatro = {u'emailId': u"user4@gmail.com", u'firstName': u'user4'}
+        json_cinco = {u'emailId': u"user5@gmail.com", u'firstName': u'user5'}
+        for i in range(10):
+            aux.upload_date(json_uno)
+            aux.upload_date(json_dos)
+            aux.upload_date(json_tres)
+            aux.upload_date(json_cuatro)
+            aux.upload_date(json_cinco)
 
-aux = MyFirebase()
-aux.upload_footprint(u'id_footprint', u'soy_yo000@hotmail.com')
+if __name__ == "__main__":
+    aux = MyFirebase()
+    #aux.upload_footprint(u'vector_cjj', u'nuevo@gmail.comdasfds')
+    val = aux.upload_footprint(u'vector_cjj', u'nuevo@gmail.comdasfds')
+    #print(val)
+    my_json = aux.vect_charasteristics_doc(u'yo_nuevo')
+    # print(my_json)
+    if my_json:
+        for n in my_json:
+            print(n)
 
-# json_uno = {u'emailId': u"user1@gmail.com",
-#             u'firstName': u'user1'}
-# json_dos = {u'emailId': u"user2@gmail.com",
-#             u'firstName': u'user2'}
-# json_tres = {u'emailId': u"user3@gmail.com",
-#              u'firstName': u'user3'}
-# json_cuatro = {u'emailId': u"user4@gmail.com",
-#                u'firstName': u'user4'}
-# json_cinco = {u'emailId': u"user5@gmail.com",
-#               u'firstName': u'user5'}
-
-# for i in range(10):
-#     aux.upload_date(json_uno)
-#     aux.upload_date(json_dos)
-#     aux.upload_date(json_tres)
-#     aux.upload_date(json_cuatro)
-#     aux.upload_date(json_cinco)

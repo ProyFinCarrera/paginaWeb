@@ -5,7 +5,7 @@
   Created by: Jairo Gonzalez Lemus alu0100813272@ull.edu.es
   File face.py :
   1. Class to do face verification with opencv.
-  Finguer. Search for a finger
+  Finguer. Search for a fingerv
 """
 from  footprint.pyfingerprint import PyFingerprint
 import hashlib

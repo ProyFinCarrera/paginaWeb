@@ -5,6 +5,7 @@
 import os
 import cv2
 import numpy
+import threading
 PATH_DIR = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 MODEL = {1: cv2.face.LBPHFaceRecognizer_create,
          2: cv2.face.FisherFaceRecognizer_create,
@@ -37,7 +38,10 @@ class Recognizer:
             # OpenCV entrena un modelo a partir de las imagenes
             self.__model = MODEL[selRecon]()
             self.__prediction = OP_PREDICTION[selRecon]
-            self.__model.train(self.__images, self.__lables)
+            hilo = threading.Thread(target= self.__model.train(self.__images, self.__lables)
+        ,  args=(self.__images,self.__lables,),)
+            hilo.start()
+           
         except Exception as e:
             print('Error loaded Recognizer: ' + str(e))
             exit(1)

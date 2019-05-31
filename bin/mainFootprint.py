@@ -13,9 +13,6 @@ import sys
 from recognizerVideo.saveSystem import saveSystem
 
 # Pasara de tmpface a imagenes alemno 20 fotos
-
-
 print("Estoy en main footprint")
- 
 aux= saveSystem.SaveSystem()
 aux.save_tmp()
