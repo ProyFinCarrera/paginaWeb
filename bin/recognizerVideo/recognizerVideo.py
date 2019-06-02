@@ -5,6 +5,9 @@
 import os
 import cv2
 import threading
+import glob
+from PIL import Image
+
 
 if __name__ == "__main__":
     from faceDetector import faceDetector
@@ -40,6 +43,7 @@ class RecognizerVideo:
             self.__temp_face = os.path.join(PATH_DIR, os.path.join(
                 "recognizer", os.path.join("att_faces", "tmp_face")))
             file = "%s.%s" % ("video", EXT)
+            self.__save_webp = os.path.join(PATH_VID, "video.webp")
             self.__save_img = os.path.join(PATH_VID, file)
             self.__det = faceDetector.FaceDetector()
             self.__rec = recognizer.Recognizer(selRecon=selRecon)
@@ -58,16 +62,21 @@ class RecognizerVideo:
                 frame: Image where the face will be detected.
             Returns:
                 True If you have detected a person self._max
-                followed., False otherwise.
+                followed and name the person recognizer.,
+                False otherwise and -1.
         """
         rt, face, point = self.__det.detect(frame)
+        name = -1
         if rt:
             self._save_face(face)
-            rec = self.__rec.recognize(frame, face, point)
+            rec, name = self.__rec.recognize(frame, face, point)
             self._repeated_times_recognized(rec)
             # print(str(self.__cont_face) + " " + str(rec))
-        cv2.imwrite(self.__save_img, frame)  # safe imagen
-        return self._maximum_recognition()
+        thread = threading.Thread(
+            target=cv2.imwrite, args=(self.__save_img, frame),)
+        thread.start()
+        thread.join()
+        return self._maximum_recognition(), name
 
     def set_cont_cero(self):
         """Class methods what it does is initialize the value of __cont a 0"""
@@ -85,10 +94,21 @@ class RecognizerVideo:
         else:
             return False
 
+    def _save_webp(self):
+        try:
+            for infile in glob.glob(self.__save_img):
+                file, ext = os.path.splitext(infile)
+                im = Image.open(infile).convert("RGB")
+                im.save(self.__save_webp, "WEBP")
+        except Exception as e:
+            print("fueras")
+
     def _save_face(self, face):
         save = os.path.join(self.__temp_face, "%d.%s" %
                             (self.__cont_img, EXT))
-        cv2.imwrite(save, face)
+        hilo1 = threading.Thread(target=cv2.imwrite, args=(save, face),)
+        hilo1.start()
+        # cv2.imwrite(save, face)
         if(self.__cont_img < self.__maxiF):
             self.__cont_img += 1
         else:

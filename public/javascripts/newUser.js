@@ -17,16 +17,12 @@
     const pImageText = document.getElementById("pImageText");
 
     // Catch buttons 
-    const btnAddData = document.querySelector("#btnAddData");
+   // const btnAddData = document.getElementById("btnAddData");
     const btnAddFootprint = document.getElementById("btnAddFootprint");
     const btnAddImage = document.getElementById("btnAddImage");
     const btnTakePhotos = document.getElementById("btnTakePhotos");
     const btnDeleteSelect = document.getElementById("btnDeleteSelect");
-
-    // Cath Formulario
-    const form1 = document.getElementById("form1");
-    const form2 = document.getElementById("form2");
-    const form3 = document.getElementById("form3");
+    const btnSelectAll = document.getElementById("btnSelectAll");
 
     // Client Get
     var HttpClientGet = function() {
@@ -41,7 +37,6 @@
             anHttpRequest.send();
         }
     }
-
     // Client Post
     var HttpClient = function() {
         this.post = function(aUrl, aCallback) {
@@ -55,139 +50,119 @@
             anHttpRequest.send();
         }
     }
-
-    // Listener
-    //form1.addEventListener('submit', addData, false);
-    //form2.addEventListener('submit', addFootprint, false);
-    //form3.addEventListener('submit', addImages, false);
-
-
+    const form1 =  document.getElementById("form1");
+   // btnAddData.addEventListener('click', addData, false);
+    form1.addEventListener('submit',addData,false);
     btnAddFootprint.addEventListener('click', addFootprint, false);
     btnAddImage.addEventListener('click', addImages, false);
     btnTakePhotos.addEventListener('click', takephotos, false);
     btnDeleteSelect.addEventListener('click', deleteSelect, false);
+    btnSelectAll.addEventListener('click', selectAll, false);
 
+    //var socket = io('http://localhost:3000/video',{ reconnection: false });
+    var socket = io('http://192.168.1.50:3000/video', { reconnection: false });
+    var ctx = document.getElementById('canvas').getContext('2d');
+
+    function videoOn() {
+        socket.emit("image", { image: "ok" })
+    }
+    setInterval(() => { videoOn() }, 30)
+    socket.on("new_image", function(info) {
+        let img = new Image();
+        if (info.image) {
+            //img.src = 'data:image/jpeg;base64,' +  info.buffer ;
+            img.src = 'data:image/webp;base64,' + info.buffer;
+            img.onload = function() {
+                ctx.drawImage(img, 0, 0);
+                socket.emit("image", { image: "ok" })
+            }
+        }
+    });
+
+    socket.on("rec_img", function(images) {
+        clearDiv();
+        images.forEach(function(img) {
+
+            let divI = document.createElement("div");
+            switch (images.length) {
+                case 3:
+                    divI.setAttribute("class", "form-check form-check-inlin col-4");
+                    break;
+                case 2:
+                    divI.setAttribute("class", "form-check form-check-inlin col-6");
+                    break;
+                case 1:
+                    divI.setAttribute("class", "form-check form-check-inlin col-12")
+                    break;
+                default:
+                    divI.setAttribute("class", "form-check form-check-inlin col-3");
+            }
+
+            let label = document.createElement("label");
+            label.setAttribute("class", "form-check-label");
+            label.setAttribute("for", "inlineCheckbox1");
+
+            let input = document.createElement("input");
+            input.setAttribute("class", "form-check-input check");
+            input.setAttribute("type", "checkbox");
+            input.setAttribute("value", img);
+            input.setAttribute("id", img);
+
+            let image = document.createElement("img");
+            image.setAttribute("src", img + "?" + Math.random());
+            image.setAttribute("class", "mw-100 img-responsive");
+            image.setAttribute("id", "picture");
+
+            label.appendChild(input);
+            divI.appendChild(label);
+            divI.appendChild(image);
+
+            let divF = document.getElementById('cont_img');
+            divF.appendChild(divI);
+        })
+
+        btnDeleteSelect.disabled = false;
+        if (images.length < 20) {
+            btnTakePhotos.setAttribute("class", "btn-sm btn-success my-button col-3")
+            btnTakePhotos.disabled = false;
+            btnAddImage.disabled = true;
+        } else {
+            btnTakePhotos.setAttribute("class", "btn-sm btn-outline-success my-button col-3");
+            btnAddImage.disabled = false;
+        }
+    })
+
+    function clearDiv() {
+        let myNode = document.getElementById("cont_img");
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.firstChild);
+        }
+    }
+
+    function selectAll() {
+        //console.log("Sleccion")
+        sel = document.getElementById("cont_img").getElementsByTagName('input');
+        // console.log(sel.length);
+        for (var i = 0; i < sel.length; i++) {
+            sel[i].checked = true;
+        }
+
+    }
 
     function refresh() {
         //console.log("HAcer refresh")
-        deleteDataFirebase() // elimino el domengo
-        clearDiv() // elimina todo als foto del 3 formulario
-        console.log(document.cookie.DOCREF)
-        deleteCookies("DOCREF")
-        console.log(document.cookie.DOCREF)
+        deleteDataFirebase(); // elimino el domengo
+        clearDiv(); // elimina todo als foto del 3 formulario
+        //console.log(document.cookie.DOCREF);
+        deleteCookies("DOCREF");
         var client = new HttpClient();
         client.post('/refresh', function(response) {
             // elimar de la base de datos todo los reqistros.
             // mandar nombre y buscar la capeta si esta borrarla.
             // elimnar la huell poss de la huella se va paano dpro cookis
         });
-        console.log("Borramo todo.");
+        console.log("Clear All");
     }
-
-
-
-let cont=0
-let lista=[]
-    //  { reconnection: false });
-    var socket = io('http://localhost:3000/video', { reconnection: false });
-     var ctx = document.getElementById('canvas').getContext('2d');
-    socket.emit("image", { image: "ok" })
-    socket.on("new_image", function(info) {
-        let img = new Image();
-        if (info.image) {
-           // var ctx = document.getElementById('canvas');
-            //lista.push(info.buffer)
-           // console.log(lista.length)
-            //lista.push(info.buffer)
-            //if (lista.length == 10) {
-           // if ((info.buffer[info.buffer.length - 5] == "/") || (info.buffer[info.buffer.length - 4] == "/")) {
-               // for (x=0; x<lista.length;x++)
-               //img.src = 'data:image/jpeg;base64,' +  info.buffer ;
-
-               // img.src = "";
-               // ctx  = ctx.toDataURL('image/webp', 0.5);
-                 img.src = 'data:image/webp;base64,' +info.buffer;
-                 
-                img.onload = function() {
-                    
-                    //img.src = 'data:image/jpeg;base64,' + info.buffer;
-                    //console.log("Num:"+ info.n_img)
-                    ctx.drawImage(img, 0, 0);
-                    socket.emit("image", { image: "ok" })
-                   //console.log(localStorage)
-                    // cont+=1
-                    //console.log("Num:" + cont)
-                    //if (localStorage){
-                         // Existe la caché
-                         //console.log("Borra cache")
-                         //console.log(localStorage)
-                         //localStorage.clear();
-                         aux = null
-                        // var father = document.getElementById("canvasp");
-                         //father.removeChild(ctx);
-                       // let canvas = document.createElement("canvas")
-                       // canvas.setAttribute("id", "canvas")
-                        //father.appendChild(canvas)
-                         // var nuevo.
-                    //}else{
-                        // No existe la caché
-                     //   console.log("sincahe")
-                    //}
-                }
-                
-        }
-       // }
-    });
-
-    function clearDiv() {
-        console.log("Estoy limpiando todo")
-        let myNode = document.getElementById("cont_img");
-        while (myNode.firstChild) {
-            myNode.removeChild(myNode.firstChild);
-        }
-        // var el = document.createElement('div');
-        //myNode.appendChild(el);
-    }
-
-
-    socket.on("rec_img", function(images) {
-        console.log(images);
-        clearDiv()
-        images.forEach(function(img) {
-
-            let divI = document.createElement("div")
-            divI.setAttribute("class", "form-check form-check-inlin col-3")
-
-            let label = document.createElement("label")
-            label.setAttribute("class", "form-check-label")
-            label.setAttribute("for", "inlineCheckbox1")
-
-            let input = document.createElement("input")
-            input.setAttribute("class", "form-check-input check")
-            input.setAttribute("type", "checkbox")
-            input.setAttribute("value", img)
-            input.setAttribute("id", img)
-
-            let image = document.createElement("img");
-            image.setAttribute("src", img + "?" + Math.random());
-            image.setAttribute("class", "mw-100 img-responsive")
-            image.setAttribute("id", "picture")
-
-            label.appendChild(input)
-            divI.appendChild(label)
-            divI.appendChild(image)
-
-            let divF = document.getElementById('cont_img');
-
-            divF.appendChild(divI);
-
-
-        })
-
-
-        btnDeleteSelect.disabled = false
-        btnTakePhotos.disabled = false
-    })
 
     function clearDiva() {
         console.log("Estoy limpiando todo")
@@ -195,15 +170,11 @@ let lista=[]
         while (myNode.firstChild) {
             myNode.removeChild(myNode.firstChild);
         }
-        // var el = document.createElement('div');
-        //myNode.appendChild(el);
     }
 
     function deleteSelect() {
-        //  btnDeleteSelect.disabled = true
-        //btnTakePhotos.disabled = true
-        console.log("Eliminarrrrr")
-
+        btnDeleteSelect.disabled = true
+        btnTakePhotos.disabled = true
         let aux = []
         let nodo;
         for (nodo = 1; nodo <= 20; nodo++) {
@@ -215,23 +186,20 @@ let lista=[]
             }
 
         }
-        console.log(aux)
-
+        //console.log(aux)
         document.cookie = "datos=" + aux;
-        //limpiar()
-        //clearDiv()
         var client = new HttpClient();
         client.post('/deleteSelect', function(response) {
             var content = JSON.parse(response);
-            console.log(content.photos)
             var clienta = new HttpClient();
+            sleep(250); //250
             clienta.post('/ordSelect', function(response) {
-                //socket.emit("give_pictures", {});
-                setTimeout(waitGive(), 5000);
+                sleep(500); //500
+                socket.emit("give_pictures", {})
 
             })
         });
-        console.log("Evento accionado boton Image");
+        //console.log("Evento accionado boton Image");
     }
 
     function deleteCookies(n_cookie) {
@@ -246,26 +214,33 @@ let lista=[]
         }
     }
 
-    function takephotos() {
-
-        btnTakePhotos.disabled = true
-        btnDeleteSelect.disabled = true
-        console.log("HAcer fotos")
-
-        clearDiv()
-        var client = new HttpClient();
-        client.post('/take_photos', function(response) {
-            //var clienta = new HttpClient();
-            // setTimeout(waitGive(), 3000);
-            // clienta.post('/ordSelect', function(response) {
-            setTimeout(waitGive(), 100);
-            //})
-        });
-        console.log("Evento accionado boton Image");
+    function readCookie(name) {
+        return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + name.replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
     }
 
-    function waitGive() {
-        socket.emit("give_pictures", {})
+    function sleep(milliseconds) {
+        var start = new Date().getTime();
+        for (var i = 0; i < 1e7; i++) {
+            if ((new Date().getTime() - start) > milliseconds) {
+                break;
+            }
+        }
+    }
+
+    function takephotos() {
+        btnTakePhotos.disabled = true;
+        btnDeleteSelect.disabled = true;
+        var client = new HttpClient();
+        client.post('/take_photos', function(response) {
+            var client2 = new HttpClient();
+            // setTimeout(waitGive(), 3000);
+            sleep(250);
+            client2.post('/ordSelect', function(response) {
+                sleep(500);
+                socket.emit("give_pictures", {});
+            })
+        });
+         //console.log("Evento accionado takephotos");
     }
 
     function deleteImg() {
@@ -278,8 +253,9 @@ let lista=[]
     }
     // Function
     function addImages(event) {
-        //event.preventDefault();
-        console.log("AddImages")
+        event.preventDefault();
+        //console.log("AddImages")
+         //console.log(firstName.value)
         document.cookie = "nombre=" + firstName.value;
         //document.cookie = "email=" + "rooot)?"
         document.cookie = "newUser=" + email.value;
@@ -287,41 +263,35 @@ let lista=[]
         var client = new HttpClient();
         client.post('/confir_photos', function(response) {
             // do something with response
-            // var content = JSON.parse(response);
-            // pCheckFText.innerHTML = content['text'];
-            // if (content['code'] == "0") {
-            //     divCheckFRed.style.borderColor = "green";
-            //     divCheckFRed.style.backgroundColor = "green";
-            //     btnCheckF.disabled = true;
-            //     btnCheckI.disabled = false;
-            // }
-            console.log(response)
-            clearDiv()
-            sendDataImg()
-            // socket.emit("give_pictures", {});
+            var content = JSON.parse(response);
+            pImageText.innerHTML = content['message'];
+            if (content['code'] == "0") {
+                 divImageRed.style.borderColor = "green";
+                 divImageRed.style.backgroundColor = "green";
+                 btnAddImage.disabled = true;
+                 btnAddFootprint.disabled=false;
+                 btnSelectAll.disabled = true;
+                 btnDeleteSelect.disabled= true;
+             }
+            clearDiv();
+            sendDataImg();
         });
-        console.log("Evento accionado botonasimagne");
+        //console.log("Evento accionado botonasimagne");
     }
 
     function sendDataImg() {
-        console.log("VEr")
-        let aux = document.cookie.split(";")[5].split("=")[1]
-        let docRef = document.cookie.split(";")[2].split("=")[1]
-        console.log(document.cookie)
-        console.log(document.cookie)
-        //console.log(document.cookie.split(";")[5].split("=")[1])
-        //console.log(document.cookie.DOCREF)
-        console.log(docRef.split(" "))
+        //console.log(readCookie("email"))
+        let nameFile =readCookie("nameFile"); 
+        let docRef = readCookie("DOCREF")
 
-        let subir = '{"' + aux + '":{"huella":"afdsfsd"}}'
-        console.log(subir)
+        let subir = '{"nameFile":"' + nameFile + '"}'
+        // console.log(subir)
         var content = JSON.parse(subir);
         // Initialize Cloud Firestore through Firebase
         let db = firebase.firestore();
-        db.collection("users").doc(docRef).update(content).then(function(docRef) {
-            console.log("Document written with ID: ");
+        db.collection("users").doc(docRef).update(content).then(function(doc) {
+            // console.log("Document written with ID: ");
             // docRef.update({ id: docRef.id });
-
         }).catch(function(error) {
             console.error("Error adding document: ", error);
         });
@@ -333,18 +303,14 @@ let lista=[]
         pDataText.innerHTML = "";
     }
 
+    //////////////////////////////////////////////////////////falta esto para adeltne
+
     function addFootprint(event) {
-        // deleteDataFirebase()
         event.preventDefault();
-        //setTimeout(upFootprint, 50);
-
-        //document.cookie = "newUser=" + email.value;
-        document.cookie = "newUser=" + "pepito";
+        ///btnAddFootprint.disabled = true;
         upFootprint()
-
         pFootprintText.innerHTML = "";
     }
-
 
     function upFootprint() {
         var client = new HttpClientGet();
@@ -356,19 +322,13 @@ let lista=[]
             var content = JSON.parse(response);
             pFootprintText.innerHTML = content['text'];
             if (content['code'] == "0") {
-
                 divFootprintRed.style.borderColor = "green";
                 divFootprintRed.style.backgroundColor = "green"
-
                 // Imagne no esta desbloqueo. sino solo desbloque el registro.
-                btnAddFootprint.disabled = true;
-                btnAddImage.disabled = false;
-
+              
                 nameImage = content['dataC'];
-
                 mando = { datoC: nameImage }
                 console.log(nameImage);
-
                 emaila = "nuevo@gmail.com";
                 // console.log(content['dataC']);
                 upDataC(mando, emaila);
@@ -381,6 +341,7 @@ let lista=[]
     function upDate(firstName, lastName, workPosition, email, otherInfo) {
         // Initialize Cloud Firestore through Firebase
         let db = firebase.firestore();
+         //console.log("update")
         // Create a query against the collection
         let userdb = db.collection("users").where('emailId', '==', email).get()
             .then(function(querySnapshot) {
@@ -392,8 +353,9 @@ let lista=[]
                     divDataRed.style.borderColor = "green";
                     divDataRed.style.backgroundColor = "green";
                     btnAddData.disabled = true;
-                    btnAddFootprint.disabled = false;
-                    otherInfo.disabled = false;
+                    btnTakePhotos.disabled = false;
+                    btnSelectAll.disabled = false;
+                    btnDeleteSelect.disabled= false;
                     blockInput();
                 } else {
                     // do something with the data 
@@ -402,7 +364,9 @@ let lista=[]
                         divDataRed.style.borderColor = "green";
                         divDataRed.style.backgroundColor = "green";
                         btnAddData.disabled = true;
-                        btnAddFootprint.disabled = false;
+                        btnTakePhotos.disabled = false;
+                        btnSelectAll.disabled = false;
+                        btnDeleteSelect.disabled= false;
                         blockInput();
 
                     } else {
@@ -413,8 +377,6 @@ let lista=[]
                 // console.log("Error getting documents: ", error);
             });
     }
-
-
 
     function sendDataFirestore(firstName, lastName, workPosition, email, otherInfo) {
         let userData;
@@ -485,106 +447,4 @@ let lista=[]
             return false;
         }
     }
-
-
-
-
-
-    // Send data
-    // function upPicture() {
-    //     var client = new HttpClient();
-    //     client.get('/saveImage', function(response) {
-    //         // do something with response
-    //         var content = JSON.parse(response);
-    //         pCheckFText.innerHTML = content['text'];
-    //         if (content['code'] == "0") {
-    //             divCheckFRed.style.borderColor = "green";
-    //             divCheckFRed.style.backgroundColor = "green";
-    //             btnCheckF.disabled = true;
-    //             btnCheckI.disabled = false;
-    //         }
-    //     });
-    //     console.log("Evento accionado boton Image");
-    //     console.log("dato en imagen: " + nameImage)
-    //     // manda la imagen a firebase.
-
-    //     pImageText.innerHTML = 'Todo correcto!!';
-
-    //     divImageRed.style.borderColor = "green";
-    //     divImageRed.style.backgroundColor = "green";
-    //     btnAddImage.disabled = true;
-    //     btnRegister.disabled = false;
-    // }
-
-
-
-
-
-
-    // function upDataC(dataC, email) {
-    //     // Initialize Cloud Firestore through Firebase
-    //     let emails = "soy_yo000@hotmail.com"
-    //     let db = firebase.firestore();
-    //     // Create a query against the collection
-    //     let userdb = db.collection("users").where('emailId', '==', email).get()
-    //         .then(function(querySnapshot) {
-    //             //console.log("Query");
-    //             let id = null;
-    //             querySnapshot.forEach(function(doc) {
-    //                 // doc.data() is never undefined for query doc snapshots
-    //                 console.log(doc.id, " => ", doc.data());
-    //                 id = doc.id;
-    //             });
-
-    //             if (querySnapshot.empty) {
-    //                 console.log('Documents no found');
-    //                 alert("User no exists");
-
-    //             } else {
-    //                 // do something with the data 
-    //                 console.log('Documents found');
-    //                 alert("This user exists, add new data.");
-    //                 //id ="o8lMusW7GXmf7P4qA3lN";
-    //                 sendDataCFerestore(dataC, id);
-
-    //                 let divDataRed = document.getElementById("divDataRed");
-    //                 let pDataText = document.getElementById("pDataText");
-    //                 console.log('No documents found');
-    //                 alert("New registered user");
-    //                 pDataText.innerHTML = 'Todo correcto!!';
-    //                 divDataRed.style.borderColor = "green";
-    //                 divDataRed.style.backgroundColor = "green";
-    //                 btnAddData.disabled = true;
-    //                 btnAddFootprint.disabled = false;
-    //             }
-    //         })
-    //         .catch(function(error) {
-    //             console.log("Error getting documents: ", error);
-    //         });
-
-    // }
-
-    // function sendDataCFerestore(dataC, docId) {
-    //     //let userData = dataC;
-    //     let userData = { caca: "tpafsdfas" };
-    //     // Initialize Cloud Firestore through Firebase
-    //     let db = firebase.firestore();
-
-    //     db.collection("users").doc(docId).update(dataC)
-    //         .then(function() {
-    //             console.log("Document successfully updated!");
-    //         });
-
-    // }
-
-    // function subirImagen() {
-    //     var canvas = document.getElementById("canvas");
-    //     canvas.toBlob(function(blob) {
-    //         //aquí la variable blob contiene el blob que se acaba de generar
-    //         storageRef = firebase.storage().ref("/imagenes/" + "ufffdd.png"); // directorio raiz  
-    //         var uploadTAsk = storageRef.put(blob);
-    //         console.log("Estoy en subir imagen");
-    //         console.log("Respuesta" + uploadTAsk);
-    //     });
-    // }
 }());

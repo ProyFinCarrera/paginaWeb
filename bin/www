@@ -14,6 +14,7 @@ var fs = require('fs'); //required for file serving
  * Get port from environment and store in Express.
  */
 const host = 'localhost';
+//const host = '192.168.1.50';
 
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
@@ -73,32 +74,50 @@ video.on('connection', function(socket) {
     let dir_picture = path.join(dir, "images")
     //dir_picture = path.join(dir_picture, "")
     //console.log(dir_picture)
-    dir = path.join(dir, "video.webp")
+    // dir = path.join(dir, "video.webp")
+    dir = path.join(dir, "video.jpg")
     let cont = 0;
+   
     //console.log(dir)
-    setInterval(() => {
+    // setInterval(() => {
         fs.readFile(dir, function(err, buf) {
+             //console.log("conectandooooooooooooooooooooooooooooooooooooo dentro")
             //console.log( buf.toString('base64').length)
             //if ((buf.length > 10) && (
-            //      (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
-            //    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) { //80000
+              //    (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
+               // (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) { //80000
             // if(buf.toString('base64').length!=0){//80000
             //console.log(buf.length)
             // console.log( buf.toString('base64')[buf.toString('base64').length-1])
             //console.log(buf)
             // console.log(buf.length)
-            if (buf.length > 0) {
+            //if (buf.length > 0) {
                 //console.log(buf.length)
                 //console.log(buf.toString('base64'))
                 //cont += 1
                // console.log("Num:" + cont)
-                socket.broadcast.emit('new_image', { recognizer: false, image: true, buffer: buf.toString('base64') }); //imprimiendo el id del cliente conectado 
+                socket.emit('new_image', { recognizer: false, image: true, buffer: buf.toString('base64') }); //imprimiendo el id del cliente conectado 
+                //console.log("conectandooooooooooooooooooooooooooooooooooooo dentro")
                 //console.log('image file is initialized');
                 //}
+            //}
+
+        })
+    // },100)
+    socket.on('image', function() {
+        //console.log("Estoy en imgaen")
+        fs.readFile(dir, function(err, buf) {
+            //console.log( buf.toString('base64').length)
+            if ((buf.length > 10) && (
+                    (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
+                    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
+                socket.emit('new_image', { recognizer: false, image: true, buffer: buf.toString('base64') });
             }
 
         })
-    },30)
+
+    })
+
     // si esxite el archvo tal manada d
     // socket.on("disconet", function(img) {
     //     console.log("Cliente desconcetado")

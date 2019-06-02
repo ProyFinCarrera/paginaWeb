@@ -14,7 +14,7 @@ OP_PREDICTION = {1: 80, 2: 500, 3: 500}
 
 
 class Recognizer:
-    """	Class that recognizes the image of the face.
+    """ Class that recognizes the image of the face.
         Attributes:
                 __path_faces(str): Address where the faces are for comparison
                 __model(obj: 'cv2'): Model for the realization and comparison
@@ -38,10 +38,11 @@ class Recognizer:
             # OpenCV entrena un modelo a partir de las imagenes
             self.__model = MODEL[selRecon]()
             self.__prediction = OP_PREDICTION[selRecon]
-            hilo = threading.Thread(target= self.__model.train(self.__images, self.__lables)
-        ,  args=(self.__images,self.__lables,),)
+            hilo = threading.Thread(target=self.__model.train, args=(
+                self.__images, self.__lables,),)
             hilo.start()
-           
+            hilo.join()
+
         except Exception as e:
             print('Error loaded Recognizer: ' + str(e))
             exit(1)
@@ -57,14 +58,17 @@ class Recognizer:
                 point(int,int): Point where the image is
                 located.
              Returns:
-                True If you have detected a person, False otherwise.
+                True If you have detected a person and name the person
+                , False otherwise and -1.
          """
         reconoce = False
+        name = -1
         prediction = self.__model.predict(face)
         point_a = (point[0] - 10, point[1] - 10)
         # print(prediction[1])
         if prediction[1] < self.__prediction:
             pr = '%s - %.0f' % (self.__names[prediction[0]], prediction[1])
+            name = self.__names[prediction[0]]
             font = cv2.FONT_HERSHEY_PLAIN
             font_scale = 1
             font_color = (0, 255, 0)
@@ -76,7 +80,7 @@ class Recognizer:
         else:
             cv2.putText(img, 'Desconocido', point_a,
                         cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0))
-        return reconoce
+        return reconoce, name
 
     def __create_list_img_names(self):
         """ Method to create a list of images and a

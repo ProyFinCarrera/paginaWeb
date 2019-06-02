@@ -23,7 +23,8 @@ path_file_face = os.path.dirname(__file__)
 path_file_face = os.path.join(path_file_face, "..")
 path_file_face = os.path.join(path_file_face, "recognizer")
 path_file_facee = os.path.join(path_file_face, "att_faces")
-path_file_face = os.path.join(path_file_face, "tem_face.jpg")
+path_file_face = os.path.join(path_file_face, "tem_face")
+path_file_face = os.path.join(path_file_face, "1.jpg")
 
 ext = "pmg"
 
@@ -37,6 +38,7 @@ class SaveSystem:
             self.__path_dir_tmp = path_dir_tmp
         except:
             print("mall")
+
 
     def save_tmp(self):
         try:
@@ -110,19 +112,5 @@ class SaveSystem:
             print("No delete all")
 
 if __name__ == "__main__":
-    path_dir = os.path.dirname(__file__)
-    path_dir= os.path.join(path_dir,"..")
-    path_dir= os.path.join(path_dir,"..")
-    path_dir= os.path.join(path_dir,"..")
-    path_dir= os.path.join(path_dir,"public")
-    path_dir= os.path.join(path_dir,"video")
-    path_dir= os.path.join(path_dir,"images")
-    print(os.path.isdir(path_dir))
-    path_save = os.path.dirname(__file__)
-    path_save= os.path.join(path_save,"..")
-    path_save= os.path.join(path_save,"recognizer")
-    path_save= os.path.join(path_save,"att_faces")
-    path_save= os.path.join(path_save,"orl_faces")
-    # path_pfm= os.path.join(path_save,name)
-    print(os.path.isdir(path_save))
-    ux= saveSystem.SaveSystem()
+    aux= SaveSystem()
+    aux.save_faces(20,'pedro')

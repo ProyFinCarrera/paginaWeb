@@ -41,23 +41,33 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
-    <script src="/javascripts/getIna.js"></script>
+    <!--script src="/javascripts/getIna.js"></script-->
     <script src="/socket.io/socket.io.js"></script>
     <script>
-    var socket = io('http://localhost:3000/video',{ reconnection: false });
+    //var socket = io('http://localhost:3000/video',{ reconnection: false });
+    var socket = io('http://192.168.1.50:3000/video',{ reconnection: false });
     var ctx = document.getElementById('canvas').getContext('2d');
-
+    function ver(){d
+        socket.emit("image", { image: "ok" })
+         //console.log("emite coñoñoo")
+    }
+   // ver()
+   setInterval(() => { ver()},30)
+   
     socket.on("new_image", function(info) {
+          //console.log("new_image estoyyyyyyyyyyyyyyyyyy")
         let img = new Image();
         if (info.image) {
             img.src = 'data:image/jpeg;base64,' + info.buffer;
             img.onload = function() {
                 ctx.drawImage(img, 0, 0);
-                socket.emit("image", { image: "ok" })
+               // ver()
                 img = null
             }
 
         }
+      
+        // socket.emit("image", { image: "ok" })
     });
     </script>
 </body>

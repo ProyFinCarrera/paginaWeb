@@ -6,6 +6,7 @@
 import json
 import time
 import os
+import firebase_admin
 import firebase_admin as admin
 from firebase_admin import credentials
 from firebase_admin import firestore
@@ -13,58 +14,35 @@ from uuid import getnode as get_mac
 
 PATH_DIR = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 # Function that returns the mac of the device where it is running.
+
+
 def my_mac():
     mac = get_mac()
     mac_aux = ':'.join(('%012X' % mac)[i:i + 2]for i in range(0, 12, 2))
     return mac_aux
 
-class Users(object):
-    """ Class that manages the users of the database.
-        The attributes of the parameter database are passed.
-    """
-    def __init__(self, emailId, firstName, lastName, dir_img, m_div):
-        self.emailId = emailId
-        self.firstName= firstName
-        self.lastName = lastName
-        self.dir_img = dir_img
-        self.m_div = m_div
-
-    def vect_characteristics(self):
-        """
-            Class method that consults the carecteristic vectors
-            Returns:
-                A document with all the characteristic vectors of the user.      
-        """
-        mac = my_mac()
-        return self.m_div[mac]
-
-    @staticmethod
-    def from_dict(source):
-        for doc in source:
-            data = doc.to_dict()
-            return Users(data['emailId'], data['firstName'] , data['lastName'], data['dir_img'], data['m_div'])
-
-    def to_dict(self):  
-        pass
-
-    def __repr__(self):
-        return u'Users( emailId={}, firstName={}, lastName={}, dir_photo={})'.format(
-            self.emailId, self.firstName, self.lastName, self.dir_photo)
 
 class MyFirebase:
     """ Class that manages the connection to the database. I make consultation 
         and store data necessary for the system."""
+
     def __init__(self):
         path = os.path.join(PATH_DIR, 'serviceAccountKey.json')
         file = open(path, 'r')
-        with file as f:
-            self.conf = json.load(f)
-        self.cred = credentials.Certificate(self.conf)
-        self.db_admin = admin.initialize_app(self.cred, {
-            "storageBucket": "tfg-findegrado.appspot.com",
-            "databaseURL": "https://tfg-findegrado.firebaseio.com"
-        })
-        self.db_fire = firestore.client()
+        try:
+            app = firebase_admin.get_app()
+            self.db_fire = firestore.client()
+        except ValueError as e:
+            #cred = credentials.Certificate(path)
+            with file as f:
+                self.conf = json.load(f)
+
+            self.cred = credentials.Certificate(self.conf)
+            self.db_admin = admin.initialize_app(self.cred, {
+                "storageBucket": "tfg-findegrado.appspot.com",
+                "databaseURL": "https://tfg-findegrado.firebaseio.com"
+            })
+            self.db_fire = firestore.client()
 
     def vect_charasteristics_doc(self, dir_img):
         """ Class method that is responsible for downloading the 
@@ -79,12 +57,12 @@ class MyFirebase:
             user = self.db_fire.collection("users").where(
                 u'dir_img', u'==', dir_img).limit(1).stream()
             doc = Users.from_dict(user)
-            return doc.vect_characteristics();
+            return doc.vect_characteristics()
         except:
             # print("Vectors characteristic not foud")
             return False
 
-    def upload_footprint(self, vect_characteristic , email):
+    def upload_footprint(self, vect_characteristic, email):
         """ Class method that loads the characteristic vector of 
             the footprint in firebase.
             Args:
@@ -100,8 +78,8 @@ class MyFirebase:
         # Reference to the document.
         doc = self._search_id_user(email)
         # Update
-        camp =  "m_div" + "." + mac + "." + vect_characteristic
-        up_data = { camp: vect_characteristic }
+        camp = "m_div" + "." + mac + "." + vect_characteristic
+        up_data = {camp: vect_characteristic}
         if(doc == -1):
             # print("User not foud")
             return False
@@ -142,7 +120,7 @@ class MyFirebase:
         # time.time()
         up = json.dumps(json_d)
         up = json.loads(up)
-        #print()
+        # print()
         up_data[u'emailId'] = up[u'emailId']
         up_data[u'firstName'] = up[u'firstName']
         upload = self.db_fire.collection(u'passVerification').document()
@@ -163,14 +141,49 @@ class MyFirebase:
             aux.upload_date(json_cuatro)
             aux.upload_date(json_cinco)
 
+
+class Users(object):
+    """ Class that manages the users of the database.
+        The attributes of the parameter database are passed.
+    """
+
+    def __init__(self, emailId, firstName, lastName, dir_img, m_div):
+        self.emailId = emailId
+        self.firstName = firstName
+        self.lastName = lastName
+        self.dir_img = dir_img
+        self.m_div = m_div
+
+    def vect_characteristics(self):
+        """
+            Class method that consults the carecteristic vectors
+            Returns:
+                A document with all the characteristic vector of the user.
+        """
+        mac = my_mac()
+        return self.m_div[mac]
+
+    @staticmethod
+    def from_dict(source):
+        for doc in source:
+            data = doc.to_dict()
+            return Users(data['emailId'], data['firstName'], data['lastName'], data['dir_img'], data['m_div'])
+
+    def to_dict(self):
+        pass
+
+    def __repr__(self):
+        return u'Users( emailId={}, firstName={}, lastName={}, dir_photo={})'.format(
+            self.emailId, self.firstName, self.lastName, self.dir_photo)
+
+
 if __name__ == "__main__":
     aux = MyFirebase()
     #aux.upload_footprint(u'vector_cjj', u'nuevo@gmail.comdasfds')
     val = aux.upload_footprint(u'vector_cjj', u'nuevo@gmail.comdasfds')
-    #print(val)
+    # print(val)
     my_json = aux.vect_charasteristics_doc(u'yo_nuevo')
     # print(my_json)
     if my_json:
         for n in my_json:
             print(n)
-
