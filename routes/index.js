@@ -46,6 +46,11 @@ admin.initializeApp({
 });
 /* GET home page. */
 router.get('/', function(req, res, next) {
+    let url = req.headers.referer;
+    let page = takePageName(url);
+    if((page == "getIn")||(page == "newUser") ){
+      closeSistem()
+    }
     res.render('index', { title: 'Secure Access Control' });
 });
 /* GET admin page. */
@@ -64,6 +69,9 @@ function takePageName(url) {
 router.get('/menuAdm', function(req, res, next) {
     let url = req.headers.referer;
     let page = takePageName(url);
+    if (page == "newUser") {
+      closeSistem()
+    }
     //console.log("Vengo de : " + url);
     //console.log("Pagina es: " + page);
     if (page == "admin") {
@@ -103,6 +111,10 @@ function verifyOn(url) {
 /* GET userDelete page. */
 router.get('/deleteUser', function(req, res, next) {
     let url = req.headers.referer;
+    let page = takePageName(url);
+    if (page == "newUser") {
+      closeSistem()
+    }
     verifyOn(url)
         .then(function(valor) {
             console.log("Inf: Verify page correct");
@@ -174,6 +186,11 @@ function listAllAdmUsers(nextPageToken) {
 /* GET deleteAdmin page. */
 router.get('/deleteAdm', function(req, res, next) {
     //(admin.auth().getUserByEmail())
+    let url = req.headers.referer;
+    let page = takePageName(url);
+    if (page == "newUser") {
+      closeSistem()
+    }
     listAllAdmUsers().then(function(users) {
         //console.log(users)
         let url = req.headers.referer;
@@ -204,6 +221,10 @@ router.get('/deleteAdm', function(req, res, next) {
 /* GET newAdm page. */
 router.get('/newAdm', function(req, res, next) {
     let url = req.headers.referer;
+    let page = takePageName(url);
+    if (page == "newUser") {
+      closeSistem()
+    }
     verifyOn(url)
         .then(function(valor) {
             console.log("Inf: Verify page correct");
@@ -229,6 +250,27 @@ router.get('/newAdm', function(req, res, next) {
             });
         });
 });
+function closeSistem(){
+     // Initialize verification process
+        var PythonShell = require('python-shell');
+        //pyshell = new PythonShell('sudo ls');
+        pyshell = new PythonShell('sudo python ./../bin/close.py');
+        pyshell.on('message', function(message) {
+            // received a message sent from the Python script (a simple "print" statement)
+            console.log(message);
+            dataC = message;
+        });
+        pyshell.end(function(err, code, signal) {
+            /// if (err) throw err;
+            console.log('The exit err: ' + err);
+            console.log('The exit code was: ' + code);
+            console.log('The exit signal was: ' + signal);
+            //console.log('The opcion: ' + opcion);
+            console.log('finished');
+            var message = "";
+        });
+        pyshell = null;
+}
 /* GET newUser page. */
 router.get('/newUser', function(req, res, next) {
     let url = req.headers.referer;
@@ -236,6 +278,25 @@ router.get('/newUser', function(req, res, next) {
         .then(function(valor) {
             // console.log("Inf: Verify page correct");
             //videoOn()
+            // Initialize verification process
+            var PythonShell = require('python-shell');
+            //pyshell = new PythonShell('sudo ls');
+            pyshell = new PythonShell('sudo python ./../bin/mainSaveFace.py');
+            pyshell.on('message', function(message) {
+                // received a message sent from the Python script (a simple "print" statement)
+                console.log(message);
+                dataC = message;
+            });
+            pyshell.end(function(err, code, signal) {
+                /// if (err) throw err;
+                console.log('The exit err: ' + err);
+                console.log('The exit code was: ' + code);
+                console.log('The exit signal was: ' + signal);
+                //console.log('The opcion: ' + opcion);
+                console.log('finished');
+                var message = "";
+            });
+            pyshell = null;
             if (req.cookies.email == 'root@gmail.com') {
 
                 res.render('newUser', { title: titleApp, iam: 'root' });
@@ -257,6 +318,10 @@ router.get('/newUser', function(req, res, next) {
 /* GET getIn page. */
 router.get('/graphics', function(req, res, next) {
     let url = req.headers.referer;
+    let page = takePageName(url);
+    if (page == "newUser") {
+      closeSistem()
+    }
     verifyOn(url)
         .then(function(valor) {
             console.log("Inf: Verify page correct");
@@ -280,24 +345,24 @@ router.get('/graphics', function(req, res, next) {
 router.get('/getIn', function(req, res, next) {
     // Initialize verification process
     res.render('getIn', { title: titleApp });
-    // var PythonShell = require('python-shell');
-    // //pyshell = new PythonShell('sudo ls');
-    // pyshell = new PythonShell('sudo python ./../bin/main.py');
-    // pyshell.on('message', function(message) {
-    //     // received a message sent from the Python script (a simple "print" statement)
-    //     console.log(message);
-    //     dataC = message;
-    // });
-    // pyshell.end(function(err, code, signal) {
-    //     /// if (err) throw err;
-    //     console.log('The exit err: ' + err);
-    //     console.log('The exit code was: ' + code);
-    //     console.log('The exit signal was: ' + signal);
-    //     //console.log('The opcion: ' + opcion);
-    //     console.log('finished');
-    //     var message = "";
-    // });
-    // pyshell = null;
+    var PythonShell = require('python-shell');
+    //pyshell = new PythonShell('sudo ls');
+    pyshell = new PythonShell('sudo python ./../bin/main.py');
+    pyshell.on('message', function(message) {
+        // received a message sent from the Python script (a simple "print" statement)
+        console.log(message);
+        dataC = message;
+    });
+    pyshell.end(function(err, code, signal) {
+        /// if (err) throw err;
+        console.log('The exit err: ' + err);
+        console.log('The exit code was: ' + code);
+        console.log('The exit signal was: ' + signal);
+        //console.log('The opcion: ' + opcion);
+        console.log('finished');
+        var message = "";
+    });
+    pyshell = null;
 });
 /* Save footprint and GET menuAdm page. */
 router.get('/saveFootprint', function(req, res, next) {
@@ -385,7 +450,7 @@ router.post('/ordSelect', function(req, res, next) {
     path_dir_tmp = path.join(path_dir_tmp, "images")
 
     ord(path_dir_tmp, path_dir_tmp, function(err) {
-         //console.log(err)
+        //console.log(err)
 
     })
     res.send({ message: "Order Correct" })
@@ -460,14 +525,14 @@ router.post('/take_photos', function(req, res, next) {
         let aux = (20 - cont)
         //console.log("Tengo k hacer:" + aux)
         if (aux > 0) {
-            take_photos(aux,cont,dir_faces, dir_images, function(errr) {
-                if (errr){
+            take_photos(aux, cont, dir_faces, dir_images, function(errr) {
+                if (errr) {
                     console.log(errr)
-                } 
+                }
                 console.log(errr)
 
             })
-           
+
         } else {
             // for (const file of files) {
             //     let delelete_new = path.join(path_dir_tmp, file)
@@ -480,7 +545,7 @@ router.post('/take_photos', function(req, res, next) {
             //     if (errr) throw errr;
 
             // })
-           // res.send({ "photos": " files" });
+            // res.send({ "photos": " files" });
             console.log("esto es una mierdaaa")
 
         }
@@ -535,16 +600,16 @@ function take_photos(cant_photos, cant_newPath, dir_oldPath, newPath, callback) 
 }
 // Post
 router.post('/confir_photos', function(req, res, next) {
-    try{
+    try {
         let name = req.cookies.nombre
         let nameFile = req.cookies.nombre + "_" + req.cookies.newUser.split('@')[0]
         res.cookie('nameFile', nameFile);
         move(nameFile, dir_images, dir_save, function(err) {
             //console.log(err)
         })
-        res.send({code:"0", message: "ALL right!!" });
-    }catch{
-        res.send({code:"1", message: "Save Error" });
+        res.send({ code: "0", message: "ALL right!!" });
+    } catch {
+        res.send({ code: "1", message: "Save Error" });
     }
 });
 

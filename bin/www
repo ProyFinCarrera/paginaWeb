@@ -72,46 +72,63 @@ video.on('connection', function(socket) {
     dir = path.join(dir, "public")
     dir = path.join(dir, "video")
     let dir_picture = path.join(dir, "images")
-    //dir_picture = path.join(dir_picture, "")
-    //console.log(dir_picture)
     // dir = path.join(dir, "video.webp")
     dir = path.join(dir, "video.jpg")
     let cont = 0;
-   
+
+    let dir_temp = path.join(__dirname, path.join("tmp", "pass.PID"))
     //console.log(dir)
     // setInterval(() => {
-        fs.readFile(dir, function(err, buf) {
-             //console.log("conectandooooooooooooooooooooooooooooooooooooo dentro")
-            //console.log( buf.toString('base64').length)
-            //if ((buf.length > 10) && (
-              //    (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
-               // (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) { //80000
-            // if(buf.toString('base64').length!=0){//80000
-            //console.log(buf.length)
-            // console.log( buf.toString('base64')[buf.toString('base64').length-1])
-            //console.log(buf)
-            // console.log(buf.length)
-            //if (buf.length > 0) {
-                //console.log(buf.length)
-                //console.log(buf.toString('base64'))
-                //cont += 1
-               // console.log("Num:" + cont)
-                socket.emit('new_image', { recognizer: false, image: true, buffer: buf.toString('base64') }); //imprimiendo el id del cliente conectado 
-                //console.log("conectandooooooooooooooooooooooooooooooooooooo dentro")
-                //console.log('image file is initialized');
-                //}
-            //}
+    let rec = false;
+    fs.stat(dir_temp, function(err) {
+        if (err == null) {
+            fs.unlink(dir_temp, (err) => {
+                //if (err) throw err;
+                //console.log("Borro")
+            });
+            rec = true
+            //console.log("File exist");
+        } else if (err.code == 'ENOENT') {
+            //console.log("File not exist");
+        } else {
+            console.log(err); // ocurrió algún error
+        }
+    })
 
-        })
+    fs.readFile(dir, function(err, buf) {
+        //console.log( buf.toString('base64').length)
+        if ((buf.length > 10) && (
+                (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
+                (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
+            socket.emit('new_image', { recognizer: rec, image: true, buffer: buf.toString('base64') });
+        }
+
+    })
     // },100)
     socket.on('image', function() {
         //console.log("Estoy en imgaen")
+        let name;
+        fs.stat(dir_temp, function(err) {
+            if (err == null) {
+                fs.unlink(dir_temp, (err) => {
+                    // if (err) throw err;
+                    //console.log("Borro")
+                });
+                rec = true
+                //console.log("File exist");
+            } else if (err.code == 'ENOENT') {
+                //console.log("File not exist");
+            } else {
+                console.log(err); // ocurrió algún error
+            }
+        })
         fs.readFile(dir, function(err, buf) {
             //console.log( buf.toString('base64').length)
             if ((buf.length > 10) && (
                     (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
                     (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
-                socket.emit('new_image', { recognizer: false, image: true, buffer: buf.toString('base64') });
+                socket.emit('new_image', { recognizer: rec, image: true, buffer: buf.toString('base64') });
+                rec = false
             }
 
         })

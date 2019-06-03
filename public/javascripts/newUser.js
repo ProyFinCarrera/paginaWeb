@@ -73,7 +73,10 @@
             //img.src = 'data:image/jpeg;base64,' +  info.buffer ;
             img.src = 'data:image/webp;base64,' + info.buffer;
             img.onload = function() {
-                ctx.drawImage(img, 0, 0);
+                ctx.width=640
+                ctx.height=480
+                ctx.drawImage(img, 0, 0 , 640, 480);
+                //ctx.drawImage(img, 0, 0);
                 socket.emit("image", { image: "ok" })
             }
         }

@@ -110,12 +110,12 @@ class MyFirebase:
             u'timeStamps': time.time(),
             u'day': int(time.strftime('%d')),
             u'month': int(time.strftime('%m')),
-            u'nameMonth': time.strftime('%B').decode('utf-8'),
-            u'nameDay': time.strftime('%A').decode('utf-8'),
+            u'nameMonth': time.strftime('%B'),
+            u'nameDay': time.strftime('%A'),
             u'year': int(time.strftime('%Y')),
             u'hour': int(time.strftime('%H')),
             u'minute': int(time.strftime('%M')),
-            u'mac': my_mac().decode('utf-8')
+            u'mac': my_mac()
         }
         # time.time()
         up = json.dumps(json_d)

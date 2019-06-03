@@ -38,7 +38,7 @@ class RecognizerVideo:
             selRecon(int): Option for the type of recognition.
     """
 
-    def __init__(self, maxiR=20, maxiF=20, selRecon=1):
+    def __init__(self, maxiR=20, maxiF=20, selRecon=1,rec_op=True):
         try:
             self.__temp_face = os.path.join(PATH_DIR, os.path.join(
                 "recognizer", os.path.join("att_faces", "tmp_face")))
@@ -46,7 +46,10 @@ class RecognizerVideo:
             self.__save_webp = os.path.join(PATH_VID, "video.webp")
             self.__save_img = os.path.join(PATH_VID, file)
             self.__det = faceDetector.FaceDetector()
-            self.__rec = recognizer.Recognizer(selRecon=selRecon)
+            self.__op = rec_op
+            self.__rec = ""
+            if(self.__op):
+                self.__rec = recognizer.Recognizer(selRecon=selRecon)
             self.__cont_face = 0
             self.__cont_img = 1
             self.__maxiR = maxiR
@@ -69,11 +72,14 @@ class RecognizerVideo:
         name = -1
         if rt:
             self._save_face(face)
-            rec, name = self.__rec.recognize(frame, face, point)
-            self._repeated_times_recognized(rec)
+            result = False
+            if(self.__op):
+                result, name = self.__rec.recognize(frame, face, point)
+            self._repeated_times_recognized(result)
             # print(str(self.__cont_face) + " " + str(rec))
+        nuevo = cv2.resize(frame,(50,50))
         thread = threading.Thread(
-            target=cv2.imwrite, args=(self.__save_img, frame),)
+            target=cv2.imwrite, args=(self.__save_img, nuevo),)
         thread.start()
         thread.join()
         return self._maximum_recognition(), name

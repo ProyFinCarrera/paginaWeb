@@ -44,31 +44,45 @@
     <!--script src="/javascripts/getIna.js"></script-->
     <script src="/socket.io/socket.io.js"></script>
     <script>
+    let btnPass = document.getElementById('divCheckFRed')
     //var socket = io('http://localhost:3000/video',{ reconnection: false });
-    var socket = io('http://192.168.1.50:3000/video',{ reconnection: false });
+    var socket = io('http://192.168.1.50:3000/video', { reconnection: false });
     var ctx = document.getElementById('canvas').getContext('2d');
-    function ver(){d
+
+    function ver() {
         socket.emit("image", { image: "ok" })
-         //console.log("emite coñoñoo")
+        //console.log("emite coñoñoo")
     }
-   // ver()
-   setInterval(() => { ver()},30)
-   
+    // ver()
+    setInterval(() => { ver() }, 30)
+
     socket.on("new_image", function(info) {
-          //console.log("new_image estoyyyyyyyyyyyyyyyyyy")
+        //console.log("new_image estoyyyyyyyyyyyyyyyyyy")
         let img = new Image();
         if (info.image) {
+            if (info.recognizer) {
+                btnPass.style.borderColor = "green";
+                btnPass.style.backgroundColor = "green";
+                setTimeout(drawRed,500)
+            }
             img.src = 'data:image/jpeg;base64,' + info.buffer;
+
             img.onload = function() {
-                ctx.drawImage(img, 0, 0);
-               // ver()
+                ctx.width=640
+                ctx.height=480
+                ctx.drawImage(img, 0, 0 , 640, 480);
                 img = null
             }
 
         }
-      
+
         // socket.emit("image", { image: "ok" })
     });
+
+    function drawRed() {
+        btnPass.style.borderColor = "red";
+        btnPass.style.backgroundColor = "red";
+    }
     </script>
 </body>
 

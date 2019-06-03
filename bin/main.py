@@ -37,28 +37,34 @@ try:
              maxiR=20, maxiF=20, selRecon=1)
         # det_footprint = footprint.Footprint()
         # db = myfirebase.MyFirebase()
-
+        cont=1
         while cap.isOpened():
             rval, frame = cap.read()
             if rval:
                 frame = cv2.flip(frame, 1, 0)
+
                 aux, name_img = det_video.video_img(frame)
                
                 if aux:
+                    cont+=1
+                    name_img ="nuevo_yo"
                     print (name_img)
-                    # # buscar
-                    # my_json = db.vect_charasteristics_doc(name_img)
-                    # if my_json:
-                    #     for n in my_json:
-                    #         print(n)
-                    #         aux = det_footprint.verify_footprint(vector)
-                            # if  det_footprint.verify_footprint(vector):
-                             #     db.upload_date(json_uno = {u'emailId': u"user1@gmail.com", u'firstName': u'user1'})
+                    cmd = 'python fingers.py '+ name_img
 
+                    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    if(p.poll()):
+                        (stdout, stderr) = p.communicate()
+                        print(stdout)
+                        print(stderr)
+                        print(p.poll())
+                    #thread = threading.Thread(target=os.system, args=(todo))
+                    #thread.start()
+                    # a = os.system('python fingers.py '+ name_img)
+                    # print(a)
 
                     print("Encendia lector de huellas")
                     det_video.set_cont_cero()
-            cv2.imshow("face", frame)
+            # cv2.imshow("face", frame)
 
             if cv2.waitKey(10) == 27:
                 break
