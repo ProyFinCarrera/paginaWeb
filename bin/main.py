@@ -1,86 +1,65 @@
 # !/usr/bin/python3
 # -*- coding: utf-8 -*-
 # Creado por: Jairo Gonzalez Lemus alu0100813272@ull.edu.es
-# Main: Programa principara que lleva al gestion de
-# funcionemineto del siemta reconocerdor:
-#           1. Clase RecognonizerVideo reconozcera a una persona en una imagen,si la reconoce 20 veces seguir
-#                la persona quires registarse.
-#            2. llaamara al reconocerdor de huella para ver si estas en el siemta.path
-#            3. se bajara lso datos del firebase.path
-#            4. Se comparara y verificara los datos y si concuerda todo se registar en firebase la entrada.
+# Main: Main program that manages the operation of the system:
+#            1. Check if it was already running.
+#            2. Using the RecognizerVideo class
+#            3. Create a subporocesos with the file "mainSaveFingers.py"
+#            4. Save the camera image.
 import subprocess
 import threading
-import sys
 import cv2
 import os
-import signal
 from recognizerVideo import recognizerVideo
-from myfirebase import myfirebase
-from footprint import footprint
+from recognizerVideo.saveSystem import saveSystem
 
 # oscuro padre gray con 200 con sitem 2
 # oscuro yo gray con 60 con sistema 1
 PATH_DIR = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 PID = str(os.getpid())
-PID_FILE = PATH_DIR + "/tmp/mydaemon.PID"
-pid = 1
+PID_FILE = os.path.join(os.path.join(PATH_DIR, "tmp"), "mydaemon.PID")
+PID_FILE2 = os.path.join(os.path.join(PATH_DIR, "tmp"), "fin.PID")
 
 try:
     if os.path.isfile(PID_FILE):
-        print("%s el archivo ya existe, cerrando el proceso" % PID_FILE)
-        pid = open(PID_FILE, "w").read()
+        print("%s the file already exists" % PID_FILE)
         raise ValueError('The program is in process')
     else:
         open(PID_FILE, "w").write(PID)
         cap = cv2.VideoCapture(0)
         det_video = recognizerVideo.RecognizerVideo(
-             maxiR=20, maxiF=20, selRecon=1)
-        # det_footprint = footprint.Footprint()
-        # db = myfirebase.MyFirebase()
-        cont=1
+            maxiR=20, selRecon=1)
         while cap.isOpened():
             rval, frame = cap.read()
             if rval:
                 frame = cv2.flip(frame, 1, 0)
-
                 aux, name_img = det_video.video_img(frame)
-               
                 if aux:
-                    cont+=1
-                    name_img ="nuevo_yo"
-                    print (name_img)
-                    cmd = 'python fingers.py '+ name_img
+                    #name_img = "sdfadfsd" #este fuera
+                    # print(name_img)
+                    #cmd = 'python mainSaveFingers.py ' + name_img
+                    aux  = os.path.join(PATH_DIR ,'mainSaveFingers.py')
+                    #aux = 'mainSaveFingers.py'
+                    print(aux)
+                    cmd = ['python', aux , name_img]
+                    p = subprocess.Popen(cmd)
 
-                    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                    if(p.poll()):
-                        (stdout, stderr) = p.communicate()
-                        print(stdout)
-                        print(stderr)
-                        print(p.poll())
-                    #thread = threading.Thread(target=os.system, args=(todo))
-                    #thread.start()
-                    # a = os.system('python fingers.py '+ name_img)
-                    # print(a)
-
-                    print("Encendia lector de huellas")
-                    det_video.set_cont_cero()
-            # cv2.imshow("face", frame)
-
+            if os.path.isfile(PID_FILE2):
+                print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+                os.unlink(PID_FILE2)
+                det_video.set_cont_cero()
+            # save video
+            t1 = threading.Thread(target=saveSystem.save_img, args=(frame,))
+            t1.start()
+            # cv2.imshow("Frame", frame)
             if cv2.waitKey(10) == 27:
                 break
         cap.release()
-
 except Exception as e:
     print('Exception message: ' + str(e))
-finally:
-    if(pid!=1):
-        pirnt("Me carge el proceso:"+str(pid))
-        os.kill(pid, signal.SIGTERM)
-    
-    os.unlink(PID_FILE)
-    # eliminar la carpete de las fotos.
 
 
+# eliminar la carpete de las fotos.
 # # showing stat information of file "foo.txt"
 # statinfo = os.stat('foo.txt')
 # PATH_DIR = os.path.abspath(os.path.realpath(__file__))

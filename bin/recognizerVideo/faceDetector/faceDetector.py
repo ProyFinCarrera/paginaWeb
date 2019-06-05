@@ -62,7 +62,7 @@ class FaceDetector:
         prepared_img = self._prepare_img(img)
         # cv2.imshow("imagen pre",prepared_img)
         faces = self.__sys_det.detectMultiScale(
-            prepared_img, scaleFactor=1.05, minNeighbors=5, minSize=(50, 60))
+            prepared_img, scaleFactor=1.05, minNeighbors=8, minSize=(50, 60))
         tam = len(faces)
         # print(tam)
         if tam > 0:
@@ -85,7 +85,7 @@ class FaceDetector:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         gray_min = self._resize_img(gray)
         if(self.__op_contrast):
-            gray_c = self.__prepare_constrate(gray_min)
+            gray_c = self._prepare_constrate(gray_min)
             return gray_c
         else:
             return gray_min

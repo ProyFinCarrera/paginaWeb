@@ -25,7 +25,7 @@ function catch_dir_faces() {
     path_tmp = path.join(path_tmp, "recognizerVideo")
     path_tmp = path.join(path_tmp, "recognizer")
     path_tmp = path.join(path_tmp, "att_faces")
-    path_tmp = path.join(path_tmp, "tmp_face")
+    path_tmp = path.join(path_tmp, "tmp_faces")
     return path_tmp;
 }
 /* Function to take the address of the  folder */
@@ -274,8 +274,10 @@ function closeSistem(){
 /* GET newUser page. */
 router.get('/newUser', function(req, res, next) {
     let url = req.headers.referer;
+    let page = takePageName(url);   
     verifyOn(url)
         .then(function(valor) {
+             if (page != "newUser") {
             // console.log("Inf: Verify page correct");
             //videoOn()
             // Initialize verification process
@@ -297,6 +299,7 @@ router.get('/newUser', function(req, res, next) {
                 var message = "";
             });
             pyshell = null;
+        }
             if (req.cookies.email == 'root@gmail.com') {
 
                 res.render('newUser', { title: titleApp, iam: 'root' });
@@ -304,6 +307,7 @@ router.get('/newUser', function(req, res, next) {
 
                 res.render('newUser', { title: titleApp, iam: 'other' });
             }
+
         })
         .catch(function() {
             console.log("Inf: Verify page incorrect");
@@ -344,25 +348,30 @@ router.get('/graphics', function(req, res, next) {
 /* GET getIn page. */
 router.get('/getIn', function(req, res, next) {
     // Initialize verification process
+    let url = req.headers.referer;
+    let page = takePageName(url);
     res.render('getIn', { title: titleApp });
-    var PythonShell = require('python-shell');
-    //pyshell = new PythonShell('sudo ls');
-    pyshell = new PythonShell('sudo python ./../bin/main.py');
-    pyshell.on('message', function(message) {
-        // received a message sent from the Python script (a simple "print" statement)
-        console.log(message);
-        dataC = message;
-    });
-    pyshell.end(function(err, code, signal) {
-        /// if (err) throw err;
-        console.log('The exit err: ' + err);
-        console.log('The exit code was: ' + code);
-        console.log('The exit signal was: ' + signal);
-        //console.log('The opcion: ' + opcion);
-        console.log('finished');
-        var message = "";
-    });
-    pyshell = null;
+    if (page != "getIn") {
+        
+        var PythonShell = require('python-shell');
+        //pyshell = new PythonShell('sudo ls');
+        pyshell = new PythonShell('sudo python ./../bin/main.py');
+        pyshell.on('message', function(message) {
+            // received a message sent from the Python script (a simple "print" statement)
+            console.log(message);
+            dataC = message;
+        });
+        pyshell.end(function(err, code, signal) {
+            /// if (err) throw err;
+            console.log('The exit err: ' + err);
+            console.log('The exit code was: ' + code);
+            console.log('The exit signal was: ' + signal);
+            //console.log('The opcion: ' + opcion);
+            console.log('finished');
+            var message = "";
+        });
+        pyshell = null;
+    }
 });
 /* Save footprint and GET menuAdm page. */
 router.get('/saveFootprint', function(req, res, next) {

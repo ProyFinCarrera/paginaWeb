@@ -13,7 +13,7 @@
 
 <body class="container">
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="/">
             <%= title %></a>
         <form action="/" method="GET">
             <button type="submit" class="btn btn-outline-light" id="btnClose">
@@ -60,17 +60,17 @@
         //console.log("new_image estoyyyyyyyyyyyyyyyyyy")
         let img = new Image();
         if (info.image) {
-            if (info.recognizer) {
+            if (info.recognizer == true) {
                 btnPass.style.borderColor = "green";
                 btnPass.style.backgroundColor = "green";
-                setTimeout(drawRed,500)
+                setTimeout(drawRed, 5000)
             }
             img.src = 'data:image/jpeg;base64,' + info.buffer;
 
             img.onload = function() {
-                ctx.width=640
-                ctx.height=480
-                ctx.drawImage(img, 0, 0 , 640, 480);
+                ctx.width = 640
+                ctx.height = 480
+                ctx.drawImage(img, 0, 0, 640, 480);
                 img = null
             }
 

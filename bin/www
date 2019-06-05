@@ -77,60 +77,60 @@ video.on('connection', function(socket) {
     let cont = 0;
 
     let dir_temp = path.join(__dirname, path.join("tmp", "pass.PID"))
-    //console.log(dir)
-    // setInterval(() => {
-    let rec = false;
-    fs.stat(dir_temp, function(err) {
-        if (err == null) {
-            fs.unlink(dir_temp, (err) => {
-                //if (err) throw err;
-                //console.log("Borro")
-            });
-            rec = true
-            //console.log("File exist");
-        } else if (err.code == 'ENOENT') {
-            //console.log("File not exist");
-        } else {
-            console.log(err); // ocurrió algún error
-        }
-    })
+    //console.log(dir_temp)
 
     fs.readFile(dir, function(err, buf) {
-        //console.log( buf.toString('base64').length)
-        if ((buf.length > 10) && (
-                (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
-                (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
-            socket.emit('new_image', { recognizer: rec, image: true, buffer: buf.toString('base64') });
-        }
-
-    })
-    // },100)
-    socket.on('image', function() {
-        //console.log("Estoy en imgaen")
-        let name;
         fs.stat(dir_temp, function(err) {
             if (err == null) {
                 fs.unlink(dir_temp, (err) => {
-                    // if (err) throw err;
-                    //console.log("Borro")
+                    //if (err) throw err;
+                    //console.log("Borro filpid")
                 });
-                rec = true
                 //console.log("File exist");
-            } else if (err.code == 'ENOENT') {
-                //console.log("File not exist");
+
+                if ((buf.length > 10) && (
+                        (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
+                        (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
+                    socket.emit('new_image', { recognizer: true, image: true, buffer: buf.toString('base64') });
+                }
+
             } else {
-                console.log(err); // ocurrió algún error
-            }
-        })
-        fs.readFile(dir, function(err, buf) {
-            //console.log( buf.toString('base64').length)
-            if ((buf.length > 10) && (
-                    (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
-                    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
-                socket.emit('new_image', { recognizer: rec, image: true, buffer: buf.toString('base64') });
-                rec = false
+
+                if ((buf.length > 10) && (
+                        (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
+                        (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
+                    socket.emit('new_image', { recognizer: false, image: true, buffer: buf.toString('base64') });
+                }
             }
 
+        })
+    })
+    socket.on('image', function() {
+        fs.readFile(dir, function(err, buf) {
+            fs.stat(dir_temp, function(err) {
+                if (err == null) {
+                    fs.unlink(dir_temp, (err) => {
+                        //if (err) throw err;
+                        //console.log("Borro filpid")
+                    });
+                    //console.log("File exist");
+
+                    if ((buf.length > 10) && (
+                            (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
+                            (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
+                        socket.emit('new_image', { recognizer: true, image: true, buffer: buf.toString('base64') });
+                    }
+
+                } else {
+
+                    if ((buf.length > 10) && (
+                            (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
+                            (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
+                        socket.emit('new_image', { recognizer: false, image: true, buffer: buf.toString('base64') });
+                    }
+                }
+
+            })
         })
 
     })

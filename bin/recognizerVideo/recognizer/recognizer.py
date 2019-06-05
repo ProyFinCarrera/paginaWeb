@@ -70,16 +70,18 @@ class Recognizer:
             pr = '%s - %.0f' % (self.__names[prediction[0]], prediction[1])
             name = self.__names[prediction[0]]
             font = cv2.FONT_HERSHEY_PLAIN
-            font_scale = 1
+            font_scale = 2
             font_color = (0, 255, 0)
-            line_type = 0
+            line_type = 3
             cv2.putText(img, pr, point_a, font,
                         font_scale, font_color,
                         line_type)
             reconoce = True
         else:
-            cv2.putText(img, 'Desconocido', point_a,
-                        cv2.FONT_HERSHEY_PLAIN, 1, (255, 0, 0))
+            pr = '%s - %.0f' % ("Stranger", prediction[1])
+            cv2.putText(img, pr, point_a,
+                        cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 3)
+            # desconocido
         return reconoce, name
 
     def __create_list_img_names(self):
