@@ -283,7 +283,7 @@ router.get('/newUser', function(req, res, next) {
             // Initialize verification process
             var PythonShell = require('python-shell');
             //pyshell = new PythonShell('sudo ls');
-            pyshell = new PythonShell('sudo python ./../bin/mainSaveFace.py');
+            pyshell = new PythonShell('sudo python ./../bin/mainSaveFaceNew.py');
             pyshell.on('message', function(message) {
                 // received a message sent from the Python script (a simple "print" statement)
                 console.log(message);
@@ -355,7 +355,7 @@ router.get('/getIn', function(req, res, next) {
         
         var PythonShell = require('python-shell');
         //pyshell = new PythonShell('sudo ls');
-        pyshell = new PythonShell('sudo python ./../bin/main.py');
+        pyshell = new PythonShell('sudo python3 ./../bin/mainNew.py');
         pyshell.on('message', function(message) {
             // received a message sent from the Python script (a simple "print" statement)
             console.log(message);
@@ -374,20 +374,19 @@ router.get('/getIn', function(req, res, next) {
     }
 });
 /* Save footprint and GET menuAdm page. */
-router.get('/saveFootprint', function(req, res, next) {
+router.post('/saveFootprint', function(req, res, next) {
     let path_file = __dirname
     path_file = path.join(path_file, "./..")
     path_file = path.join(path_file, "bin")
     path_file = path.join(path_file, 'mainFootprint.py')
 
-    var dataC = null;
-    res.send({})
+
+    //res.send({})
     var PythonShell = require('python-shell');
     pyshell = new PythonShell('sudo python ./../bin/mainFootprint.py', { args: [req.cookies.newUser] });
     pyshell.on('message', function(message) {
         // received a message sent from the Python script (a simple "print" statement)
         console.log(message);
-        dataC = message;
     });
 
     // end the input stream and allow the process to exit
@@ -407,13 +406,10 @@ router.get('/saveFootprint', function(req, res, next) {
                 message = "Match found!!! Impossible to save. Are you already registered";
                 break;
             default:
-                message = "Correct Save!!!";
+                message = "All right!!!";
                 break;
         }
-        // dataC dato cifrado.
-        console.log("dataC : " + dataC);
-
-        //res.send({ "code": code, "text": message, "dataC": dataC });
+        res.send({ "code": code, "message": message });
     });
     pyshell = null;
 });
@@ -616,9 +612,9 @@ router.post('/confir_photos', function(req, res, next) {
         move(nameFile, dir_images, dir_save, function(err) {
             //console.log(err)
         })
-        res.send({ code: "0", message: "ALL right!!" });
+        res.send({ code: "0", message: "All right!!!" });
     } catch {
-        res.send({ code: "1", message: "Save Error" });
+        res.send({ code: "1", message: "Save Error!!!" });
     }
 });
 

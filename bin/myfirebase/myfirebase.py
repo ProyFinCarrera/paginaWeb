@@ -18,7 +18,7 @@ PATH_DIR = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 
 def my_mac():
     mac = get_mac()
-    mac_aux = ':'.join(('%012X' % mac)[i:i + 2]for i in range(0, 12, 2))
+    mac_aux = ''.join(('%012X' % mac)[i:i + 2]for i in range(0, 12, 2))
     return mac_aux
 
 
@@ -44,7 +44,7 @@ class MyFirebase:
             })
             self.db_fire = firestore.client()
 
-    def vect_charasteristics_doc(self, dir_img):
+    def vect_charasteristics_doc(self, nameFile):
         """ Class method that is responsible for downloading the 
             document with all the characteristic vectors of the 
             user's footprint.
@@ -55,7 +55,7 @@ class MyFirebase:
         """
         try:
             user = self.db_fire.collection("users").where(
-                u'dir_img', u'==', dir_img).limit(1).stream()
+                u'nameFile', u'==', nameFile).limit(1).stream()
             doc = Users.from_dict(user)
             return doc.vect_characteristics()
         except:
@@ -72,14 +72,13 @@ class MyFirebase:
             Return:
                 True if you find a user, false otherwise.
         """
-        #mac = my_mac().decode('utf-8')
-        #mac = my_mac().encode('hex')
         mac = my_mac()
         # Reference to the document.
         doc = self._search_id_user(email)
         # Update
-        camp = "m_div" + "." + mac + "." + vect_characteristic
+        camp = "m_div." + mac + "." + vect_characteristic
         up_data = {camp: vect_characteristic}
+      
         if(doc == -1):
             # print("User not foud")
             return False
@@ -147,11 +146,11 @@ class Users(object):
         The attributes of the parameter database are passed.
     """
 
-    def __init__(self, emailId, firstName, lastName, dir_img, m_div):
+    def __init__(self, emailId, firstName, lastName, nameFile, m_div):
         self.emailId = emailId
         self.firstName = firstName
         self.lastName = lastName
-        self.dir_img = dir_img
+        self.nameFile = nameFile
         self.m_div = m_div
 
     def vect_characteristics(self):
@@ -167,22 +166,23 @@ class Users(object):
     def from_dict(source):
         for doc in source:
             data = doc.to_dict()
-            return Users(data['emailId'], data['firstName'], data['lastName'], data['dir_img'], data['m_div'])
+            return Users(data['emailId'], data['firstName'], data['lastName'], data['nameFile'], data['m_div'])
 
     def to_dict(self):
         pass
 
     def __repr__(self):
-        return u'Users( emailId={}, firstName={}, lastName={}, dir_photo={})'.format(
-            self.emailId, self.firstName, self.lastName, self.dir_photo)
+        return u'Users( emailId={}, firstName={}, lastName={}, nameFile={})'.format(
+            self.emailId, self.firstName, self.lastName, self.nameFile)
 
 
 if __name__ == "__main__":
     aux = MyFirebase()
     #aux.upload_footprint(u'vector_cjj', u'nuevo@gmail.comdasfds')
-    val = aux.upload_footprint(u'vector_cjj', u'nuevo@gmail.comdasfds')
+    val = aux.upload_footprint(u'vectordd_cjj', u'dios@gmail.com')
     # print(val)
-    my_json = aux.vect_charasteristics_doc(u'yo_nuevo')
+    nameFile="luis_dios"
+    my_json = aux.vect_charasteristics_doc(nameFile)
     # print(my_json)
     if my_json:
         for n in my_json:

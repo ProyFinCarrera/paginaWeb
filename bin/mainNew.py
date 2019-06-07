@@ -11,6 +11,7 @@ import threading
 import cv2
 import os
 import time
+from footprint import footprint
 from recognizerVideo import recognizerVideo
 from recognizerVideo.saveSystem import saveSystem
 from picamera.array import PiRGBArray
@@ -19,7 +20,7 @@ from picamera import PiCamera
 PATH_DIR = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 PID = str(os.getpid())
 PID_FILE = os.path.join(os.path.join(PATH_DIR, "tmp"), "mydaemon.PID")
-
+PID_FILE2 = os.path.join(os.path.join(PATH_DIR, "tmp"), "fin.PID")
 CMD = os.path.join(PATH_DIR, "mainSaveFingers.py ")
 
 try:
@@ -27,7 +28,7 @@ try:
         print("%s the file already exists" % PID_FILE)
         raise ValueError('The program is in process')
     else:
-        open(PID_FILE, "w").write(PID)
+        #open(PID_FILE, "w").write(PID)
         # initialize the camera and grab a reference to the raw camera capture
         camera = PiCamera()
         camera.resolution = (640, 480)
@@ -36,33 +37,37 @@ try:
         # allow the camera to warmup
         time.sleep(0.1)
         det_video = recognizerVideo.RecognizerVideo(
-            maxiR=20, maxiF=20, selRecon=1)
+            maxiR=20, selRecon=1)
+        # aux_F = footprint.Footprint(timer_power = 15 );
         # capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
             # grab the raw NumPy array representing the image,
             # then initialize the timestamp bgr and occupied/unoccupied text
             image = frame.array
             # image = cv2.flip(image,1)
-            image = cv2.flip(image, 1, 0)
+            image = cv2.flip(image, 1)            
             aux, name_img = det_video.video_img(image)
+            cv2.imshow("Frame", image)
+            aux =True
             if aux:
-                print(name_img)
-                #cmd = 'python mainSaveFingers.py ' + name_img
-                cmd = ['python', 'mainSaveFingers.py', name_img]
-                p = subprocess.Popen(
-                    cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                if(p.poll()):
-                    (stdout, stderr) = p.communicate()
-                    print(stdout)
-                    print(stderr)
-                    print(p.poll())
-                    print("Encendia lector de huellas")
-                    det_video.set_cont_cero()
+                aux  = os.path.join(PATH_DIR ,'mainFootprint.py')
+                #aux = 'mainSaveFingers.py'
+                # vec_aux = aux_F.save_footprint()
+                # print(aux)
+                cmd = ['python', aux , name_img]
+                p = subprocess.Popen(cmd)
+            
+            if os.path.isfile(PID_FILE2):
+                print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+                os.unlink(PID_FILE2)
+                det_video.set_cont_cero()
             # save video
-            t1 = threading.Thread(target=saveSystem.save_img, args=(frame,))
+            t1 = threading.Thread(target=saveSystem.save_img, args=(image,))
             t1.start()
-            # cv2.imshow("Frame", frame)
+            # image = ""
+            rawCapture.truncate(0)
             if cv2.waitKey(10) == 27:
                 break
+            
 except Exception as e:
     print('Exception message: ' + str(e))

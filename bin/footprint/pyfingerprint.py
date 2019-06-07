@@ -1,5 +1,3 @@
-
-# esto es una mierda.
 # -*- coding: ascii -*-
 """Class Footprint
   Created by: Jairo Gonzalez Lemus alu0100813272@ull.edu.es
@@ -168,6 +166,7 @@ class PyFingerprint(object):
             self.__serial.close()
 
         self.__serial.open()
+           
 
     def __del__(self):
         """

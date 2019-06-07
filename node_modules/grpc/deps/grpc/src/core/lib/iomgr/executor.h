@@ -61,8 +61,7 @@ class Executor {
   /** Is the executor multi-threaded? */
   bool IsThreaded() const;
 
-  /* Enable/disable threading - must be called after Init and Shutdown(). Never
-   * call SetThreading(false) in the middle of an application */
+  /* Enable/disable threading - must be called after Init and Shutdown() */
   void SetThreading(bool threading);
 
   /** Shutdown the executor, running all pending work as part of the call */

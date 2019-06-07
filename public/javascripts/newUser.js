@@ -60,7 +60,7 @@
     btnSelectAll.addEventListener('click', selectAll, false);
 
     //var socket = io('http://localhost:3000/video',{ reconnection: false });
-    var socket = io('http://192.168.1.50:3000/video', { reconnection: false });
+    var socket = io('http://192.168.1.42:3000/video', { reconnection: false });
     var ctx = document.getElementById('canvas').getContext('2d');
 
     function videoOn() {
@@ -310,37 +310,30 @@
 
     function addFootprint(event) {
         event.preventDefault();
-        ///btnAddFootprint.disabled = true;
+        btnAddFootprint.disabled = true;
         upFootprint()
         pFootprintText.innerHTML = "";
     }
 
     function upFootprint() {
-        var client = new HttpClientGet();
-        // console.log("Evento accionado boton add data");
-        console.log("Evento accionado boton add Footprint");
+        var client = new HttpClient();
         //Hacer funcional la parate de la huella.
-        client.get('/saveFootprint', function(response) {
+        client.post('/saveFootprint', function(response) {
             // do something with response
             var content = JSON.parse(response);
-            pFootprintText.innerHTML = content['text'];
+            setTimeout(writeDatoF,10,content.message)
             if (content['code'] == "0") {
                 divFootprintRed.style.borderColor = "green";
-                divFootprintRed.style.backgroundColor = "green"
-                // Imagne no esta desbloqueo. sino solo desbloque el registro.
-              
-                nameImage = content['dataC'];
-                mando = { datoC: nameImage }
-                console.log(nameImage);
-                emaila = "nuevo@gmail.com";
-                // console.log(content['dataC']);
-                upDataC(mando, emaila);
-
+                divFootprintRed.style.backgroundColor = "green";
+            }else{
+                btnAddFootprint.disabled = false;
             }
-            console.log(response);
         });
+        
     }
-
+    function writeDatoF(dato){
+        pFootprintText.innerHTML = dato;
+    }
     function upDate(firstName, lastName, workPosition, email, otherInfo) {
         // Initialize Cloud Firestore through Firebase
         let db = firebase.firestore();

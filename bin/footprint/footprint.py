@@ -7,10 +7,12 @@
 import time
 import hashlib
 from time import clock
+
 if __name__ == "__main__":
-  import pyfingerprint
+    import pyfingerprint
 else:
-  from footprint.pyfingerprint import PyFingerprint
+    from footprint import pyfingerprint
+
 
 
 class Footprint:
@@ -25,7 +27,7 @@ class Footprint:
                  value is 0.5.
       """
 
-      def __init__( self, timer_power = 5 ):
+      def __init__( self, timer_power = 0.1 ):
           try:
             self.__timer_power = timer_power
             self.__fingerprint = pyfingerprint.PyFingerprint(
@@ -39,8 +41,9 @@ class Footprint:
             print('The Footprint sensor could not be initialized!')
             print('Exception message: ' + str(e))
             exit(1)
+        
 
-      def verify_footprint(self, vect_caracteristic):
+      def verify_footprint(self, json_v_caracteristic):
           """ Tries to enroll new finger. Befor saving ,
              the finger is checked twice. Steps to follow
                        1. Catch finger
@@ -53,12 +56,13 @@ class Footprint:
           try:
             (rt, pos) = self._read_and_be_inside()  # lo k leo 0x01
             if(rt):
-              vect = self.id_footprint(pos, buffer=0x02)  # poxicondonde esta en dos
-              print(vect)
-              if vect_caracteristic == vect:
-                print("Vector Equals")
-                return True
-              else:
+                vect = self.id_footprint(pos, buffer=0x02)  # poxicondonde esta en do
+                print(vect)
+                for aux_v in json_v_caracteristic:
+                    print(aux_v)
+                    if aux_v == vect:
+                        # print("Vector Equals")
+                        return True
                 return False
           except Exception as e:
             print('Exception message: ' + str(e))
@@ -77,33 +81,30 @@ class Footprint:
         """
         try:
           rt = self._read_and_not_be_inside()
-
           if rt:
-            # print("Dedo no dentro")
-            time.sleep(2)
-            self._read_footprint_pos(0x02)
+            self._read_footprint_buffer(0x02)
             if self.is_footprint_equal():
-              print("Save footprint")
+              # print("Save footprint")
               position_number = self._save_footprint_inside()
-              # Footprin put in position 1 buffer.
-              self.id_footprint(position_number)
-              return str(self.__fingerprint.downloadCharacteristics(0x01))
+              vect = self.id_footprint(position_number , buffer=0x01)
+              return (True,vect)
             else:
-              return False
+              return (False,-1)
           else:
-            print("Dedos ya dentro")
-            return False
+            exit(2)
+            # print("Dedos ya dentro")
+            # return (False,-1)
         except Exception as e:
           print('Operation failed!')
           print('Exception message: ' + str(e))
-          exit(1)
-
+          exit(1) 
+          
       def clear_all_footprint(self):
         """ Remove all fingers from the divece"""
         self.__fingerprint.clearDatabase()
 
       def _read_and_be_inside(self):
-        read = self._read_footprint_pos(0x01)
+        read = self._read_footprint_buffer(0x01)
         (check, pos) = self._check_if_inside()
         if(read and check):
           return (True, pos)
@@ -111,23 +112,35 @@ class Footprint:
           return (False, -1)
 
       def _read_and_not_be_inside(self):
-        if(self._read_footprint_pos(0x01) and
-           (self._check_if_inside()[0] == False)):
-          return True
+        (check, pos) = self._read_and_be_inside()
+        if(check):
+            return False
         else:
-          return False
+            return True
+      
+      def clearBuffer(self):
+          self.__fingerprint.uploadCharacteristics(0x01,[0,0])
+          self.__fingerprint.uploadCharacteristics(0x02,[0,0])
+          time.sleep(2)
+      
 
-      def _read_footprint_pos(self, pos):
+      def _read_footprint_buffer(self, buffer):
         # Wait that finger is read
-        wait = True
-        while (wait and (self.__fingerprint.readImage() == False)):
-          b = clock()
-          print(b)
-          if self.__timer_power - b <= 0:
-            wait = False
+        wait = False
+        read = False
+        time_a = clock()
+        while (wait == False):
+            wait = self.__fingerprint.readImage()
+            if(wait):
+                read = True
+            time_b = clock()
+            if (time_b - time_a) >= self.__timer_power:
+                wait = True
+          
         # Converts read image to characteristics and stores it in charbuffer 1
-        if self.__fingerprint.readImage():
-          self.__fingerprint.convertImage(pos)
+        if (read):
+          self.__fingerprint.convertImage(buffer)
+          time.sleep(1)
           return True
         else:
           return False
@@ -154,9 +167,9 @@ class Footprint:
         self.__fingerprint.loadTemplate(pos, buffer)
         # Downloads the characteristics of template loaded in charbuffer 1
         characterics = str(
-            self.__fingerprint.downloadCharacteristics(buffer)).encode('utf-8')
-        print(hashlib.sha256(characterics.encode('utf-8')).hexdigest())
-        return characterics
+            self.__fingerprint.downloadCharacteristics(buffer))
+        return hashlib.sha256(characterics.encode('utf-8')).hexdigest()
+        # return characterics
 
       def _save_footprint_inside(self):
         # Creates a template
@@ -166,16 +179,18 @@ class Footprint:
         print('Finger enrolled successfully!')
         print('New template position #' + str(position_number))
         return position_number
-
+      
 
 if __name__ == "__main__":
   aux = Footprint()
-  # aux.clear_all_footprint();
+  aux.clear_all_footprint();
+
   # introducto huella.
   # Saco vector caracteristico.
-  vec_aux = aux.save_footprint()
-  print(vec_aux)
+  # check , vec_aux = aux.save_footprint()
+  #print(vec_aux)
   # mto nuevo dedo y verifico el vecto caracteritico.
   # con el vector carateristico veo si esta dentro
-  time.sleep(3)
-  print(aux.verify_footprint(vec_aux))
+  #time.sleep(3)
+  #vec_aux = {"41436bec58e9c5381d9e8f8e23a38f4bf988f98e57febe10f7e208ab87734708"}
+  #print(aux.verify_footprint(vec_aux))

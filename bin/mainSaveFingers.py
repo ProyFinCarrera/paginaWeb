@@ -40,3 +40,13 @@ try:
     # (result, characterics) = finguer.verify_footprint()
 except Exception as e:
     raise e
+        
+def holaverifica():
+    email = "nuevo@gmail";
+    db = myfirebase.MyFirebase()
+    aux = footprint.Footprint(timer_power = 15 );
+    nameFile="Primero_nuevo"
+    my_json = db.vect_charasteristics_doc(nameFile)
+    # primero lo meto en uno y despu lo cambio. mirar eso.
+    if my_json:
+        print(aux.verify_footprint(my_json))

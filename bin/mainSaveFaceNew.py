@@ -50,7 +50,7 @@ try:
             t2 = threading.Thread(target=saveSystem.save_img, args=(image,))
             t2.start()
             # show the frame
-            cv2.imshow("Frame", image)
+            # cv2.imshow("Frame", image)
             if cv2.waitKey(10) == 27:
                 break
             # clear the stream in preparation for the next frame
