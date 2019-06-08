@@ -61,8 +61,11 @@ class RecognizerVideo:
         name = -1
         if rt:
             result, name = self.__rec.recognize(frame, face, point)
+            cv2.imshow("Frame",frame) 
             print(self.__cont_face) 
             self._repeated_times_recognized(result)
+        else:
+            cv2.imshow("Frame",frame) 
         return self._maximum_recognition(), name
 
     def set_cont_cero(self):

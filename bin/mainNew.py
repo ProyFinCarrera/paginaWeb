@@ -37,37 +37,33 @@ try:
         # allow the camera to warmup
         time.sleep(0.1)
         det_video = recognizerVideo.RecognizerVideo(
-            maxiR=20, selRecon=1)
+            maxiR=5, selRecon=1)
+        time.sleep(0.1)
         # aux_F = footprint.Footprint(timer_power = 15 );
         # capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
             # grab the raw NumPy array representing the image,
             # then initialize the timestamp bgr and occupied/unoccupied text
             image = frame.array
-            # image = cv2.flip(image,1)
-            image = cv2.flip(image, 1)            
+            # image = cv2.flip(image, 1)
             aux, name_img = det_video.video_img(image)
-            cv2.imshow("Frame", image)
-            aux =True
+            #time.sleep(0.1)
+            #cv2.imshow("Frame",image )
+           
             if aux:
-                aux  = os.path.join(PATH_DIR ,'mainFootprint.py')
-                #aux = 'mainSaveFingers.py'
-                # vec_aux = aux_F.save_footprint()
-                # print(aux)
+                aux  = os.path.join(PATH_DIR ,'mainVerifyFootprint.py')
                 cmd = ['python', aux , name_img]
                 p = subprocess.Popen(cmd)
             
             if os.path.isfile(PID_FILE2):
-                print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
                 os.unlink(PID_FILE2)
                 det_video.set_cont_cero()
             # save video
-            t1 = threading.Thread(target=saveSystem.save_img, args=(image,))
-            t1.start()
+            # t1 = threading.Thread(target=saveSystem.save_img, args=(image,))
+            # t1.start()
             # image = ""
             rawCapture.truncate(0)
             if cv2.waitKey(10) == 27:
                 break
-            
 except Exception as e:
     print('Exception message: ' + str(e))

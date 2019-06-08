@@ -354,7 +354,6 @@ router.get('/getIn', function(req, res, next) {
     if (page != "getIn") {
         
         var PythonShell = require('python-shell');
-        //pyshell = new PythonShell('sudo ls');
         pyshell = new PythonShell('sudo python3 ./../bin/mainNew.py');
         pyshell.on('message', function(message) {
             // received a message sent from the Python script (a simple "print" statement)
@@ -379,7 +378,7 @@ router.post('/saveFootprint', function(req, res, next) {
     path_file = path.join(path_file, "./..")
     path_file = path.join(path_file, "bin")
     path_file = path.join(path_file, 'mainFootprint.py')
-
+    console.log(req.cookies)
 
     //res.send({})
     var PythonShell = require('python-shell');
@@ -426,6 +425,39 @@ router.post('/deleteSelect', function(req, res, next) {
     res.send({ message: "DeleteSelect Correct" })
 });
 
+// Post
+router.post('/deleteUserSystem', function(req, res, next) {
+    //res.send({})
+    var PythonShell = require('python-shell');
+    pyshell = new PythonShell('sudo python ./../bin/deletedAll.py', { args: [req.cookies.nameFile] });
+    pyshell.on('message', function(message) {
+        // received a message sent from the Python script (a simple "print" statement)
+        console.log(message);
+    });
+
+    // end the input stream and allow the process to exit
+    pyshell.end(function(err, code, signal) {
+        /// if (err) throw err;
+        console.log('The exit err: ' + err);
+        console.log('The exit code was: ' + code);
+        console.log('The exit signal was: ' + signal);
+        //console.log('The opcion: ' + opcion);
+        console.log('finished');
+        var message = "";
+        switch (code) {
+            case 0:
+ 		message = "All right!!!";
+                break;
+            default:
+                message = "Error Deleted user";
+                break;
+            
+               
+        }
+        res.send({ "code": code, "message": message });
+    });
+    pyshell = null;
+});
 
 
 async function deleteFiles(rest) {

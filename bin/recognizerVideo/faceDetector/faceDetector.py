@@ -58,16 +58,15 @@ class FaceDetector:
         resul = False
         face_resize = False
         pos_face = (0, 0)
-
         prepared_img = self._prepare_img(img)
         # cv2.imshow("imagen pre",prepared_img)
         faces = self.__sys_det.detectMultiScale(
-            prepared_img, scaleFactor=1.05, minNeighbors=8, minSize=(50, 60))
+            prepared_img, scaleFactor=1.05, minNeighbors=5,minSize=(40,40),maxSize=(60,60))
         tam = len(faces)
         # print(tam)
         if tam > 0:
-            (x, y, w, h) = (faces[0][0] + 10, faces[0]
-                            [1] + 10, faces[0][2] - 20, faces[0][3] - 10)
+            (x, y, w, h) = (faces[0][0]+6, faces[0]
+                            [1], faces[0][2]-11, faces[0][3]+5)
             face = prepared_img[y:y + h, x:x + w]
             face_resize = self._prepare_face(face)
 

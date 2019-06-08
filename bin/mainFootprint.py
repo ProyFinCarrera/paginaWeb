@@ -17,15 +17,16 @@ print("Save footprint ....")
 def main():
     try:
         email = sys.argv[1]
-        # email = "nuevo@gmail"
+        #print(email)
+        # email = "perez@gmail.com"
         # print("ESte es mi email: " + email)
         db = myfirebase.MyFirebase()
         aux = footprint.Footprint(timer_power = 30 );
         check , vec_aux = aux.save_footprint();
         print(check)
-        print(vec_aux)
         if check:
-            db.upload_footprint(vec_aux, email)
+            ok = db.upload_footprint(vec_aux, email)
+            print(ok)
     except Exception as e:
         print('Exception message: ' + str(e))
 

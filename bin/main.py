@@ -38,7 +38,7 @@ try:
                     #name_img = "sdfadfsd" #este fuera
                     # print(name_img)
                     #cmd = 'python mainSaveFingers.py ' + name_img
-                    aux  = os.path.join(PATH_DIR ,'mainSaveFingers.py')
+                    aux  = os.path.join(PATH_DIR ,'mainVerifyFootprint.py')
                     #aux = 'mainSaveFingers.py'
                     print(aux)
                     cmd = ['python', aux , name_img]

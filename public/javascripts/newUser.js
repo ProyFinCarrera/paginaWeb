@@ -66,18 +66,21 @@
     function videoOn() {
         socket.emit("image", { image: "ok" })
     }
-    setInterval(() => { videoOn() }, 30)
+    setInterval(() => { videoOn() }, 30);)
+    //setTimeout(() => { videoOn() }, 30);
     socket.on("new_image", function(info) {
         let img = new Image();
         if (info.image) {
             //img.src = 'data:image/jpeg;base64,' +  info.buffer ;
             img.src = 'data:image/webp;base64,' + info.buffer;
             img.onload = function() {
-                ctx.width=640
-                ctx.height=480
+                //ctx.width=640
+                //ctx.height=480
                 ctx.drawImage(img, 0, 0 , 640, 480);
                 //ctx.drawImage(img, 0, 0);
-                socket.emit("image", { image: "ok" })
+                //setTimeout(() => { videoOn() }, 10);
+                //socket.emit("image", { image: "ok" })
+  
             }
         }
     });
@@ -230,6 +233,15 @@
         }
     }
 
+    function deleteUserSystem() {
+
+        var client = new HttpClient();
+        client.post('/deleteUserSystem', function(response) {
+             
+        });
+       
+    }
+
     function takephotos() {
         btnTakePhotos.disabled = true;
         btnDeleteSelect.disabled = true;
@@ -317,6 +329,7 @@
 
     function upFootprint() {
         var client = new HttpClient();
+        document.cookie = "newUser=" + email.value; // se crera cuadno la fotos
         //Hacer funcional la parate de la huella.
         client.post('/saveFootprint', function(response) {
             // do something with response

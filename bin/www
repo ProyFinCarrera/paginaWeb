@@ -88,17 +88,19 @@ video.on('connection', function(socket) {
                 });
                 //console.log("File exist");
 
-                if ((buf.length > 10) && (
-                        (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
-                        (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
+                //if ((buf.length > 10) && (
+                  //      (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
+                    //    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
+                if (buf.length > 10){
                     socket.emit('new_image', { recognizer: true, image: true, buffer: buf.toString('base64') });
                 }
 
             } else {
 
-                if ((buf.length > 10) && (
-                        (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
-                        (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
+                //if ((buf.length > 10) && (
+                  //      (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
+                    //    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
+                if (buf.length > 10){
                     socket.emit('new_image', { recognizer: false, image: true, buffer: buf.toString('base64') });
                 }
             }

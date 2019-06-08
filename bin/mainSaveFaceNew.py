@@ -28,7 +28,8 @@ try:
         # initialize the camera and grab a reference to the raw camera capture
         camera = PiCamera()
         camera.resolution = (640, 480)
-        camera.framerate = 32  # 32
+        camera.hflip = True
+        #camera.framerate = 32  # 32
         rawCapture = PiRGBArray(camera, size=(640, 480))
         # allow the camera to warmup
         time.sleep(0.1)
@@ -39,21 +40,22 @@ try:
             # grab the raw NumPy array representing the image,
             # then initialize the timestamp bgr and occupied/unoccupied text
             image = frame.array
-            image = cv2.flip(image, 1)
             rt, face, (x, y) = det_face.detect(image)
             if rt:
                 # save face
                 t1 = threading.Thread(
                     target=saveSystem.save_face, args=(face,))
                 t1.start()
+            
             # save video
             t2 = threading.Thread(target=saveSystem.save_img, args=(image,))
             t2.start()
             # show the frame
-            # cv2.imshow("Frame", image)
+            #cv2.imshow("Frame", image)
+            rawCapture.truncate(0)
             if cv2.waitKey(10) == 27:
                 break
             # clear the stream in preparation for the next frame
-            rawCapture.truncate(0)
+        cv2.destroyAllWindows()
 except Exception as e:
     print('Exception message: ' + str(e))

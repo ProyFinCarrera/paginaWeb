@@ -74,26 +74,43 @@ class MyFirebase:
         """
         mac = my_mac()
         # Reference to the document.
-        doc = self._search_id_user(email)
+        doc,size = self._search_id_user(email)
         # Update
-        camp = "m_div." + mac + "." + vect_characteristic
-        up_data = {camp: vect_characteristic}
-      
+        camp = "m_div." + mac + ".finger" + str(size)#+ vect_characteristic.decode("ASCII")
+        up_data = {camp: vect_characteristic.decode("ASCII")}
+   
         if(doc == -1):
             # print("User not foud")
             return False
         else:
-            # print("Foud user")
+            print(up_data)
+            print("Foud user")
             users_collection = self.db_fire.collection(u'users').document(doc)
             users_collection.update(up_data)
             return True
-
+    
+    def search_email(self, nameFile):
+        user = self.db_fire.collection("users").where(
+            u"nameFile", u"==", nameFile).stream()
+        doc = Users.from_dict(user)
+        return doc.get_email()
+    
     def _search_id_user(self, email):
         user = self.db_fire.collection("users").where(
             u"emailId", u"==", email).stream()
-        for doc in user:
-            return (doc.id)
-        return -1
+        doc_id = -1
+        size=0
+        mac = my_mac()
+        try:
+            for doc in user:
+                doc_id = doc.id
+                data = doc.to_dict()
+                size = len(data['m_div'][mac])
+            return (doc_id,size)
+        except Exception as e:
+            print('Exception message: ' + str(e))
+            return (doc_id,size)
+
 
     def upload_date(self, json_d):
         """Method that loads the dates and other values ​​to 
@@ -152,6 +169,14 @@ class Users(object):
         self.lastName = lastName
         self.nameFile = nameFile
         self.m_div = m_div
+        
+    def get_cout_footprint(self):
+        mac = my_mac()
+        count = len(self.m_div[mac])
+        return count
+        
+    def get_email(self):
+        return self.emailId
 
     def vect_characteristics(self):
         """

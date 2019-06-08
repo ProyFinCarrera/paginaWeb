@@ -6,13 +6,14 @@
 #   Finguer. Search for a finger
 import time
 import hashlib
+import sys
 from time import clock
+from encode import encode
 
 if __name__ == "__main__":
     import pyfingerprint
 else:
     from footprint import pyfingerprint
-
 
 
 class Footprint:
@@ -56,14 +57,19 @@ class Footprint:
           try:
             (rt, pos) = self._read_and_be_inside()  # lo k leo 0x01
             if(rt):
-                vect = self.id_footprint(pos, buffer=0x02)  # poxicondonde esta en do
-                print(vect)
+                print(pos)
+                vect = self.id_footprint(pos, buffer=0x01).decode("ASCII")  # poxicondonde esta en do
                 for aux_v in json_v_caracteristic:
-                    print(aux_v)
-                    if aux_v == vect:
-                        # print("Vector Equals")
+                    #print(json_v_caracteristic[aux_v])
+                    # print(json_v_caracteristic[aux_v])
+                    # print(vect)
+                    if json_v_caracteristic[aux_v]== vect:
+                        print("Vector Equals")
                         return True
+            else:
+                print("Estoy fuera")
                 return False
+            return False
           except Exception as e:
             print('Exception message: ' + str(e))
             exit(1)
@@ -84,7 +90,7 @@ class Footprint:
           if rt:
             self._read_footprint_buffer(0x02)
             if self.is_footprint_equal():
-              # print("Save footprint")
+              print("Save footprint")
               position_number = self._save_footprint_inside()
               vect = self.id_footprint(position_number , buffer=0x01)
               return (True,vect)
@@ -110,6 +116,16 @@ class Footprint:
           return (True, pos)
         else:
           return (False, -1)
+      
+      def del_footprint(self,json_v_caracteristic):
+          print(json_v_caracteristic)
+          size = self.__fingerprint.getTemplateCount()
+          for pos in range(0,size):
+              vect = self.id_footprint(pos, buffer=0x02)
+              for aux_v in json_v_caracteristic:
+                  if aux_v == vect:
+                      # print("Delete foorprint: " + str(pos))
+                      self.__fingerprint.deleteTemplate(pos)
 
       def _read_and_not_be_inside(self):
         (check, pos) = self._read_and_be_inside()
@@ -166,10 +182,10 @@ class Footprint:
         # Loads the found template to charbuffer 1
         self.__fingerprint.loadTemplate(pos, buffer)
         # Downloads the characteristics of template loaded in charbuffer 1
-        characterics = str(
-            self.__fingerprint.downloadCharacteristics(buffer))
-        return hashlib.sha256(characterics.encode('utf-8')).hexdigest()
-        # return characterics
+        characterics = self.__fingerprint.downloadCharacteristics(buffer)
+        # return characterics.encode('utf-8')
+        # return hashlib.sha256(characterics.encode('utf-8')).hexdigest()
+        return encode.take_aes(encode.tranfor_vector_int(characterics))
 
       def _save_footprint_inside(self):
         # Creates a template
@@ -184,7 +200,9 @@ class Footprint:
 if __name__ == "__main__":
   aux = Footprint()
   aux.clear_all_footprint();
-
+  
+  # check , vec_aux = aux.save_footprint()
+  # aux.del_footprint({vec_aux:vec_aux})
   # introducto huella.
   # Saco vector caracteristico.
   # check , vec_aux = aux.save_footprint()
