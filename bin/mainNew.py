@@ -33,6 +33,7 @@ try:
         camera = PiCamera()
         camera.resolution = (640, 480)
         camera.framerate = 32  # 32
+        camera.hflip = True
         rawCapture = PiRGBArray(camera, size=(640, 480))
         # allow the camera to warmup
         time.sleep(0.1)
@@ -48,7 +49,7 @@ try:
             # image = cv2.flip(image, 1)
             aux, name_img = det_video.video_img(image)
             #time.sleep(0.1)
-            #cv2.imshow("Frame",image )
+            cv2.imshow("Frame",image )
            
             if aux:
                 aux  = os.path.join(PATH_DIR ,'mainVerifyFootprint.py')
@@ -59,11 +60,14 @@ try:
                 os.unlink(PID_FILE2)
                 det_video.set_cont_cero()
             # save video
-            # t1 = threading.Thread(target=saveSystem.save_img, args=(image,))
-            # t1.start()
+            t1 = threading.Thread(target=saveSystem.save_img, args=(image,))
+            t1.start()
             # image = ""
+            # clear the stream in preparation for the next frame
             rawCapture.truncate(0)
             if cv2.waitKey(10) == 27:
                 break
+         
+        cv2.destroyAllWindows()
 except Exception as e:
     print('Exception message: ' + str(e))

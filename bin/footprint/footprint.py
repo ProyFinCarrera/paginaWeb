@@ -57,12 +57,14 @@ class Footprint:
           try:
             (rt, pos) = self._read_and_be_inside()  # lo k leo 0x01
             if(rt):
-                print(pos)
+                # print(pos)
                 vect = self.id_footprint(pos, buffer=0x01).decode("ASCII")  # poxicondonde esta en do
+                print(vect)
                 for aux_v in json_v_caracteristic:
                     #print(json_v_caracteristic[aux_v])
-                    # print(json_v_caracteristic[aux_v])
-                    # print(vect)
+                    time.sleep(0.1)
+                    #print(json_v_caracteristic[aux_v])
+                    #print()
                     if json_v_caracteristic[aux_v]== vect:
                         print("Vector Equals")
                         return True
@@ -118,7 +120,7 @@ class Footprint:
           return (False, -1)
       
       def del_footprint(self,json_v_caracteristic):
-          print(json_v_caracteristic)
+          # print(json_v_caracteristic)
           size = self.__fingerprint.getTemplateCount()
           for pos in range(0,size):
               vect = self.id_footprint(pos, buffer=0x02)
@@ -156,7 +158,7 @@ class Footprint:
         # Converts read image to characteristics and stores it in charbuffer 1
         if (read):
           self.__fingerprint.convertImage(buffer)
-          time.sleep(1)
+          #time.sleep(1)
           return True
         else:
           return False
@@ -199,7 +201,7 @@ class Footprint:
 
 if __name__ == "__main__":
   aux = Footprint()
-  aux.clear_all_footprint();
+   #aux.clear_all_footprint();
   
   # check , vec_aux = aux.save_footprint()
   # aux.del_footprint({vec_aux:vec_aux})

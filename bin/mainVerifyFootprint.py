@@ -23,11 +23,10 @@ def main():
         raise e
 
 def veryfy():
-    finguer = footprint.Footprint()
-    print("demtrpp")
+    finguer = footprint.Footprint(timer_power = 0.1 )
     db = myfirebase.MyFirebase()
     name_img = sys.argv[1]
-    #name_img = "jairo_perez"
+    name_img = "jairo_perez"
     firstName = name_img.split("_")[0]
     email = db.search_email(name_img)
     print(email)

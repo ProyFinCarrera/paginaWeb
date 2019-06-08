@@ -33,7 +33,6 @@ try:
         rawCapture = PiRGBArray(camera, size=(640, 480))
         # allow the camera to warmup
         time.sleep(0.1)
-
         det_face = faceDetector.FaceDetector()
         # capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
@@ -46,7 +45,6 @@ try:
                 t1 = threading.Thread(
                     target=saveSystem.save_face, args=(face,))
                 t1.start()
-            
             # save video
             t2 = threading.Thread(target=saveSystem.save_img, args=(image,))
             t2.start()
