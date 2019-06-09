@@ -4,6 +4,12 @@
 # Class: FaceDetector.
 import os
 import cv2
+import threading   
+if __name__ == "__main__":
+    import saveFace
+else:
+    from recognizerVideo.faceDetector import saveFace
+
 PATH_DIR = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 
 
@@ -29,10 +35,11 @@ class FaceDetector:
     def __init__(self, file_haarcascade=os.path.join(
             PATH_DIR, "haarcascade_frontalface_default.xml"),
             size=4, size_face_w=92, size_face_h=112,
-            op_contrast=False, t_contrast=1):
+            op_contrast=False, t_contrast=1, save_face=False ):
         try:
             self.__tam_face = (size_face_w, size_face_h)
             self.__size = size
+            self.__save_face = save_face
             self.__file_haarcascade = file_haarcascade
             self.__sys_det = cv2.CascadeClassifier(self.__file_haarcascade)
             self.__op_contrast = op_contrast
@@ -49,8 +56,6 @@ class FaceDetector:
             img: Image where the face will be detected.
         Returns:
             resul: True if there is a picture, False otherwise.
-            face_resize(img): if "result" is true contains an
-            image of the face, False otherwise.
             pos_face(int,int): if "result" is true, it returns
             the Point where the face is placed in teh image that
             is passed as a parameter, (0,0) otherwise.
@@ -61,12 +66,12 @@ class FaceDetector:
         prepared_img = self._prepare_img(img)
         # cv2.imshow("imagen pre",prepared_img)
         faces = self.__sys_det.detectMultiScale(
-            prepared_img, scaleFactor=1.05, minNeighbors=5,minSize=(40,40),maxSize=(60,60))
+            prepared_img, scaleFactor=1.05, minNeighbors=5,minSize=(65,65),maxSize=(67,67))
         tam = len(faces)
         # print(tam)
         if tam > 0:
-            (x, y, w, h) = (faces[0][0]+6, faces[0]
-                            [1], faces[0][2]-11, faces[0][3]+5)
+            (x, y, w, h) = (faces[0][0]+12, faces[0]
+                            [1]+9, faces[0][2]-25, faces[0][3]-10)
             face = prepared_img[y:y + h, x:x + w]
             face_resize = self._prepare_face(face)
 
@@ -74,10 +79,17 @@ class FaceDetector:
             pos_a = (x * self.__size, y * self.__size)
             pos_b = (x * self.__size + w * self.__size,
                      y * self.__size + h * self.__size)
-            img = cv2.rectangle(img, pos_a, pos_b, (0, 255, 0), 3)
+            #img = cv2.rectangle(img, pos_a, pos_b, (0, 255, 0), 3)
+            t2 = threading.Thread(
+                       target=cv2.rectangle, args=(img, pos_a, pos_b, (0, 255, 0), 3,))
+            t2.start()
             resul = True
             pos_face = (x * self.__size, y * self.__size)
-            return (resul, face_resize, pos_face)
+            if self.__save_face:
+                t1 = threading.Thread(
+                        target=saveFace.save_face, args=(face_resize,))
+                t1.start()
+            return (resul, face_resize , pos_face)
         return (resul, face_resize, pos_face)
 
     def _prepare_img(self, img):
@@ -114,9 +126,9 @@ if __name__ == "__main__":
     aux = FaceDetector()
     # img = cv2.imread("example2.jpg")
     img = cv2.imread("example1.jpg")
-    rt, face, (x, y) = aux.detect(img)
+    rt, (x, y) = aux.detect(img)
     cv2.imshow('image', img)
-    if rt:
-        cv2.imshow("Face", face)
+    #if rt:
+    #    cv2.imshow("Face", img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()

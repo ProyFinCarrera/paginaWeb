@@ -13,30 +13,38 @@ from myfirebase import myfirebase
 from footprint import footprint
 PATH_DIR = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 PID_FILE = os.path.join(os.path.join(PATH_DIR, "tmp"), "pass.PID")
+PID_PROCESS = os.path.join(os.path.join(PATH_DIR, "tmp"), "process.PID")
+PID = str(os.getpid())
 PID_FILE2 = os.path.join(os.path.join(PATH_DIR, "tmp"), "fin.PID")
 # print(PID_FILE)
 def main():
     try:
+        if os.path.isfile(PID_PROCESS)==False:
+            open(PID_PROCESS, "w").write(PID)
         veryfy()
     except Exception as e:
         print("Salir" +str(e))
         raise e
+    finally:
+        os.unlink(PID_PROCESS )
 
 def veryfy():
     finguer = footprint.Footprint(timer_power = 0.1 )
     db = myfirebase.MyFirebase()
     name_img = sys.argv[1]
-    name_img = "jairo_perez"
+    #name_img = "jairo_perez"
     firstName = name_img.split("_")[0]
     email = db.search_email(name_img)
-    print(email)
+    #print(email)
     my_json = db.vect_charasteristics_doc(name_img)
+    ##print(my_json)
     check = finguer.verify_footprint(my_json)
-    print(check)
+    #print(check)
+    #check=False
     if(check):
-        print("pasa")
         json_send = {u'emailId': email, u'firstName': firstName}
         val = db.upload_date(json_send)
+        print("pasa")
         if val:
             open(PID_FILE, "w").write(name_img)
     open(PID_FILE2, "w").write(name_img)

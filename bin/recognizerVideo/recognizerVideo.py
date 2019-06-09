@@ -6,6 +6,7 @@ import os
 import cv2
 import threading
 import glob
+import time
 from PIL import Image
 
 
@@ -44,9 +45,31 @@ class RecognizerVideo:
             self.__rec = recognizer.Recognizer(selRecon=selRecon)
             self.__cont_face = 0
             self.__maxiR = maxiR
+            self.__cancel_cont = False
         except Exception as e:
             print('Error loaded FaceDetector: ')
             exit(1)
+            
+    def only_video_img(self, frame):
+        """ Class methods that recognize a person's face in an image
+            Args:
+                frame: Image where the face will be detected.
+            Returns:
+                True If you have detected a person self._max
+                followed and name the person recognizer.,
+                False otherwise and -1.
+        """
+        rt,face, point = self.__det.detect(frame)
+        myrt = False
+        name = -1
+        if rt:
+            result, name = self.__rec.only_recognize(face)
+            if(self.__cancel_cont == False):
+                self._repeated_times_recognized(result)
+                myrt = self._maximum_recognition()
+        
+        return myrt, name
+    
 
     def video_img(self, frame):
         """ Class methods that recognize a person's face in an image
@@ -57,16 +80,17 @@ class RecognizerVideo:
                 followed and name the person recognizer.,
                 False otherwise and -1.
         """
-        rt, face, point = self.__det.detect(frame)
+        rt,face, point = self.__det.detect(frame)
+        myrt = False
         name = -1
         if rt:
             result, name = self.__rec.recognize(frame, face, point)
-            cv2.imshow("Frame",frame) 
-            print(self.__cont_face) 
-            self._repeated_times_recognized(result)
-        else:
-            cv2.imshow("Frame",frame) 
-        return self._maximum_recognition(), name
+            # print(self.__cont_face)
+            if(self.__cancel_cont == False):
+                self._repeated_times_recognized(result)
+                myrt = self._maximum_recognition()
+                
+        return myrt, name
 
     def set_cont_cero(self):
         """Class methods what it does is initialize the value of __cont a 0"""
@@ -77,9 +101,17 @@ class RecognizerVideo:
             self.__cont_face += 1
         else:
             self.set_cont_cero()
+                
+    def cancel_cont(self):
+        self.__cancel_cont = True
+    
+    def active_cont(self):
+        self.__cancel_cont = False
+        
 
     def _maximum_recognition(self):
         if self.__cont_face == self.__maxiR:
+            self.__cont_face += 1
             return True
         else:
             return False

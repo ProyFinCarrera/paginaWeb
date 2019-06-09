@@ -21,7 +21,48 @@ def my_mac():
     mac_aux = ''.join(('%012X' % mac)[i:i + 2]for i in range(0, 12, 2))
     return mac_aux
 
+class Users(object):
+    """ Class that manages the users of the database.
+        The attributes of the parameter database are passed.
+    """
+    def __init__(self, emailId, firstName, lastName, nameFile, m_div):
+        self.emailId = emailId
+        self.firstName = firstName
+        self.lastName = lastName
+        self.nameFile = nameFile
+        self.m_div = m_div
+    
+    def get_cout_footprint(self):
+        mac = my_mac()
+        count = len(self.m_div[mac])
+        return count
+    
+    def get_email(self):
+        return self.emailId
+    
+    def vect_characteristics(self):
+        """
+            Class method that consults the carecteristic vectors
+            Returns:
+                A document with all the characteristic vector of the user.
+        """
+        mac = my_mac()
+        return self.m_div[mac]
 
+    @staticmethod
+    def from_dict(source):
+        for doc in source:
+            data = doc.to_dict()
+            return Users(data['emailId'], data['firstName'],
+                         data['lastName'], data['nameFile'], data['m_div'])
+
+    def to_dict(self):
+        pass
+
+    def __repr__(self):
+        return u'Users( emailId={}, firstName={}, lastName={}, nameFile={})'.format(
+            self.emailId, self.firstName, self.lastName, self.nameFile)
+    
 class MyFirebase:
     """
         Class that manages the connection to the
@@ -61,10 +102,11 @@ class MyFirebase:
             user = self.db_fire.collection("users").where(
                 u'nameFile', u'==', nameFile).limit(1).stream()
             doc = Users.from_dict(user)
+            # print(doc)
             return doc.vect_characteristics()
         except ValueError as e:
             # print("Vectors characteristic not foud")
-            return False
+            return e
 
     def upload_footprint(self, vect_characteristic, email):
         """ Class method that loads the characteristic vector of
@@ -82,23 +124,29 @@ class MyFirebase:
         # Update
         # + vect_characteristic.decode("ASCII")
         camp = "m_div." + mac + ".finger" + str(size)
-        up_data = {camp: vect_characteristic.decode("ASCII")}
+        up_data = {camp: vect_characteristic}
 
         if(doc == -1):
             # print("User not foud")
             return False
         else:
-            print(up_data)
-            print("Foud user")
+            #print(up_data)
+            # print("Foud user")
             users_collection = self.db_fire.collection(u'users').document(doc)
             users_collection.update(up_data)
             return True
 
     def search_email(self, nameFile):
-        user = self.db_fire.collection("users").where(
-            u"nameFile", u"==", nameFile).stream()
-        doc = Users.from_dict(user)
-        return doc.get_email()
+        try:
+            user = self.db_fire.collection("users").where(
+                u"nameFile", u"==", nameFile).stream()
+            doc = Users.from_dict(user)
+            # print(doc)
+            return doc.get_email()
+        except Exception as e:
+            print('Exception message: ' + str(e))
+            return (-1)
+        
 
     def _search_id_user(self, email):
         user = self.db_fire.collection("users").where(
@@ -162,53 +210,14 @@ class MyFirebase:
             aux.upload_date(json_cinco)
 
 
-class Users(object):
-    """ Class that manages the users of the database.
-        The attributes of the parameter database are passed.
-    """
 
-    def __init__(self, emailId, firstName, lastName, nameFile, m_div):
-        self.emailId = emailId
-        self.firstName = firstName
-        self.lastName = lastName
-        self.nameFile = nameFile
-        self.m_div = m_div
-
-    def get_cout_footprint(self):
-        mac = my_mac()
-        count = len(self.m_div[mac])
-        return count
-
-    def get_email(self):
-        return self.emailId
-
-    def vect_characteristics(self):
-        """
-            Class method that consults the carecteristic vectors
-            Returns:
-                A document with all the characteristic vector of the user.
-        """
-        mac = my_mac()
-        return self.m_div[mac]
-
-    @staticmethod
-    def from_dict(source):
-        for doc in source:
-            data = doc.to_dict()
-            return Users(data['emailId'], data['firstName'],
-                         data['lastName'], data['nameFile'], data['m_div'])
-
-    def to_dict(self):
-        pass
-
-    def __repr__(self):
-        return u'Users( emailId={}, firstName={}, lastName={}, nameFile={})'.format(
-            self.emailId, self.firstName, self.lastName, self.nameFile)
 
 
 if __name__ == "__main__":
     aux = MyFirebase()
     val = aux.upload_footprint(u'vectordd_cjj', u'dios@gmail.com')
+    v = aux.search_email('Ejemplo_ejmpl')
+    #print(v)
     # print(val)
     nameFile = "luis_dios"
     my_json = aux.vect_charasteristics_doc(nameFile)

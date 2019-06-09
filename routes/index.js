@@ -258,7 +258,6 @@ function closeSistem(){
         pyshell.on('message', function(message) {
             // received a message sent from the Python script (a simple "print" statement)
             console.log(message);
-            dataC = message;
         });
         pyshell.end(function(err, code, signal) {
             /// if (err) throw err;
@@ -267,7 +266,6 @@ function closeSistem(){
             console.log('The exit signal was: ' + signal);
             //console.log('The opcion: ' + opcion);
             console.log('finished');
-            var message = "";
         });
         pyshell = null;
 }
@@ -282,8 +280,8 @@ router.get('/newUser', function(req, res, next) {
             //videoOn()
             // Initialize verification process
             var PythonShell = require('python-shell')
-            //pyshell = new PythonShell('sudo python ./../bin/mainSaveFaceNew.py');
-            pyshell = new PythonShell('sudo python ./../bin/mainSaveFace.py');
+            pyshell = new PythonShell('sudo python ./../bin/mainSaveFaceNew.py');
+            //pyshell = new PythonShell('sudo python ./../bin/mainSaveFace.py');
             pyshell.on('message', function(message) {
                 // received a message sent from the Python script (a simple "print" statement)
                 console.log(message);
@@ -354,8 +352,8 @@ router.get('/getIn', function(req, res, next) {
     if (page != "getIn") {
         
         var PythonShell = require('python-shell');
-        //pyshell = new PythonShell('sudo python3 ./../bin/mainNew.py');
-        pyshell = new PythonShell('sudo python3 ./../bin/main.py');
+        pyshell = new PythonShell('sudo python ./../bin/mainNew.py');
+        //pyshell = new PythonShell('sudo python3 ./../bin/main.py');
         pyshell.on('message', function(message) {
             // received a message sent from the Python script (a simple "print" statement)
             console.log(message);
@@ -378,12 +376,12 @@ router.post('/saveFootprint', function(req, res, next) {
     let path_file = __dirname
     path_file = path.join(path_file, "./..")
     path_file = path.join(path_file, "bin")
-    path_file = path.join(path_file, 'mainFootprint.py')
-    console.log(req.cookies)
+    path_file = path.join(path_file, 'mainSaveFootprint.py')
+    //console.log(req.cookies)
 
     //res.send({})
     var PythonShell = require('python-shell');
-    pyshell = new PythonShell('sudo python ./../bin/mainFootprint.py', { args: [req.cookies.newUser] });
+    pyshell = new PythonShell('sudo python ./../bin/mainSaveFootprint.py', { args: [req.cookies.newUser] });
     pyshell.on('message', function(message) {
         // received a message sent from the Python script (a simple "print" statement)
         console.log(message);
@@ -584,7 +582,7 @@ router.post('/take_photos', function(req, res, next) {
 
             // })
             // res.send({ "photos": " files" });
-            console.log("esto es una mierdaaa")
+            
 
         }
         res.send({ message: "Take Photos Correct" })
@@ -651,40 +649,7 @@ router.post('/confir_photos', function(req, res, next) {
     }
 });
 
-function sendNamePhotoFirebase(name, callback) {
 
-    sendNamePhotoFirebase("holaaa", function() {
-        console.log("lo mande")
-    })
-
-    var db = admin.firestore();
-    var docRef = db.collection('users').doc('alovelace');
-    var setAda = docRef.set({
-        first: 'Ada',
-        last: 'Lovelace',
-        born: 1815
-    });
-    //    var setDoc = admin.firestore().collection('users')
-    // Get a database reference to our blog
-    // var db = admin.database();
-    // var ref = db.ref("/database/firestore/");
-
-    // var usersRef = ref.child("users");
-    // usersRef.set({
-    //   alanisawesome: {
-    //     date_of_birth: "June 23, 1912",
-    //     full_name: "Alan Turing"
-    //   },
-    //   gracehop: {
-    //     date_of_birth: "December 9, 1906",
-    //     full_name: "Grace Hopper"
-    //   }
-    //});
-    //     setDoc.collection('users').doc("9bzzY0zxnsPibuXtpyFl").update({
-    //   "nickname": name
-    // });
-
-}
 
 
 function move(name, dir_oldPath, newPath, callback) {

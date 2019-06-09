@@ -32,12 +32,10 @@ try:
             rval, frame = cap.read()
             if rval:
                 frame = cv2.flip(frame, 1, 0)
-                rt, face, (x, y) = det_face.detect(frame)
-                if rt:
-                    # save face
-                    t1 = threading.Thread(
-                        target=saveSystem.save_face, args=(face,))
-                    t1.start()
+                t3 = threading.Thread(target=det_face.detect, args=(frame,))
+                t3.start()
+                t3.join()
+                # det_face.detect(frame)
             # save video
             t2 = threading.Thread(target=saveSystem.save_img, args=(frame,))
             t2.start()
@@ -48,3 +46,5 @@ try:
         cap.release()
 except Exception as e:
     print('Exception message: ' + str(e))
+finally:
+        os.unlink(PID_FILE)

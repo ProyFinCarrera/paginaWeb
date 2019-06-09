@@ -56,3 +56,5 @@ try:
         cap.release()
 except Exception as e:
     print('Exception message: ' + str(e))
+finally:
+        os.unlink(PID_FILE)

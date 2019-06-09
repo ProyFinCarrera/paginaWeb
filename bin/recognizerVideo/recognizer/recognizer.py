@@ -37,8 +37,6 @@ class Recognizer:
             t1 = threading.Thread(target=self._create_list_img_names)
             t1.start()
             t1.join()
-
-
             #self._create_list_img_names()
             # OpenCV entrena un modelo a partir de las imagenes
             self.__model = MODEL[selRecon]()
@@ -51,8 +49,16 @@ class Recognizer:
         except Exception as e:
             print('Error loaded Recognizer: ' + str(e))
             exit(1)
-
-    def recognize(self, img, face, point):
+    def only_recognize(self, face):
+        reconoce = False
+        name = -1
+        prediction = self.__model.predict(face)
+        if prediction[1] < self.__prediction:
+            name = self.__names[prediction[0]]
+            reconoce = True
+        return reconoce, name
+            
+    def recognize(self, img,face, point):
         """ Method that gives a percentage of recognition
             and also says if it is recognized or not.
             Note: The image "img" will be painted the name
@@ -73,7 +79,7 @@ class Recognizer:
         # print(prediction[1])
         if prediction[1] < self.__prediction:
             pr = '%s - %.0f' % (self.__names[prediction[0]], prediction[1])
-            name = self.__names[prediction[0]]
+            pr = self.__names[prediction[0]]
             font = cv2.FONT_HERSHEY_PLAIN
             font_scale = 2
             font_color = (0, 255, 0)
@@ -81,12 +87,13 @@ class Recognizer:
             cv2.putText(img, pr, point_a, font,
                         font_scale, font_color,
                         line_type)
+            name = self.__names[prediction[0]]
             reconoce = True
         else:
             pr = '%s - %.0f' % ("Stranger", prediction[1])
+            #pr = "Stranger"
             cv2.putText(img, pr, point_a,
-                        cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 3)
-            # desconocido
+                       cv2.FONT_HERSHEY_PLAIN, 2, (255, 0, 0), 3)
         return reconoce, name
 
     def _create_list_img_names(self):

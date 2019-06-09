@@ -47,6 +47,7 @@ def save_img(images):
     # images = cv2.resize(images,(40,30))
     # images = cv2.resize(images,(80,60))
     #images = cv2.resize(images,(160,120))
+    images = cv2.resize(images,(320,240))
     images = cv2.cvtColor(images, cv2.COLOR_BGR2RGB)
     #np.save(SAVE_IMG, images)
     im = Image.fromarray(images)

@@ -60,8 +60,8 @@
     btnSelectAll.addEventListener('click', selectAll, false);
 
     //var socket = io('http://localhost:3000/video',{ reconnection: false });
-    //var socket = io('http://192.168.1.42:3000/video', { reconnection: false });
-    var socket = io('http://192.168.1.50:3000/video', { reconnection: false });
+    var socket = io('http://192.168.1.42:3000/video', { reconnection: false });
+    //var socket = io('http://192.168.1.50:3000/video', { reconnection: false });
     var ctx = document.getElementById('canvas').getContext('2d');
 
     function videoOn(data) {
@@ -331,6 +331,7 @@
 
     function upFootprint() {
         var client = new HttpClient();
+        console.log(email.value)
         document.cookie = "newUser=" + email.value; // se crera cuadno la fotos
         //Hacer funcional la parate de la huella.
         client.post('/saveFootprint', function(response) {

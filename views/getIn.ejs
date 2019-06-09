@@ -46,8 +46,8 @@
     <script>
     let btnPass = document.getElementById('divCheckFRed')
     //var socket = io('http://localhost:3000/video',{ reconnection: false });
-    var socket = io('http://192.168.1.50:3000/video', { reconnection: true });
-    //var socket = io('http://192.168.1.42:3000/video', { reconnection: false });
+    //var socket = io('http://192.168.1.50:3000/video', { reconnection: true });
+    var socket = io('http://192.168.1.42:3000/video', { reconnection: false });
     var ctx = document.getElementById('canvas').getContext('2d');
 
     function videoOn() {
@@ -64,7 +64,7 @@
             if (info.recognizer == true) {
                 btnPass.style.borderColor = "green";
                 btnPass.style.backgroundColor = "green";
-                setTimeout(drawRed, 5000)
+                setTimeout("drawRed()", 5000)
             }
             //img.src = 'data:image/jpeg;base64,' +  info.buffer ;
             img.src = 'data:image/webp;base64,' + info.buffer;
@@ -73,8 +73,11 @@
                 img.clientHeight = ctx.clientHeight;
                 ctx.drawImage(img, 0, 0, 640, 480);
                 img = null
+                
             }
+            
         }
+      
     });
 
 

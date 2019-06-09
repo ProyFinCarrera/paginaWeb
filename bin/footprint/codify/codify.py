@@ -4,6 +4,7 @@
 # File encode.py:
 #           1. Unctions that help to encode.
 from Crypto.Cipher import AES
+from Crypto import Random
 import base64
 from Crypto.Hash import SHA256
 import os
@@ -63,10 +64,10 @@ if __name__ == "__main__":
     print(tranfor_vector_int(vect))
     cadena = tranfor_vector_int(vect)
     v_Aes = take_aes(cadena)
-    print()
+    print(v_Aes)
     n = des_aes(v_Aes)
-    print(n)
-    if str(n) == cadena:
+    print(n.decode("ASCII"))
+    if n.decode("ASCII") == cadena:
         print("Equals")
     else:
         print("No Equals")

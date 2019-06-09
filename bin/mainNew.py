@@ -20,8 +20,10 @@ from picamera import PiCamera
 PATH_DIR = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 PID = str(os.getpid())
 PID_FILE = os.path.join(os.path.join(PATH_DIR, "tmp"), "mydaemon.PID")
+PID_PROCESS = os.path.join(os.path.join(PATH_DIR, "tmp"), "process.PID")
 PID_FILE2 = os.path.join(os.path.join(PATH_DIR, "tmp"), "fin.PID")
 CMD = os.path.join(PATH_DIR, "mainSaveFingers.py ")
+
 
 try:
     if os.path.isfile(PID_FILE):
@@ -32,37 +34,42 @@ try:
         # initialize the camera and grab a reference to the raw camera capture
         camera = PiCamera()
         camera.resolution = (640, 480)
-        camera.framerate = 32  # 32
+        camera.framerate = 15  # 15 32
         camera.hflip = True
         rawCapture = PiRGBArray(camera, size=(640, 480))
         # allow the camera to warmup
         time.sleep(0.1)
         det_video = recognizerVideo.RecognizerVideo(
-            maxiR=5, selRecon=1)
-        time.sleep(0.1)
+            maxiR=3, selRecon=1)
+        flag = False
+        #time.sleep(0.1)
         # aux_F = footprint.Footprint(timer_power = 15 );
         # capture frames from the camera
         for frame in camera.capture_continuous(rawCapture, format="bgr", use_video_port=True):
             # grab the raw NumPy array representing the image,
             # then initialize the timestamp bgr and occupied/unoccupied text
             image = frame.array
-            # image = cv2.flip(image, 1)
-            aux, name_img = det_video.video_img(image)
+            #aux, name_img = det_video.video_img(image)
+            rt_v, name_img = det_video.only_video_img(image)
             #time.sleep(0.1)
             cv2.imshow("Frame",image )
-           
-            if aux:
+            if rt_v == True:
                 aux  = os.path.join(PATH_DIR ,'mainVerifyFootprint.py')
                 cmd = ['python', aux , name_img]
                 p = subprocess.Popen(cmd)
+                open(PID_PROCESS, "w").write(str(p.pid))
+                flag = True
+                print("Activo suproceso")
+                det_video.cancel_cont()
+            if flag:
+                if os.path.isfile(PID_PROCESS)== False:
+                    flag = False
+                    det_video.active_cont()
+                    det_video.set_cont_cero()
             
-            if os.path.isfile(PID_FILE2):
-                os.unlink(PID_FILE2)
-                det_video.set_cont_cero()
             # save video
             t1 = threading.Thread(target=saveSystem.save_img, args=(image,))
             t1.start()
-            # image = ""
             # clear the stream in preparation for the next frame
             rawCapture.truncate(0)
             if cv2.waitKey(10) == 27:
@@ -71,3 +78,11 @@ try:
         cv2.destroyAllWindows()
 except Exception as e:
     print('Exception message: ' + str(e))
+finally:
+    if os.path.isfile(PID_FILE):
+        os.unlink(PID_FILE)
+    if os.path.isfile(PID_FILE2):
+        os.unlink(PID_FILE2)
+    if os.path.isfile(PID_PROCESS):
+        os.unlink(PID_PROCESS)
+         
