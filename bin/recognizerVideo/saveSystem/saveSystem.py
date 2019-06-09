@@ -6,6 +6,8 @@
 import os
 from PIL import Image
 import cv2
+import numpy as np
+import threading
 PATH_DIR = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 PATH_DIR = os.path.join(PATH_DIR, "..")
 
@@ -31,7 +33,9 @@ def save_face(face):
     # im = Image.Image(face)
     # img = Image.fromarray(face[0], 'RGB')
     # im.save(save)
-    cv2.imwrite(save, face)
+    #cv2.imwrite(save, face)
+    t1 = threading.Thread(target=cv2.imwrite, args=(save, face,))
+    t1.start()
     if(cont_img < MAX_F):
         cont_img += 1
     else:
@@ -39,13 +43,18 @@ def save_face(face):
 
 
 def save_img(images):
-    ##print(images)
-    
-    images = cv2.resize(images,(160,120))
+    # print(images)
+    # images = cv2.resize(images,(40,30))
+    # images = cv2.resize(images,(80,60))
+    #images = cv2.resize(images,(160,120))
     images = cv2.cvtColor(images, cv2.COLOR_BGR2RGB)
-    im = Image.fromarray(images )
-    im.save(SAVE_IMG)
-    # pass_webp(SAVE_IMG)
+    #np.save(SAVE_IMG, images)
+    im = Image.fromarray(images)
+    #im.save(SAVE_IMG)
+    t1 = threading.Thread(target=im.save, args=(SAVE_IMG,))
+    t1.start()
+   
+    #pass_webp(SAVE_IMG)
     # images = cv2.resize(images,(400,400))
     #cv2.imwrite(SAVE_IMG, images)
 

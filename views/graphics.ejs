@@ -9,12 +9,16 @@
     <%if ( iam == "root") { %>
     <% include ../views/navAdmRoot.ejs %>
     <% }else{ %>
-    <% include ../views/navAdm.ejs %>
+    <% include ../views/navAdm.ejs %>d
     <% } %>
-    <main class="jumbotron">
-        <div class="row">
+    <main class="container">
+        <div class="row jumbotron myMain">
             <div class="col-4">
                 <div class="row">
+                    <select type="email" id="inputSelect" class="form-group my-2 col-sm-8 mb-3" required autofocus>
+                        <option value="Select an administrator to delete">Select divice</option>
+                        </option>
+                    </select>
                     <button class="form-group btn btn-secondary my-2 col-sm-8 mb-3" type="button" id="btnNum1">
                         <p>Today's registration</p>
                     </button>
@@ -24,9 +28,12 @@
                     <button class="form-group btn btn-secondary my-2 col-sm-8 mb-3" type="button" id="btnNum3">
                         <p>Weeks of this month</p>
                     </button>
-                    <button class="form-group my-2 col-sm-8 mb-3 btn btn-secondary" id="btnNum4"><input type="email" class="form-control" id="inputSeachUser" aria-describedby="emailHelp" placeholder="Name user">
-                        <p>Search user</p>
-                    </button>
+                    <div class="form-group btn btn-secondary my-2 col-sm-8 mb-3">
+                        <input type="email" class="form-control" id="inputSeachUser" aria-describedby="emailHelp" placeholder="Name user" required>
+                        <button class="form-group btn btn-secondary" id="btnNum4">
+                            <p>Search user</p>
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="col-8" id="graphics"></div>

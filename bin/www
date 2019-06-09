@@ -89,18 +89,18 @@ video.on('connection', function(socket) {
                 //console.log("File exist");
 
                 //if ((buf.length > 10) && (
-                  //      (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
-                    //    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
-                if (buf.length > 10){
+                //      (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
+                //    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
+                if (buf.length > 10) {
                     socket.emit('new_image', { recognizer: true, image: true, buffer: buf.toString('base64') });
                 }
 
             } else {
 
                 //if ((buf.length > 10) && (
-                  //      (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
-                    //    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
-                if (buf.length > 10){
+                //      (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
+                //    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
+                if (buf.length > 10) {
                     socket.emit('new_image', { recognizer: false, image: true, buffer: buf.toString('base64') });
                 }
             }
@@ -110,51 +110,35 @@ video.on('connection', function(socket) {
     socket.on('image', function() {
         fs.readFile(dir, function(err, buf) {
             fs.stat(dir_temp, function(err) {
-                if (err == null) {
+                if(err == null) {
                     fs.unlink(dir_temp, (err) => {
                         //if (err) throw err;
                         //console.log("Borro filpid")
                     });
                     //console.log("File exist");
 
-                    if ((buf.length > 10) && (
-                            (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
-                            (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
+                    //if ((buf.length > 10) && (
+                    //      (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
+                    //    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
+                    if (buf.length > 10) {
                         socket.emit('new_image', { recognizer: true, image: true, buffer: buf.toString('base64') });
                     }
 
                 } else {
 
-                    if ((buf.length > 10) && (
-                            (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
-                            (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
+                    //if ((buf.length > 10) && (
+                    //      (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
+                    //    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
+                    if (buf.length > 10) {
                         socket.emit('new_image', { recognizer: false, image: true, buffer: buf.toString('base64') });
                     }
                 }
-
             })
         })
 
     })
 
-    // si esxite el archvo tal manada d
-    // socket.on("disconet", function(img) {
-    //     console.log("Cliente desconcetado")
-
-    // })
-    // socket.on("give", function(img) {
-    //     fs.readFile(dir, function(err, buf) {
-    //        socket.broadcast.emit('new_image', { image: true, buffer: buf.toString('base64') }); //imprimiendo el id del cliente conectado 
-    //         //console.log('image file is initialized');
-    //     })
-    // })
-
-
-
-
     var user_id = socket.id; //socket.decoded_token.user;
-
-
     if (users[user_id] === undefined) {
         users[user_id] = { "socket": socket };
     } else {
@@ -165,9 +149,6 @@ video.on('connection', function(socket) {
     }
 
     console.log("User Connect: " + user_id + " SocketID: " + socket.id);
-
-
-
     //disconnect client
     socket.on('disconnect', function() {
         console.log('User Disconnect ' + user_id);
@@ -202,12 +183,6 @@ video.on('connection', function(socket) {
 
     })
 });
-
-
-
-
-
-
 
 /**
  * Normalize a port into a number, string, or false.

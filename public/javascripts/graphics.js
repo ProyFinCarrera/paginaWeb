@@ -13,7 +13,6 @@
     google.charts.load('current', { 'packages': ['corechart', 'table'] });
     btnNum1.addEventListener('click', () => {
         // Set a callback to run when the Google Visualization API is loaded.
-
         google.charts.setOnLoadCallback(draw1());
     });
 
@@ -31,7 +30,7 @@
         // Set a callback to run when the Google Visualization API is loaded.
         google.charts.setOnLoadCallback(draw4());
     });
-
+    
     function contPersonYearDay(year, name_day) {
         return new Promise(function(resolve, reject) {
             let db = firestore.collection('passVerification').where('nameDay', '==', name_day).where('year', '==', year).get()
@@ -72,6 +71,7 @@
     var dayWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
     function draw2() {
+        clearDiv();
         let thisMonth = new Date().getMonth() + 1;
         contPersonYear(2019).then(function(arrayCont) {
             if (!arrayCont.empty) {
@@ -89,16 +89,57 @@
             }
         });
     }
+
+    /*devuelvo persona con y hora*/
+    function searchWorkPosition(emailId) {
+        return new Promise(function(resolve, reject) {
+            let db = firestore.collection('users').where('emailId', '==', emailId).get()
+            db.onSnapshot(function(querySnapshot) {
+                var work;
+                querySnapshot.forEach(function(doc) {
+                    work = doc.data().workPosition;
+                });
+                resolve(work)
+            }).catch(function(error) {
+                reject(error);
+            });
+        })
+    }
+    function clearDiv() {
+        let myNode = document.getElementById("graphics");
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.firstChild);
+        }
+    }
+    function draw1() {
+        clearDiv();
+        let today = new Date();
+        let thisDay = today.getDate();
+        let thisMonth = today.getMonth() + 1;
+        let thisYear = today.getFullYear();
+        console.log(thisDay)
+        var array = [];
+        // 12 / 3/2019
+        personAccessToday(thisDay , thisMonth,thisYear).then(function(users) {
+            // Create the data table.
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Name');
+            data.addColumn('string', 'Work-Position');
+            data.addColumn('string', 'Date');
+            data.addRows(users);
+            var table = new google.visualization.Table(document.getElementById('graphics'));
+            table.draw(data, { showRowNumber: true, width: '100%' });             
+        })
+
+    }
     /*devuelvo persona con y hora*/
     function personAccessToday(day, month, year) {
         return new Promise(function(resolve, reject) {
-            let db = firestore.collection('passVerification').where('day', '==', day).where('month', '==', month).where('year', '==', year).get();
+            let db = firestore.collection('passVerification').where('day', '==', day).where('month', '==', month).where('year', '==', year);
             db.onSnapshot(function(querySnapshot) {
                 var array = [];
-           
                 querySnapshot.forEach(function(doc) {
                     var auxArray = new Array()
-
                     min = ('0' + doc.data().minute).slice(-2);
                     hour = ('0' + doc.data().hour).slice(-2);
                     hourFull = hour + ":" + min;
@@ -117,46 +158,11 @@
                     auxArray.push(hourFull);
                     array.push(auxArray)
                     resolve(array);                
-                });              
-            }).catch(function(error) {
-                reject(error);
-            });
+                });  
+                
+            })
         })
     }
-    /*devuelvo persona con y hora*/
-    function searchWorkPosition(emailId) {
-        return new Promise(function(resolve, reject) {
-            let db = firestore.collection('users').where('emailId', '==', emailId).get()
-            db.onSnapshot(function(querySnapshot) {
-                var work;
-                querySnapshot.forEach(function(doc) {
-                    work = doc.data().workPosition;
-                });
-                resolve(work)
-            }).catch(function(error) {
-                reject(error);
-            });
-        })
-    }
-
-    function draw1() {
-        let today = new Date();
-        let thisDay = today.getDate();
-        let thisMonth = today.getMonth() + 1;
-        let thisYear = today.getFullYear();
-        // console.log(thisDay)
-        personAccessToday(thisDay, thisMonth, thisYear).then(function(users) {
-            // Create the data table.
-            var data = new google.visualization.DataTable();
-            data.addColumn('string', 'Name');
-            data.addColumn('string', 'Work-Position');
-            data.addColumn('string', 'Date');
-            data.addRows(users);
-            var table = new google.visualization.Table(document.getElementById('graphics'));
-            table.draw(data, { showRowNumber: true, width: '80%' });
-        })
-    }
-
     function getWeekInMonth(year, month, day) {
         let weekNum = 1; // we start at week 1 
         let weekDay = new Date(year, month - 1, 1).getDay(); // we get the weekDay of day 1 
@@ -219,6 +225,7 @@
         // Create the data table.jsapii
         //console.log(getWeekInMonth(2019, 3, 10));
         // this month Dicenbes is 11, add +1
+        clearDiv();
         let thisMonth = new Date().getMonth() + 1;
         // console.log(thisMonth);
         weeksOfThisMonth(thisMonth).then(function(contWeek) {
@@ -250,6 +257,11 @@
                 width: '100%',
                 height: '100%'
             };
+            //let aux = document.getElementById('graphics')
+            //console.log(aux.clientWidth)
+            //console.log(aux.clientHeight)
+            //aux.style.height = "350px";
+            //aux.clientHeight = 350
             var chart = new google.visualization.ColumnChart(document.getElementById('graphics'));
             chart.draw(view, options);
         });
@@ -258,7 +270,7 @@
     function getSeachUser(name) {
         return new Promise(function(resolve, reject) {
 
-            let db = firestore.collection('passVerification').where('firstName', '==', name).get()
+            let db = firestore.collection('passVerification').where('firstName', '==', name)
             let cont = 0;
             db.onSnapshot(function(querySnapshot) {
                 var array = new Array()
@@ -282,14 +294,12 @@
                 });
                 // console.log(array)
                 resolve(array)
-            }).catch(function(error) {
-                reject(error);
-            });
+            })
         })
     }
 
     function draw4() {
-
+         clearDiv();
         // etiqueta nombre
         name = inputSeachUser.value;
         //nameUno
@@ -302,6 +312,6 @@
             data.addColumn('string', 'Hour');
             data.addRows(users);
             var table = new google.visualization.Table(document.getElementById('graphics'));
-            table.draw(data, { showRowNumber: true, width: '100%' });
+            table.draw(data, { showRowNumber: true, width: '90%' });
         })
     }

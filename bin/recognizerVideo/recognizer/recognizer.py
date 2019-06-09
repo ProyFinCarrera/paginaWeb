@@ -34,7 +34,12 @@ class Recognizer:
         try:
             self.__path_faces = os.path.join(
                 PATH_DIR, os.path.join("att_faces", "orl_faces"))
-            self.__create_list_img_names()
+            t1 = threading.Thread(target=self._create_list_img_names)
+            t1.start()
+            t1.join()
+
+
+            #self._create_list_img_names()
             # OpenCV entrena un modelo a partir de las imagenes
             self.__model = MODEL[selRecon]()
             self.__prediction = OP_PREDICTION[selRecon]
@@ -84,7 +89,7 @@ class Recognizer:
             # desconocido
         return reconoce, name
 
-    def __create_list_img_names(self):
+    def _create_list_img_names(self):
         """ Method to create a list of images and a
             list of corresponding names
         """

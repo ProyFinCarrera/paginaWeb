@@ -281,9 +281,9 @@ router.get('/newUser', function(req, res, next) {
             // console.log("Inf: Verify page correct");
             //videoOn()
             // Initialize verification process
-            var PythonShell = require('python-shell');
-            //pyshell = new PythonShell('sudo ls');
-            pyshell = new PythonShell('sudo python ./../bin/mainSaveFaceNew.py');
+            var PythonShell = require('python-shell')
+            //pyshell = new PythonShell('sudo python ./../bin/mainSaveFaceNew.py');
+            pyshell = new PythonShell('sudo python ./../bin/mainSaveFace.py');
             pyshell.on('message', function(message) {
                 // received a message sent from the Python script (a simple "print" statement)
                 console.log(message);
@@ -354,7 +354,8 @@ router.get('/getIn', function(req, res, next) {
     if (page != "getIn") {
         
         var PythonShell = require('python-shell');
-        pyshell = new PythonShell('sudo python3 ./../bin/mainNew.py');
+        //pyshell = new PythonShell('sudo python3 ./../bin/mainNew.py');
+        pyshell = new PythonShell('sudo python3 ./../bin/main.py');
         pyshell.on('message', function(message) {
             // received a message sent from the Python script (a simple "print" statement)
             console.log(message);

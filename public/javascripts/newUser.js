@@ -17,7 +17,7 @@
     const pImageText = document.getElementById("pImageText");
 
     // Catch buttons 
-   // const btnAddData = document.getElementById("btnAddData");
+    // const btnAddData = document.getElementById("btnAddData");
     const btnAddFootprint = document.getElementById("btnAddFootprint");
     const btnAddImage = document.getElementById("btnAddImage");
     const btnTakePhotos = document.getElementById("btnTakePhotos");
@@ -50,9 +50,9 @@
             anHttpRequest.send();
         }
     }
-    const form1 =  document.getElementById("form1");
-   // btnAddData.addEventListener('click', addData, false);
-    form1.addEventListener('submit',addData,false);
+    const form1 = document.getElementById("form1");
+    // btnAddData.addEventListener('click', addData, false);
+    form1.addEventListener('submit', addData, false);
     btnAddFootprint.addEventListener('click', addFootprint, false);
     btnAddImage.addEventListener('click', addImages, false);
     btnTakePhotos.addEventListener('click', takephotos, false);
@@ -60,27 +60,29 @@
     btnSelectAll.addEventListener('click', selectAll, false);
 
     //var socket = io('http://localhost:3000/video',{ reconnection: false });
-    var socket = io('http://192.168.1.42:3000/video', { reconnection: false });
+    //var socket = io('http://192.168.1.42:3000/video', { reconnection: false });
+    var socket = io('http://192.168.1.50:3000/video', { reconnection: false });
     var ctx = document.getElementById('canvas').getContext('2d');
 
-    function videoOn() {
-        socket.emit("image", { image: "ok" })
+    function videoOn(data) {
+
+        socket.emit("image", { image: "ok" }, function(data) {
+
+        });
+
+
     }
-    setInterval(() => { videoOn() }, 30);)
-    //setTimeout(() => { videoOn() }, 30);
+    setInterval(() => { videoOn() }, 50); //125
+    //setTimeout(videoOn,10,"ok"+ "?" + Math.random())
     socket.on("new_image", function(info) {
         let img = new Image();
         if (info.image) {
             //img.src = 'data:image/jpeg;base64,' +  info.buffer ;
             img.src = 'data:image/webp;base64,' + info.buffer;
             img.onload = function() {
-                //ctx.width=640
-                //ctx.height=480
-                ctx.drawImage(img, 0, 0 , 640, 480);
-                //ctx.drawImage(img, 0, 0);
-                //setTimeout(() => { videoOn() }, 10);
-                //socket.emit("image", { image: "ok" })
-  
+                img.clientWidth = ctx.clientWidth;
+                img.clientHeight = ctx.clientHeight;
+                ctx.drawImage(img, 0, 0, 640,480);
             }
         }
     });
@@ -237,9 +239,9 @@
 
         var client = new HttpClient();
         client.post('/deleteUserSystem', function(response) {
-             
+
         });
-       
+
     }
 
     function takephotos() {
@@ -255,7 +257,7 @@
                 socket.emit("give_pictures", {});
             })
         });
-         //console.log("Evento accionado takephotos");
+        //console.log("Evento accionado takephotos");
     }
 
     function deleteImg() {
@@ -270,7 +272,7 @@
     function addImages(event) {
         event.preventDefault();
         //console.log("AddImages")
-         //console.log(firstName.value)
+        //console.log(firstName.value)
         document.cookie = "nombre=" + firstName.value;
         //document.cookie = "email=" + "rooot)?"
         document.cookie = "newUser=" + email.value;
@@ -281,13 +283,13 @@
             var content = JSON.parse(response);
             pImageText.innerHTML = content['message'];
             if (content['code'] == "0") {
-                 divImageRed.style.borderColor = "green";
-                 divImageRed.style.backgroundColor = "green";
-                 btnAddImage.disabled = true;
-                 btnAddFootprint.disabled=false;
-                 btnSelectAll.disabled = true;
-                 btnDeleteSelect.disabled= true;
-             }
+                divImageRed.style.borderColor = "green";
+                divImageRed.style.backgroundColor = "green";
+                btnAddImage.disabled = true;
+                btnAddFootprint.disabled = false;
+                btnSelectAll.disabled = true;
+                btnDeleteSelect.disabled = true;
+            }
             clearDiv();
             sendDataImg();
         });
@@ -296,7 +298,7 @@
 
     function sendDataImg() {
         //console.log(readCookie("email"))
-        let nameFile =readCookie("nameFile"); 
+        let nameFile = readCookie("nameFile");
         let docRef = readCookie("DOCREF")
 
         let subir = '{"nameFile":"' + nameFile + '"}'
@@ -334,23 +336,25 @@
         client.post('/saveFootprint', function(response) {
             // do something with response
             var content = JSON.parse(response);
-            setTimeout(writeDatoF,10,content.message)
+            setTimeout(writeDatoF, 10, content.message)
             if (content['code'] == "0") {
                 divFootprintRed.style.borderColor = "green";
                 divFootprintRed.style.backgroundColor = "green";
-            }else{
+            } else {
                 btnAddFootprint.disabled = false;
             }
         });
-        
+
     }
-    function writeDatoF(dato){
+
+    function writeDatoF(dato) {
         pFootprintText.innerHTML = dato;
     }
+
     function upDate(firstName, lastName, workPosition, email, otherInfo) {
         // Initialize Cloud Firestore through Firebase
         let db = firebase.firestore();
-         //console.log("update")
+        //console.log("update")
         // Create a query against the collection
         let userdb = db.collection("users").where('emailId', '==', email).get()
             .then(function(querySnapshot) {
@@ -364,7 +368,7 @@
                     btnAddData.disabled = true;
                     btnTakePhotos.disabled = false;
                     btnSelectAll.disabled = false;
-                    btnDeleteSelect.disabled= false;
+                    btnDeleteSelect.disabled = false;
                     blockInput();
                 } else {
                     // do something with the data 
@@ -374,8 +378,9 @@
                         divDataRed.style.backgroundColor = "green";
                         btnAddData.disabled = true;
                         btnTakePhotos.disabled = false;
+                        btnAddFootprint.disabled = false;
                         btnSelectAll.disabled = false;
-                        btnDeleteSelect.disabled= false;
+                        btnDeleteSelect.disabled = false;
                         blockInput();
 
                     } else {
