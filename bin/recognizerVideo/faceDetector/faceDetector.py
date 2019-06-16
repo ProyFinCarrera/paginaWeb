@@ -66,9 +66,10 @@ class FaceDetector:
         prepared_img = self._prepare_img(img)
         # cv2.imshow("imagen pre",prepared_img)
         faces = self.__sys_det.detectMultiScale(
-            prepared_img, scaleFactor=1.05, minNeighbors=5,minSize=(65,65),maxSize=(67,67))
+            prepared_img, scaleFactor=1.05, minNeighbors=5,minSize=(50,50),maxSize=(67,67))#minSize=(50,50),maxSize=(67,67)
         tam = len(faces)
-        # print(tam)
+     
+        #print(tam)
         if tam > 0:
             (x, y, w, h) = (faces[0][0]+12, faces[0]
                             [1]+9, faces[0][2]-25, faces[0][3]-10)
@@ -79,15 +80,12 @@ class FaceDetector:
             pos_a = (x * self.__size, y * self.__size)
             pos_b = (x * self.__size + w * self.__size,
                      y * self.__size + h * self.__size)
-            #img = cv2.rectangle(img, pos_a, pos_b, (0, 255, 0), 3)
-            t2 = threading.Thread(
-                       target=cv2.rectangle, args=(img, pos_a, pos_b, (0, 255, 0), 3,))
-            t2.start()
+            img = cv2.rectangle(img, pos_a, pos_b, (0, 255, 0), 3)
             resul = True
             pos_face = (x * self.__size, y * self.__size)
             if self.__save_face:
                 t1 = threading.Thread(
-                        target=saveFace.save_face, args=(face_resize,))
+                    target=saveFace.save_face, args=(face_resize,))
                 t1.start()
             return (resul, face_resize , pos_face)
         return (resul, face_resize, pos_face)

@@ -16,9 +16,9 @@ from footprint import footprint
 
 def main():
     try:
-        email = sys.argv[1]
+        #email = sys.argv[1]
         #print(email)
-        #email = "perez@gmail.com"
+        email = "perez@gmail.com"
         # print("ESte es mi email: " + email)
         db = myfirebase.MyFirebase()
         aux = footprint.Footprint(timer_power = 0.1 )

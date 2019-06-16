@@ -75,9 +75,8 @@
                     <div class="col-md-6 col-sm-12 mb-3">
                         <div class="row">
                             <div class="col-sm-1"></div>
-    
-                            <canvas  class="col-sm-10" id="canvas" width="640" height="480" alt="No se puede reproducir el vi"></canvas>
-                               <div class="col-sm-1"></div>
+                            <img id="canvas" src="video.jpg" width="640" height="480"></img>
+                            <div class="col-sm-1"></div>
                         </div>
                         <div class="row mb-3"> </div>
                         <div class="row">
@@ -134,7 +133,7 @@
         <div class="row">
             <form class="col-12 form-group" id="form2" role="form">
                 <div class="row">
-                    <button class="btn btn-secondary my-button btn-lg btn-block col-4 my-button" type="submit" id="btnAddFootprint" disabled>Add Footprint</button>
+                    <button class="btn btn-secondary my-button btn-lg btn-block col-4 my-button" type="submit" id="btnAddFootprint">Add Footprint</button>
                     <p id="pFootprintText" class="col-6"></p>
                     <div id="divFootprintRed" class="col-1 button-red"></div>
                     <div class="col-1"></div>
@@ -155,7 +154,6 @@
     <script src="/javascripts/firebase.js"></script>
     <script src="/socket.io/socket.io.js"> </script>
     <script src="/javascripts/newUser.js"></script>
-    <!--script src="/javascripts/video.js"></script-->
 </body>
 
 </html>

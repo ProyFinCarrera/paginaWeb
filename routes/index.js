@@ -48,6 +48,7 @@ admin.initializeApp({
 router.get('/', function(req, res, next) {
     let url = req.headers.referer;
     let page = takePageName(url);
+    console.log("voy a " + page)
     if((page == "getIn")||(page == "newUser") ){
       closeSistem()
     }
@@ -280,7 +281,8 @@ router.get('/newUser', function(req, res, next) {
             //videoOn()
             // Initialize verification process
             var PythonShell = require('python-shell')
-            pyshell = new PythonShell('sudo python ./../bin/mainSaveFaceNew.py');
+            //pyshell = new PythonShell('sudo python ./../bin/mainSaveFaceNew.py');
+            pyshell = new PythonShell('sudo python ./../bin/saveFaceWeb.py');
             //pyshell = new PythonShell('sudo python ./../bin/mainSaveFace.py');
             pyshell.on('message', function(message) {
                 // received a message sent from the Python script (a simple "print" statement)

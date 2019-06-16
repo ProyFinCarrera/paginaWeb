@@ -30,11 +30,11 @@ try:
         print("%s the file already exists" % PID_FILE)
         raise ValueError('The program is in process')
     else:
-        #open(PID_FILE, "w").write(PID)
+        open(PID_FILE, "w").write(PID)
         # initialize the camera and grab a reference to the raw camera capture
         camera = PiCamera()
         camera.resolution = (640, 480)
-        camera.framerate = 15  # 15 32
+        camera.framerate = 30  # 15 32
         camera.hflip = True
         rawCapture = PiRGBArray(camera, size=(640, 480))
         # allow the camera to warmup
@@ -52,7 +52,7 @@ try:
             #aux, name_img = det_video.video_img(image)
             rt_v, name_img = det_video.only_video_img(image)
             #time.sleep(0.1)
-            cv2.imshow("Frame",image )
+            #cv2.imshow("Frame",image )
             if rt_v == True:
                 aux  = os.path.join(PATH_DIR ,'mainVerifyFootprint.py')
                 cmd = ['python', aux , name_img]
@@ -78,11 +78,4 @@ try:
         cv2.destroyAllWindows()
 except Exception as e:
     print('Exception message: ' + str(e))
-finally:
-    if os.path.isfile(PID_FILE):
-        os.unlink(PID_FILE)
-    if os.path.isfile(PID_FILE2):
-        os.unlink(PID_FILE2)
-    if os.path.isfile(PID_PROCESS):
-        os.unlink(PID_PROCESS)
          

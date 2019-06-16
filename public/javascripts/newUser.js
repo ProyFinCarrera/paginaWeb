@@ -33,7 +33,7 @@
                     aCallback(anHttpRequest.response);
                 }
             }
-            anHttpRequest.open("GET", aUrl, false);
+            anHttpRequest.open("GET", aUrl, true);
             anHttpRequest.send();
         }
     }
@@ -46,7 +46,7 @@
                     aCallback(anHttpRequest.response);
                 }
             }
-            anHttpRequest.open("POST", aUrl, false);
+            anHttpRequest.open("POST", aUrl, true);
             anHttpRequest.send();
         }
     }
@@ -59,33 +59,17 @@
     btnDeleteSelect.addEventListener('click', deleteSelect, false);
     btnSelectAll.addEventListener('click', selectAll, false);
 
-    //var socket = io('http://localhost:3000/video',{ reconnection: false });
-    var socket = io('http://192.168.1.42:3000/video', { reconnection: false });
+    var socket = io('http://localhost:3000/video',{ reconnection: false });
+    //var socket = io('http://192.168.1.42:3000/video');//{ reconnection: false }
     //var socket = io('http://192.168.1.50:3000/video', { reconnection: false });
-    var ctx = document.getElementById('canvas').getContext('2d');
+    //var ctx = document.getElementById('canvas').getContext('2d');
 
-    function videoOn(data) {
-
-        socket.emit("image", { image: "ok" }, function(data) {
-
-        });
-
-
-    }
-    setInterval(() => { videoOn() }, 50); //125
-    //setTimeout(videoOn,10,"ok"+ "?" + Math.random())
-    socket.on("new_image", function(info) {
-        let img = new Image();
-        if (info.image) {
-            //img.src = 'data:image/jpeg;base64,' +  info.buffer ;
-            img.src = 'data:image/webp;base64,' + info.buffer;
-            img.onload = function() {
-                img.clientWidth = ctx.clientWidth;
-                img.clientHeight = ctx.clientHeight;
-                ctx.drawImage(img, 0, 0, 640,480);
-            }
-        }
-    });
+  
+    
+    setTimeout(  function videoOn() {
+        let img = document.getElementById('canvas');
+        img.src = 'http://localhost:8000/stream.mjpg';
+    },4000)
 
     socket.on("rec_img", function(images) {
         clearDiv();
@@ -323,19 +307,23 @@
     //////////////////////////////////////////////////////////falta esto para adeltne
 
     function addFootprint(event) {
-        event.preventDefault();
         btnAddFootprint.disabled = true;
-        upFootprint()
+        event.preventDefault();      
         pFootprintText.innerHTML = "";
+        upFootprintw()
     }
-
-    function upFootprint() {
+    
+    
+    function upFootprintw() {
         var client = new HttpClient();
         console.log(email.value)
-        document.cookie = "newUser=" + email.value; // se crera cuadno la fotos
+        document.cookie = "newUser=" + email.value; // se crera cuadno la fotos /saveFootprint
         //Hacer funcional la parate de la huella.
-        client.post('/saveFootprint', function(response) {
+        
+        client.post('http://localhost:8000/footprintSave', function(response) {
             // do something with response
+            //btnAddFootprint.disabled = false;
+            console.log(response)
             var content = JSON.parse(response);
             setTimeout(writeDatoF, 10, content.message)
             if (content['code'] == "0") {
@@ -347,7 +335,7 @@
         });
 
     }
-
+    
     function writeDatoF(dato) {
         pFootprintText.innerHTML = dato;
     }

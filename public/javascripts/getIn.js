@@ -4,7 +4,7 @@ const divCheckFRed = document.getElementById("divCheckFRed");
 const pCheckFText = document.getElementById("pCheckFText");
 
 
-setInterval("video()", 50);
+setInterval("video()", 30);
 //setInterval("infoData()", 2000);
 function video() {
     var img = document.getElementById('myImg');

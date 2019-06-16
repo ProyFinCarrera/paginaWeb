@@ -45,9 +45,9 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
     let btnPass = document.getElementById('divCheckFRed')
-    //var socket = io('http://localhost:3000/video',{ reconnection: false });
+    var socket = io('http://localhost:3000/video',{ reconnection: false });
     //var socket = io('http://192.168.1.50:3000/video', { reconnection: true });
-    var socket = io('http://192.168.1.42:3000/video', { reconnection: false });
+    //var socket = io('http://192.168.1.42:3000/video', { reconnection: false });
     var ctx = document.getElementById('canvas').getContext('2d');
 
     function videoOn() {

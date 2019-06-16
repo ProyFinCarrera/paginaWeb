@@ -77,7 +77,7 @@ video.on('connection', function(socket) {
     let cont = 0;
 
     let dir_temp = path.join(__dirname, path.join("tmp", "pass.PID"))
-    console.log(dir_temp)
+    //console.log(dir_temp)
 
     fs.readFile(dir, function(err, buf) {
         fs.stat(dir_temp, function(err) {

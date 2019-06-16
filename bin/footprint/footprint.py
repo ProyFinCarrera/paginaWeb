@@ -6,11 +6,10 @@
 #   Finguer. Search for a finger
 import time
 from time import clock
-#from codify import codify
 
 if __name__ == "__main__":
   import pyfingerprint
-  import codify
+  from codify import codify
 else:
   from footprint import pyfingerprint
   from footprint.codify import codify
@@ -27,7 +26,7 @@ class Footprint:
                  recognizer by the finger in seconds. The defaul
                  value is 0.1
           """
-        def __init__(self, timer_power = 0.1):        
+        def __init__(self, timer_power = 15):        
           try:
               self.__timer_power = timer_power
               self.__fingerprint = pyfingerprint.PyFingerprint(
@@ -90,26 +89,28 @@ class Footprint:
                   vector. False in otherwise.
             """
             try:
-              rt = self._read_and_not_be_inside()
-              if rt:
-                self._read_footprint_buffer(0x02)
-                if self.is_footprint_equal():
-                  # print("Save footprint")
-                  position_number = self._save_footprint_inside()
-                  vect = self.id_footprint(position_number, buffer=0x01)
-                  return (True, vect.decode("ASCII"))
-                else:
-                  exit(2)
-                  #return (False, -1)
+              aux = self._read_footprint_buffer(0x01)
+              if aux:
+                  aux = self._read_footprint_buffer(0x02)
+                  if self.is_footprint_equal():
+                      (check, pos) = self._check_if_inside()
+                      if check == False:
+                          position_number = self._save_footprint_inside()
+                          vect = self.id_footprint(position_number, buffer=0x01)
+                          return (True, vect.decode("ASCII"))
+                      else:
+                         return (False, 3) # is inside
+                  else:
+                    return (False, 2) # footprin no equal
               else:
-                exit(2)
-                # print("Dedos ya dentro")
-                # return (False,-1)
+                  return (False, 2) # footprin no equal
             except Exception as e:
               print('Operation failed!')
               print('Exception message: ' + str(e))
-              exit(1)
-
+              raise e
+          
+              
+        
         def clear_all_footprint(self):
             """ Remove all fingers from the divece"""
             self.__fingerprint.clearDatabase()
@@ -143,18 +144,17 @@ class Footprint:
            # Wait that finger is read
             wait = False
             read = False
-            time_a = clock()
+            time_a = 0
             while (wait == False):
               wait = self.__fingerprint.readImage()
               if(wait):
                 read = True
-              time_b = clock()
-              if (time_b - time_a) >= self.__timer_power:
-                wait = True
+              if time_a >= self.__timer_power:
+                 wait = True
+              time_a+=1
             # Converts read image to characteristics and stores it in charbuffer 1
             if (read):
               self.__fingerprint.convertImage(buffer)
-              # time.sleep(1)
               return True
             else:
               return False
@@ -181,8 +181,6 @@ class Footprint:
             self.__fingerprint.loadTemplate(pos, buffer)
             # Downloads the characteristics of template loaded in charbuffer 1
             characterics = self.__fingerprint.downloadCharacteristics(buffer)
-            # return characterics.encode('utf-8')
-            # return hashlib.sha256(characterics.encode('utf-8')).hexdigest()
             return codify.take_aes(codify.tranfor_vector_int(characterics))
 
         def _save_footprint_inside(self):
@@ -198,7 +196,8 @@ class Footprint:
 if __name__ == "__main__":
   aux = Footprint()
   #aux.clear_all_footprint();
-  # check , vec_aux = aux.save_footprint()
+  check , vec_aux = aux.save_footprint()
+  print (vec_aux)
   # aux.del_footprint({vec_aux:vec_aux})
   # introducto huella.
   # Saco vector caracteristico.

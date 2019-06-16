@@ -41,19 +41,34 @@ def save_face(face):
     else:
         cont_img = 1
 
-
+def save_img2(images):
+    # print(images)
+    # images = cv2.resize(images,(40,30))
+    # images = cv2.resize(images,(80,60))
+    images = cv2.resize(images,(160,120))
+    #images = cv2.resize(images,(320,240))
+    #images = cv2.cvtColor(images, cv2.COLOR_BGR2RGB)
+    #np.save(SAVE_IMG, images)
+    im = Image.fromarray(images,mode='RGB')
+    
+    #im.save(SAVE_IMG)
+    t1 = threading.Thread(target=im.save, args=(SAVE_IMG,))
+    t1.start()
+    
 def save_img(images):
     # print(images)
     # images = cv2.resize(images,(40,30))
     # images = cv2.resize(images,(80,60))
-    #images = cv2.resize(images,(160,120))
-    images = cv2.resize(images,(320,240))
+    images = cv2.resize(images,(160,120))
+    #images = cv2.resize(images,(320,240))
     images = cv2.cvtColor(images, cv2.COLOR_BGR2RGB)
     #np.save(SAVE_IMG, images)
     im = Image.fromarray(images)
+    
     #im.save(SAVE_IMG)
     t1 = threading.Thread(target=im.save, args=(SAVE_IMG,))
     t1.start()
+    #t1.join()
    
     #pass_webp(SAVE_IMG)
     # images = cv2.resize(images,(400,400))
