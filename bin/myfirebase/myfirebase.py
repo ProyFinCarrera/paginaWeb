@@ -118,23 +118,27 @@ class MyFirebase:
             Return:
                 True if you find a user, false otherwise.
         """
-        mac = my_mac()
-        # Reference to the document.
-        doc, size = self._search_id_user(email)
-        # Update
-        # + vect_characteristic.decode("ASCII")
-        camp = "m_div." + mac + ".finger" + str(size)
-        up_data = {camp: vect_characteristic}
+        try:
+            mac = my_mac()
+            # Reference to the document.
+            doc, size = self._search_id_user(email)
+            # Update
+            # + vect_characteristic.decode("ASCII")
+            camp = "m_div." + mac + ".finger" + str(size)
+            up_data = {camp: vect_characteristic}
 
-        if(doc == -1):
-            # print("User not foud")
-            return False
-        else:
-            #print(up_data)
-            # print("Foud user")
-            users_collection = self.db_fire.collection(u'users').document(doc)
-            users_collection.update(up_data)
-            return True
+            if(doc == -1):
+                # print("User not foud")
+                return False
+            else:
+                #print(up_data)
+                # print("Foud user")
+                users_collection = self.db_fire.collection(u'users').document(doc)
+                users_collection.update(up_data)
+                return True
+        except Exception as e:
+            print('Exception message: ' + str(e))
+            return e
 
     def search_email(self, nameFile):
         try:

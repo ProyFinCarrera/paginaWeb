@@ -63,18 +63,18 @@
     //var socket = io('http://192.168.1.42:3000/video');//{ reconnection: false }
     //var socket = io('http://192.168.1.50:3000/video', { reconnection: false });
     //var ctx = document.getElementById('canvas').getContext('2d');
-
-  
-    
-    setTimeout(  function videoOn() {
+   
+    setTimeout( function videoOn() {
         let img = document.getElementById('canvas');
         img.src = 'http://localhost:8000/stream.mjpg';
-    },4000)
+        img.onload() = function(){
+            
+        }
+    } ,5000)
 
     socket.on("rec_img", function(images) {
         clearDiv();
         images.forEach(function(img) {
-
             let divI = document.createElement("div");
             switch (images.length) {
                 case 3:
@@ -156,14 +156,6 @@
         console.log("Clear All");
     }
 
-    function clearDiva() {
-        console.log("Estoy limpiando todo")
-        let myNode = document.getElementById("cont_img");
-        while (myNode.firstChild) {
-            myNode.removeChild(myNode.firstChild);
-        }
-    }
-
     function deleteSelect() {
         btnDeleteSelect.disabled = true
         btnTakePhotos.disabled = true
@@ -220,12 +212,10 @@
     }
 
     function deleteUserSystem() {
-
         var client = new HttpClient();
         client.post('/deleteUserSystem', function(response) {
 
         });
-
     }
 
     function takephotos() {
@@ -258,9 +248,7 @@
         //console.log("AddImages")
         //console.log(firstName.value)
         document.cookie = "nombre=" + firstName.value;
-        //document.cookie = "email=" + "rooot)?"
         document.cookie = "newUser=" + email.value;
-        // document.cookie = "nombre=" + "jairooo";
         var client = new HttpClient();
         client.post('/confir_photos', function(response) {
             // do something with response
@@ -310,20 +298,20 @@
         btnAddFootprint.disabled = true;
         event.preventDefault();      
         pFootprintText.innerHTML = "";
-        upFootprintw()
+        upFootprint()
     }
     
     
-    function upFootprintw() {
+    function upFootprint() {
         var client = new HttpClient();
-        console.log(email.value)
+        //console.log(email.value)
         document.cookie = "newUser=" + email.value; // se crera cuadno la fotos /saveFootprint
         //Hacer funcional la parate de la huella.
-        
-        client.post('http://localhost:8000/footprintSave', function(response) {
+        val = "?" + email.value;
+        client.post('http://localhost:8000/footprintSave' + val, function(response) {
             // do something with response
             //btnAddFootprint.disabled = false;
-            console.log(response)
+            //console.log(response)
             var content = JSON.parse(response);
             setTimeout(writeDatoF, 10, content.message)
             if (content['code'] == "0") {
@@ -404,7 +392,7 @@
         let db = firebase.firestore();
         db.collection("users").add(userData)
             .then(function(docRef) {
-                console.log("Document written with ID: ", docRef.id);
+                //console.log("Document written with ID: ", docRef.id);
                 docRef.update({ id: docRef.id });
                 document.cookie = "DOCREF=" + docRef.id;
             }).catch(function(error) {

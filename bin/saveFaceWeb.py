@@ -67,10 +67,13 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         
     def do_POST(self):
-        if self.path == '/footprintSave':
+        path = self.path.split("?")
+        print( path)
+        if path[0] == '/footprintSave':
             try:
+                #print(self)
                 check , vec_aux = det_footprint.save_footprint();
-                print(vec_aux)
+                #print(vec_aux)
                 content = json.dumps({'code':0,'message':'All right'}).encode('utf-8')
                 if vec_aux == 2:
                     content = json.dumps({'code':2,'message':'Footprint not registered'}).encode('utf-8')
@@ -82,9 +85,9 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                 self.send_header('Content-Length', len(content))
                 self.end_headers()
                 self.wfile.write(content)
-                
-                email = "perez@gmail.com"
-                # print(check)
+                #email  = sys.argv[1]
+                email = path[1]# "perez@gmail.com"
+                print(check)
                 if check:              
                    ok = db.upload_footprint(vec_aux, email)
                    if ok:
@@ -113,10 +116,10 @@ class StreamingHandler(server.BaseHTTPRequestHandler):
                         img = Image.open(BytesIO(frame))
                         t_img= numpy.array(img)
                         (resul, face_resize , pos_face) = det_face.detect(t_img)                              
-                        output.set_name("No detecto")
+                        output.set_name("Not detected")
                         output.set_red()
                         if resul:
-                            output.set_name("Detecto Rostro")
+                            output.set_name("Detect Face")
                             output.set_green()
                     self.wfile.write(b'--FRAME\r\n')
                     self.send_header('Content-Type', 'image/jpeg')
@@ -145,10 +148,10 @@ try:
         det_face = faceDetector.FaceDetector(save_face=True)
         det_footprint = footprint.Footprint()
         db = myfirebase.MyFirebase()
-        with picamera.PiCamera(resolution='640x480', framerate=20) as camera:
+        with picamera.PiCamera(resolution='640x480', framerate=30) as camera:
             output = StreamingOutput(camera=camera)
             camera.hflip=True
-            camera.annotate_text = "hola"
+            camera.annotate_text = "Not detected"
             camera.annotate_background = picamera.Color('red')
             camera.start_recording(output, format='mjpeg')
             try:

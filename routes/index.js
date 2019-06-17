@@ -48,9 +48,8 @@ admin.initializeApp({
 router.get('/', function(req, res, next) {
     let url = req.headers.referer;
     let page = takePageName(url);
-    console.log("voy a " + page)
     if((page == "getIn")||(page == "newUser") ){
-      closeSistem()
+      closeSistem();
     }
     res.render('index', { title: 'Secure Access Control' });
 });
@@ -354,7 +353,8 @@ router.get('/getIn', function(req, res, next) {
     if (page != "getIn") {
         
         var PythonShell = require('python-shell');
-        pyshell = new PythonShell('sudo python ./../bin/mainNew.py');
+        //pyshell = new PythonShell('sudo python ./../bin/mainNew.py');
+        pyshell = new PythonShell('sudo python ./../bin/recognizerWeb.py', { args: [req.cookies.newUser] });
         //pyshell = new PythonShell('sudo python3 ./../bin/main.py');
         pyshell.on('message', function(message) {
             // received a message sent from the Python script (a simple "print" statement)
@@ -373,13 +373,13 @@ router.get('/getIn', function(req, res, next) {
         pyshell = null;
     }
 });
-/* Save footprint and GET menuAdm page. */
+/* Save footprint and GET menuAdm page.
 router.post('/saveFootprint', function(req, res, next) {
     let path_file = __dirname
     path_file = path.join(path_file, "./..")
     path_file = path.join(path_file, "bin")
     path_file = path.join(path_file, 'mainSaveFootprint.py')
-    //console.log(req.cookies)
+    console.log(req.cookies)
 
     //res.send({})
     var PythonShell = require('python-shell');
@@ -412,7 +412,7 @@ router.post('/saveFootprint', function(req, res, next) {
         res.send({ "code": code, "message": message });
     });
     pyshell = null;
-});
+});*/
 
 // Post
 router.post('/deleteSelect', function(req, res, next) {

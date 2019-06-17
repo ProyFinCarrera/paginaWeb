@@ -29,7 +29,7 @@
             </div>
             <div class="row mb-3">
                 <div class="col-sm-2"></div>
-                <canvas class="col-sm-8" id="canvas" width="640" height="480" alt="No se puede reproducir el vi"></canvas>
+                <img class="col-sm-8" id="canvas" src="video.jpg" width="640" height="480"  alt="No se puede reproducir el vi"></img>
                 <div class="col-sm-2">
                 </div>
             </div>
@@ -45,20 +45,20 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
     let btnPass = document.getElementById('divCheckFRed')
-    var socket = io('http://localhost:3000/video',{ reconnection: false });
+    //var socket = io('http://localhost:3000/video',{ reconnection: false });
     //var socket = io('http://192.168.1.50:3000/video', { reconnection: true });
     //var socket = io('http://192.168.1.42:3000/video', { reconnection: false });
-    var ctx = document.getElementById('canvas').getContext('2d');
+    //var ctx = document.getElementById('canvas').getContext('2d');
 
-    function videoOn() {
+    /*function videoOn() {
         socket.emit("image", { image: "ok" })
         //console.log("emite coñoñoo")
-    }
+    }*/
 
 
-    setInterval(() => { videoOn() }, 125);
+    //setInterval(() => { videoOn() }, 125);
     //setTimeout(videoOn,10,"ok"+ "?" + Math.random())
-    socket.on("new_image", function(info) {
+   /* socket.on("new_image", function(info) {
         let img = new Image();
         if (info.image) {
             if (info.recognizer == true) {
@@ -78,9 +78,14 @@
             
         }
       
-    });
-
-
+    });*/
+  setTimeout(  function videoOn() {
+        let img = document.getElementById('canvas');
+        img.src = 'http://localhost:8000/stream.mjpg';
+        img.onload() = function(){
+            //sleep(15)
+        }
+    },10000)
     function drawRed() {
         btnPass.style.borderColor = "red";
         btnPass.style.backgroundColor = "red";

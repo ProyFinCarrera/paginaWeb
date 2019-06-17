@@ -1,36 +1,30 @@
 #!/usr/bin/env node
-
 /**
  * Module dependencies.
  */
-
 var app = require('../app');
 var debug = require('debug')('ctrlaccess:server');
 var http = require('http');
 var path = require('path');
-var fs = require('fs'); //required for file serving
+var fs = require('fs'); 
+//required for file serving
 //var https = require('https');
 /**
  * Get port from environment and store in Express.
  */
 const host = 'localhost';
 //const host = '192.168.1.50';
-
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
-
 /**
  * Create HTTP server.
  */
 var server = http.createServer(app);
-
 // var server = https.createServer({
 //     key: fs.readFileSync('./bin/ssl/my_cert.key'),
 //     cert: fs.readFileSync('./bin/ssl/my_cert.crt'),
 //     ca: fs.readFileSync ( './bin/ssl/my_cert.csr' )
 // }, app)
-
-
 // http.createServer(app).listen(80);
 // app.use(function(req, res, next) {
 //     if (req.secure) {
@@ -39,30 +33,16 @@ var server = http.createServer(app);
 //         res.redirect('https://' + req.headers.host + req.url);
 //     }
 // });
+//server.listen(host ,port);
+//const server2 = http.createServer(app).listen(3001);
 /**
  * Listen on provided port, on all network interfaces.
  */
-
-
-//);
-
-// socket.on('image', function(socket){
-//    console.log(socket);
-//   fs.readFile(__dirname + '/../public/video/cam1.jpg', function(err, buf){
-//     video.emit('new_image', { image: true, buffer: buf.toString('base64')});
-//     video.disconte
-//   });
-//});
-
-//  });
-//server.listen(host ,port);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
-
-//const server2 = http.createServer(app).listen(3001);
-users = {}
-ids_disconnect = []
+let users = {}
+let ids_disconnect = []
 const io = require('socket.io')(server);
 //trying to serve the image file from the server
 const video = io.of('/video');
@@ -72,72 +52,6 @@ video.on('connection', function(socket) {
     dir = path.join(dir, "public")
     dir = path.join(dir, "video")
     let dir_picture = path.join(dir, "images")
-    // dir = path.join(dir, "video.webp")
-    dir = path.join(dir, "video.jpg")
-    let cont = 0;
-
-    let dir_temp = path.join(__dirname, path.join("tmp", "pass.PID"))
-    //console.log(dir_temp)
-
-    fs.readFile(dir, function(err, buf) {
-        fs.stat(dir_temp, function(err) {
-            if (err == null) {
-                fs.unlink(dir_temp, (err) => {
-                    //if (err) throw err;
-                    //console.log("Borro filpid")
-                });
-                //console.log("File exist");
-
-                //if ((buf.length > 10) && (
-                //      (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
-                //    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
-               // if (buf.length > 10) {
-                    socket.emit('new_image', { recognizer: true, image: true, buffer: buf.toString('base64') });
-                //}
-
-            } else {
-
-                //if ((buf.length > 10) && (
-                //      (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
-                //    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
-               // if (buf.length > 10) {
-                    socket.emit('new_image', { recognizer: false, image: true, buffer: buf.toString('base64') });
-                //}
-            }
-
-        })
-    })
-    socket.on('image', function() {
-        fs.readFile(dir, function(err, buf) {
-            fs.stat(dir_temp, function(err) {
-                if(err == null) {
-                    fs.unlink(dir_temp, (err) => {
-                        //if (err) throw err;
-                        //console.log("Borro filpid")
-                    });
-                    //console.log("File exist");
-
-                    //if ((buf.length > 10) && (
-                    //      (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
-                    //    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
-                    //if (buf.length > 10) {
-                        socket.emit('new_image', { recognizer: true, image: true, buffer: buf.toString('base64') });
-                    //}
-
-                } else {
-
-                    //if ((buf.length > 10) && (
-                    //      (buf.toString('base64')[buf.toString('base64').length - 5] == "/") ||
-                    //    (buf.toString('base64')[buf.toString('base64').length - 4] == "/"))) {
-                    //if (buf.length > 10) {
-                        socket.emit('new_image', { recognizer: false, image: true, buffer: buf.toString('base64') });
-                    //}
-                }
-            })
-        })
-
-    })
-
     var user_id = socket.id; //socket.decoded_token.user;
     if (users[user_id] === undefined) {
         users[user_id] = { "socket": socket };
@@ -147,7 +61,6 @@ video.on('connection', function(socket) {
         users[user_id].socket.disconnect(true);
         users[user_id] = { "socket": socket };
     }
-
     console.log("User Connect: " + user_id + " SocketID: " + socket.id);
     //disconnect client
     socket.on('disconnect', function() {
@@ -158,10 +71,9 @@ video.on('connection', function(socket) {
         } else {
             delete users[user_id];
             socket.disconnect(true)
-            users[user_id] = undefined; // <-------- Está es la linea que agregué
+            users[user_id] = undefined;
         }
     });
-
     socket.on("give_pictures", function(img) {
         fs.readdir(dir_picture, (err, files) => {
             let tam = files.length
@@ -180,10 +92,8 @@ video.on('connection', function(socket) {
             })
             video.emit("rec_img", ordFiles)
         });
-
     })
 });
-
 /**
  * Normalize a port into a number, string, or false.
  */
@@ -203,7 +113,6 @@ function normalizePort(val) {
 
     return false;
 }
-
 /**
  * Event listener for HTTP server "error" event.
  */
@@ -230,7 +139,6 @@ function onError(error) {
             throw error;
     }
 }
-
 /**
  * Event listener for HTTP server "listening" event.
  */

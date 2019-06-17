@@ -39,7 +39,7 @@ class Footprint:
           except Exception as e:
                print('The Footprint sensor could not be initialized!')
                print('Exception message: ' + str(e))
-               exit(1)
+               raise e
         
         def verify_footprint(self, json_v_caracteristic):
             """ Tries to enroll new finger. Befor saving ,
@@ -52,30 +52,33 @@ class Footprint:
                    True if you are verified by the system. False in otherwise.
             """
             try:
-              (rt, pos) = self._read_and_be_inside()  # lo k leo 0x01
-              if(rt):
-                # print(pos)
-                vect = self.id_footprint(pos, buffer=0x01).decode(
-                    "ASCII")  # poxicondonde esta en do
-                #print(vect)
-                vect_aux = codify.des_aes(vect).decode(
-                    "ASCII")
-                
-                #print(vect_aux)
-                #print()
-                for aux_v in json_v_caracteristic:
-                  vect_aux2 = codify.des_aes(json_v_caracteristic[aux_v]).decode("ASCII")
-                  # print(vect_aux2)
-                  if vect_aux2 == vect_aux:
-                    print("Vector Equals")
-                    return True
+              aux = self._read_footprint_buffer(0x01)
+              if aux:
+                  aux = self._read_footprint_buffer(0x02)
+                  if self.is_footprint_equal():
+                      (check, pos) = self._check_if_inside()
+                      if check:
+                          vect = self.id_footprint(pos, buffer=0x01).decode("ASCII")  # poxicondonde esta en do
+                          vect_aux = codify.des_aes(vect).decode("ASCII")
+                          #print(vect_aux)
+                          #print()
+                          for aux_v in json_v_caracteristic:
+                              vect_aux2 = codify.des_aes(json_v_caracteristic[aux_v]).decode("ASCII")
+                              # print(vect_aux2)
+                              if vect_aux2 == vect_aux:
+                                print("Vector Equals")
+                                return True
+                      else:
+                          # print("Estoy fuera")
+                          return False
+                  else:
+                      return False
               else:
-                # print("Estoy fuera")
-                return False
-              return False
+                  return False
             except Exception as e:
               print('Exception message: ' + str(e))
-              exit(1)
+              raise e
+            
         def save_footprint(self):
             """ Tries to enroll new finger. Befor saving ,
                  the finger is checked twice. Steps to follow
@@ -114,14 +117,6 @@ class Footprint:
         def clear_all_footprint(self):
             """ Remove all fingers from the divece"""
             self.__fingerprint.clearDatabase()
-
-        def _read_and_be_inside(self):
-            read = self._read_footprint_buffer(0x01)
-            (check, pos) = self._check_if_inside()
-            if(read and check):
-              return (True, pos)
-            else:
-              return (False, -1)
 
         def del_footprint(self, json_v_caracteristic):
               # print(json_v_caracteristic)
@@ -196,8 +191,8 @@ class Footprint:
 if __name__ == "__main__":
   aux = Footprint()
   #aux.clear_all_footprint();
-  check , vec_aux = aux.save_footprint()
-  print (vec_aux)
+  #check , vec_aux = aux.save_footprint()
+  #print (vec_aux)
   # aux.del_footprint({vec_aux:vec_aux})
   # introducto huella.
   # Saco vector caracteristico.

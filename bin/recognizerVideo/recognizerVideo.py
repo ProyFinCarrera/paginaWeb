@@ -17,6 +17,7 @@ else:
     from recognizerVideo.faceDetector import faceDetector
     from recognizerVideo.recognizer import recognizer
 PATH_DIR = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
+FILE_REC =os.path.join(os.path.join(os.path.dirname(PATH_DIR),'tmp'),"recognizer.info")
 PATH_VID = os.path.join(os.path.join(os.path.join(os.path.join(
     os.path.dirname(os.path.dirname(PATH_DIR)), "public"), "video")))
 EXT = "jpg"
@@ -67,9 +68,18 @@ class RecognizerVideo:
             if(self.__cancel_cont == False):
                 self._repeated_times_recognized(result)
                 myrt = self._maximum_recognition()
-        
-        return myrt, name
+                if myrt:
+                    t1 = threading.Thread(target=self._save_date,
+                                            args=(name,))
+                    t1.start()
+                    
+        #print(name)
+        #result = myrt
+        #r_name = name
+        return myrt,name
     
+    def _save_date(self,name):
+        open(FILE_REC, "w").write(name)  
 
     def video_img(self, frame):
         """ Class methods that recognize a person's face in an image
@@ -103,9 +113,11 @@ class RecognizerVideo:
             self.set_cont_cero()
                 
     def cancel_cont(self):
+        self.set_cont_cero()
         self.__cancel_cont = True
     
     def active_cont(self):
+        self.set_cont_cero()
         self.__cancel_cont = False
         
 
