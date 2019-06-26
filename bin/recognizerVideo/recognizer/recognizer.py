@@ -10,7 +10,7 @@ PATH_DIR = os.path.dirname(os.path.abspath(os.path.realpath(__file__)))
 MODEL = {1: cv2.face.LBPHFaceRecognizer_create,
          2: cv2.face.FisherFaceRecognizer_create,
          3: cv2.face.EigenFaceRecognizer_create}
-OP_PREDICTION = {1: 90, 2: 500, 3: 500}
+OP_PREDICTION = {1: 200, 2: 500, 3: 500}
 # 80
 
 class Recognizer:

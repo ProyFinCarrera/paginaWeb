@@ -81,10 +81,7 @@
     });*/
   setTimeout(  function videoOn() {
         let img = document.getElementById('canvas');
-        img.src = 'http://localhost:8000/stream.mjpg';
-        img.onload() = function(){
-            //sleep(15)
-        }
+        img.src = 'http://localhost:8000/stream.mjpg'
     },10000)
     function drawRed() {
         btnPass.style.borderColor = "red";

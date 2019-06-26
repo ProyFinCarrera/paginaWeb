@@ -158,27 +158,29 @@ class StreamingServer(socketserver.ThreadingMixIn, server.HTTPServer):
 try:
     if os.path.isfile(PID_FILE):
         print("%s the file exist" % PID_FILE)
-        raise ValueError('The program is in process')
+        #raise ValueError('The program is in process')
     else:
-        open(PID_FILE, "w").write(PID)  
-        det_face = faceDetector.FaceDetector()
-        det_video = recognizerVideo.RecognizerVideo(
-            maxiR=3, selRecon=1)
+        open(PID_FILE, "w").write(PID)
+    
+    det_face = faceDetector.FaceDetector()
+    det_video = recognizerVideo.RecognizerVideo(
+    maxiR=3, selRecon=1)
         #det_footprint = footprint.Footprint()
         #db = myfirebase.MyFirebase()
-            
-        with picamera.PiCamera(resolution='640x480', framerate=30) as camera:
-            output = StreamingOutput(camera=camera)
-            camera.hflip=True
-            camera.annotate_text = "Not detected"
-            camera.annotate_background = picamera.Color('red')
-            camera.start_recording(output, format='mjpeg',quality=30)
-            try:
-                address = ('127.0.0.1', 8000)
-                server = StreamingServer(address, StreamingHandler)
-                server.serve_forever()
-            finally:
-                camera.stop_recording()
+    print("ussss")
+    with picamera.PiCamera(resolution='640x480', framerate=30) as camera:
+         output = StreamingOutput(camera=camera)
+         camera.hflip=True
+         camera.annotate_text = "Not detected"
+         camera.annotate_background = picamera.Color('red')
+         camera.start_recording(output, format='mjpeg',quality=30)
+         try:
+            address = ('127.0.0.1', 8000)
+            server = StreamingServer(address, StreamingHandler)
+            server.serve_forever()
+         finally:
+               camera.stop_recording()
 except Exception as e:
     print('Exception message: ' + str(e))
+
 
