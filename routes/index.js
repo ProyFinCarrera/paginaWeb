@@ -3,6 +3,7 @@ const router = express.Router();
 const admin = require('firebase-admin');
 const path = require('path');
 const fs = require('fs');
+var ip = require("ip");
 const serviceAccount = require('./serviceAccountKey.json');
 const titleApp = 'Secure Access Control'
 const dir_images = catch_dir_img()
@@ -47,11 +48,19 @@ admin.initializeApp({
 /* GET home page. */
 router.get('/', function(req, res, next) {
     let url = req.headers.referer;
+    var ip_a = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    
+
     let page = takePageName(url);
     if((page == "getIn")||(page == "newUser") ){
       closeSistem();
     }
-    res.render('index', { title: 'Secure Access Control' });
+    if((ip_a.split(":")[3] ==  ip.address())||(ip_a.split(":")[2] == "1")){
+        res.render('index', { title: 'Secure Access Control', out:false });
+    }else{
+       res.render('index', { title: 'Secure Access Control', out:true });
+    }
+   
 });
 /* GET admin page. */
 router.get('/admin', function(req, res, next) {
@@ -272,6 +281,12 @@ function closeSistem(){
 /* GET newUser page. */
 router.get('/newUser', function(req, res, next) {
     let url = req.headers.referer;
+    let aux_out = true
+    let ip_a = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    
+    if((ip_a.split(":")[3] ==  ip.address())||(ip_a.split(":")[2] == "1")){
+        aux_out =false
+    }
     let page = takePageName(url);   
     verifyOn(url)
         .then(function(valor) {
@@ -299,12 +314,20 @@ router.get('/newUser', function(req, res, next) {
             });
             pyshell = null;
         }
+           if(aux_out!=true){
             if (req.cookies.email == 'root@gmail.com') {
 
-                res.render('newUser', { title: titleApp, iam: 'root' });
+                res.render('newUser', { title: titleApp, iam: 'root'});
             } else {
 
-                res.render('newUser', { title: titleApp, iam: 'other' });
+                res.render('newUser', { title: titleApp, iam: 'other'});
+            }
+            }else{
+                  res.render('error', {
+                title: titleApp,
+                message: "Operation no permiti: only on the device.",
+                error: { status: 401, stack: "Unauthorized" }
+                });
             }
 
         })

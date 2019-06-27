@@ -4,6 +4,7 @@
     const btnNum4 = document.getElementById("btnNum4");
 
     const inputSeachUser = document.getElementById("inputSeachUser");
+    const inputSelect = document.getElementById("inputSelect");
 
     const firestore = firebase.firestore();
     const settings = { timestampsInSnapshots: true };
@@ -30,10 +31,16 @@
         // Set a callback to run when the Google Visualization API is loaded.
         google.charts.setOnLoadCallback(draw4());
     });
-    
-    function contPersonYearDay(year, name_day) {
+
+    function contPersonYearDay(year, month, day, name_day) {
         return new Promise(function(resolve, reject) {
-            let db = firestore.collection('passVerification').where('nameDay', '==', name_day).where('year', '==', year).get()
+            var mac = inputSelect.value
+            let db = null
+            if (mac == "ALL") {
+                db = firestore.collection('passVerification').where('year', '==', year).where('month', '==', month).where('day', '==', day).get()
+            } else {
+                db = firestore.collection('passVerification').where('year', '==', year).where('month', '==', month).where('day', '==', day).where('mac', '==', mac).get();
+            }
             let cont = 0;
             db.then(function(querySnapshot) {
                 var array = new Array()
@@ -49,18 +56,37 @@
         })
     }
 
-    function contPersonYear(year) {
+    function selecDevice() {
+        db = firestore.collection('device').get()
+        db.then(function(querySnapshot) {
+            querySnapshot.forEach(function(doc) {
+                let opt = document.createElement("option");
+                opt.setAttribute("value", doc.data().mac);
+                opt.innerHTML = doc.data().name + "//" + doc.data().mac
+                inputSelect.appendChild(opt);
+            });
+
+
+        }).catch(function(error) {
+            reject(error);
+        });
+
+    }
+    window.onload = selecDevice();
+
+    function contPersonYear(year, month, day_week) {
         return new Promise(function(resolve, reject) {
             var data = new Array();
+            new_day = day_week
+            new_day = 24
             for (var i = 0; i < 7; i++) {
-                contPersonYearDay(year, dayWeek[i]).then(function(doc) {
+                contPersonYearDay(year, month, new_day, dayWeek[i]).then(function(doc) {
                     data.push(doc);
                     if (data.length == 7) {
                         resolve(data);
-
                     }
                 })
-
+                new_day += 1
             }
         }).catch(function(error) {
             reject(error);
@@ -68,12 +94,16 @@
 
     }
 
-    var dayWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    var dayWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
     function draw2() {
         clearDiv();
-        let thisMonth = new Date().getMonth() + 1;
-        contPersonYear(2019).then(function(arrayCont) {
+        let today = new Date();
+        let thisMonth = today.getMonth() + 1;
+        let thisYear = today.getFullYear();
+        let start_week = start_day_week(today) //today.getFullYear();
+        // console.log(start_week)
+        contPersonYear(thisYear, thisMonth, start_week).then(function(arrayCont) {
             if (!arrayCont.empty) {
                 // Create the data table.
                 var data = new google.visualization.DataTable();
@@ -82,7 +112,8 @@
                 data.addColumn('string', 'Day');
                 data.addColumn('number', 'Count');
                 data.addRows(arrayCont);
-                var options = { 'title': 'How many people for day and year' };
+                let sum = sumArrayArray(arrayCont);
+                var options = { 'title': 'Number of people identified each day of this week. Total Register: ' + sum };
                 // Instantiate and draw our chart, passing in some options.
                 var chart = new google.visualization.PieChart(document.getElementById('graphics'));
                 chart.draw(data, options);
@@ -90,6 +121,23 @@
         });
     }
 
+    function sumArrayArray(array) {
+        let suma = 0;
+        for (let i = 0; i < array.length; i++) {
+            suma += array[i][1];
+        }
+        return suma;
+    }
+
+    function start_day_week(date) {
+        day = date.getDay();
+        if (day == 0) {
+            day = (-6);
+        } else {
+            day = (day - 1)
+        }
+        return (date.getDate() - day)
+    }
     /*devuelvo persona con y hora*/
     function searchWorkPosition(emailId) {
         return new Promise(function(resolve, reject) {
@@ -105,38 +153,103 @@
             });
         })
     }
+
     function clearDiv() {
         let myNode = document.getElementById("graphics");
         while (myNode.firstChild) {
             myNode.removeChild(myNode.firstChild);
         }
+        myNode = null
     }
+
     function draw1() {
         clearDiv();
         let today = new Date();
         let thisDay = today.getDate();
         let thisMonth = today.getMonth() + 1;
         let thisYear = today.getFullYear();
-        console.log(thisDay)
+        // console.log(thisDay)
         var array = [];
         // 12 / 3/2019
-        personAccessToday(thisDay , thisMonth,thisYear).then(function(users) {
+        personAccessToday(thisDay, thisMonth, thisYear).then(function(users) {
             // Create the data table.
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'Name');
-            data.addColumn('string', 'Work-Position');
-            data.addColumn('string', 'Date');
+            data.addColumn('string', 'email');
+            //data.addColumn('string', 'Work-Position');
+            /*var i;
+            workPositionArray(users).then(function(dato) {
+                var ar = new Array(dato)
+
+                console.log(ar["0"][1])
+
+                for (i = 0; i < users.length; i++) {
+                                        
+                 // users[i][2] = dato[0][i];
+                  // console.log(dato.pop())
+                }
+            })*/
+            data.addColumn('string', 'Divice');
+            data.addColumn('string', 'Hour');
             data.addRows(users);
             var table = new google.visualization.Table(document.getElementById('graphics'));
-            table.draw(data, { showRowNumber: true, width: '100%' });             
+            table.draw(data, { showRowNumber: true, width: '100%' });
+
+
+
         })
 
     }
     /*devuelvo persona con y hora*/
+    function workPositionArray(array) {
+        return new Promise(function(resolve, reject) {
+            var i
+            var list = []
+            for (i = 0; i < array.length; i++) {
+                workPosition(array[i][1]).then(function(work) {
+
+                    list.push(work)
+                    //list = list + work
+                    //console.log(work)
+
+                })
+                resolve(list)
+            }
+
+
+
+        })
+    }
+
+    function workPosition(email) {
+        return new Promise(function(resolve, reject) {
+            db = firestore.collection('users').where('emailId', '==', email).get();
+
+            db.then(function(querySnapshot) {
+                var array = new Array();
+                querySnapshot.forEach(function(doc) {
+                    // array.push(doc.data().workPosition );
+                    resolve(doc.data().workPosition)
+                })
+                //resolve(array)
+
+            })
+
+        })
+    }
+
+    /*devuelvo persona con y hora*/
     function personAccessToday(day, month, year) {
         return new Promise(function(resolve, reject) {
-            let db = firestore.collection('passVerification').where('day', '==', day).where('month', '==', month).where('year', '==', year);
-            db.onSnapshot(function(querySnapshot) {
+            var mac = inputSelect.value
+            let db = null
+            if (mac == "ALL") {
+                db = firestore.collection('passVerification').where('day', '==', day).where('month', '==', month).where('year', '==', year).get();
+            } else {
+                db = firestore.collection('passVerification').where('day', '==', day).where('month', '==', month).where('year', '==', year).where('mac', '==', mac).get();
+            }
+
+            db.then(function(querySnapshot) {
                 var array = [];
                 querySnapshot.forEach(function(doc) {
                     var auxArray = new Array()
@@ -155,14 +268,17 @@
                     // })
                     auxArray.push(doc.data().firstName);
                     auxArray.push(doc.data().emailId);
+                    // auxArray.push("");
+                    auxArray.push(doc.data().mac);
                     auxArray.push(hourFull);
                     array.push(auxArray)
-                    resolve(array);                
-                });  
-                
+                    resolve(array);
+                });
+
             })
         })
     }
+
     function getWeekInMonth(year, month, day) {
         let weekNum = 1; // we start at week 1 
         let weekDay = new Date(year, month - 1, 1).getDay(); // we get the weekDay of day 1 
@@ -175,9 +291,16 @@
         return weekNum; //we return it
     }
 
-    function weeksOfThisMonth(month) {
+    function weeksOfThisMonth(year, month) {
         return new Promise(function(resolve, reject) {
-            let db = firestore.collection('passVerification').where('month', '==', month).get();
+
+            var mac = inputSelect.value
+            let db = null
+            if (mac == "ALL") {
+                db = firestore.collection('passVerification').where('month', '==', month).where('year', '==', year).get();
+            } else {
+                db = firestore.collection('passVerification').where('month', '==', month).where('year', '==', year).where('mac', '==', mac).get();
+            }
             let week1 = 0;
             let week2 = 0;
             let week3 = 0;
@@ -227,18 +350,28 @@
         // this month Dicenbes is 11, add +1
         clearDiv();
         let thisMonth = new Date().getMonth() + 1;
+        let thisYear = new Date().getFullYear();
         // console.log(thisMonth);
-        weeksOfThisMonth(thisMonth).then(function(contWeek) {
-            // console.log(contWeek[1]);
-            var data = google.visualization.arrayToDataTable([
-                ["Element", "Density", { role: "style" }],
-                ["Week 1", contWeek[1], "#f6f461"],
-                ["Week 2", contWeek[2], "#db3d3d"],
-                ["Week 3", contWeek[3], "#b87333"],
-                ["Week 4", contWeek[4], "color: #65cf7a"],
-                ["Week 5", contWeek[5], "color: #5961bf"]
-            ]);
-
+        weeksOfThisMonth(thisYear, thisMonth).then(function(contWeek) {
+            var data = null
+            if (contWeek.length == 5) {
+                data = google.visualization.arrayToDataTable([
+                    ["Element", "Density", { role: "style" }],
+                    ["Week 1", contWeek[0], "#f6f461"],
+                    ["Week 2", contWeek[1], "#db3d3d"],
+                    ["Week 3", contWeek[2], "#b87333"],
+                    ["Week 4", contWeek[3], "color: #65cf7a"],
+                    ["Week 5", contWeek[4], "color: #5961bf"]
+                ]);
+            } else {
+                data = google.visualization.arrayToDataTable([
+                    ["Element", "Density", { role: "style" }],
+                    ["Week 1", contWeek[0], "#f6f461"],
+                    ["Week 2", contWeek[1], "#db3d3d"],
+                    ["Week 3", contWeek[2], "#b87333"],
+                    ["Week 4", contWeek[3], "color: #65cf7a"]
+                ]);
+            }
             var view = new google.visualization.DataView(data);
             view.setColumns([0, 1,
                 {
@@ -249,9 +382,10 @@
                 },
                 2
             ]);
+            let sum = sumArray(contWeek)
 
             var options = {
-                title: "People for each week of this month",
+                title: "People for each week of this month. Total Register: " + sum,
                 bar: { groupWidth: "95%" },
                 legend: { position: "none" },
                 width: '100%',
@@ -267,18 +401,34 @@
         });
     }
 
+    function sumArray(array) {
+        let suma = 0;
+        for (let i = 0; i < array.length; i++) {
+            suma += array[i];
+        }
+        return suma;
+    }
+
+
+
     function getSeachUser(name) {
         return new Promise(function(resolve, reject) {
-
-            let db = firestore.collection('passVerification').where('firstName', '==', name)
+            var mac = inputSelect.value
+            let db = null
+            if (mac == "ALL") {
+                db = firestore.collection('passVerification').where('firstName', '==', name).get();
+            } else {
+                db = firestore.collection('passVerification').where('firstName', '==', name).where('mac', '==', mac).get();
+            }
             let cont = 0;
-            db.onSnapshot(function(querySnapshot) {
+            db.then(function(querySnapshot) {
                 var array = new Array()
                 querySnapshot.forEach(function(doc) {
                     var auxArray = new Array();
 
                     auxArray.push(doc.data().firstName);
                     auxArray.push(doc.data().emailId);
+                    auxArray.push(doc.data().mac);
 
                     let day = doc.data().day;
                     let month = doc.data().month;
@@ -299,7 +449,7 @@
     }
 
     function draw4() {
-         clearDiv();
+        clearDiv();
         // etiqueta nombre
         name = inputSeachUser.value;
         //nameUno
@@ -308,9 +458,12 @@
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'Name');
             data.addColumn('string', 'Email');
+            data.addColumn('string', 'Divice');
             data.addColumn('string', 'Date of pass');
             data.addColumn('string', 'Hour');
+
             data.addRows(users);
+            data.sort({ column: 3, desc: true });
             var table = new google.visualization.Table(document.getElementById('graphics'));
             table.draw(data, { showRowNumber: true, width: '90%' });
         })

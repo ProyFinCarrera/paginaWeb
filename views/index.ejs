@@ -14,8 +14,13 @@
                 </h1>
                 <p class="lead text-muted">This is a final project of the degree made by the student <strong>Jairo González Lemus</strong>. In which will be used the technologies studied in the subjects of the computer engineering degree taught at <strong>the University of La Laguna</strong>.</p>
                 <p>
-                    <a href="/getIn" class="btn btn-primary my-2">Get In</a>
-                    <a href="/admin" class="btn btn-secondary my-2">Administrator</a>
+                   
+                    <% if(out == true){ %>
+                        <a href="/admin" class="btn btn-secondary my-2">Administrator</a>
+                    <% }else{ %>
+                        <a href="/getIn" class="btn btn-primary my-2">Get In</a>
+                        <a href="/admin" class="btn btn-secondary my-2">Administrator</a>
+                    <% } %>
                 </p>
             </div>
         </section>

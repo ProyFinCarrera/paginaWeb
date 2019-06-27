@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # Created by: Jairo Gonzalez Lemus alu0100813272@ull.edu.es
 # File test_firebase.py:
-#			1. Class for upload and download of data in the firebase account.
+#           1. Class for upload and download of data in the firebase account.
 # -*- coding: utf-8 -*-
 import myfirebase
 import json
@@ -43,6 +43,32 @@ n_mac = {
     2: "70E3450178FB",
     3: "80E3350178FB",
 }
+lastName = {
+    1: "Pérez",
+    2: "González",
+    3: "Dorta",
+    4: "Lemus",
+}
+
+work = {
+    1: "Gerencia",
+    2: "Administración",
+    3: "Cocina",
+    4: "Auxiliar Gerencia",
+}
+
+info = {
+    1: "Eficiente",
+    2: "Sale temprano los viernes",
+    3: "Trabaja de noche",
+    4: "Esta de Vacaciones",
+}
+
+r_mac = {
+    1:{u"name": u"Device 1",u"mac": u"60E3270178FB"},
+    2:{u"name": u"Puerta 2",u"mac": u"70E3450178FB"},
+    3:{u"name": u"Puerta 5", u"mac": u"80E3350178FB"}
+}
 
 
 def my_mac():
@@ -67,11 +93,33 @@ class TestFirebase:
     def getCont(self):
         return self.__cont_up
 
+    def register_divice(self):
+        for i in r_mac:
+            self.__db.upload_testMac(r_mac.get(i))
+
+    def register_new_user(self, c_user):
+        for x in range(c_user):
+            op_user = random.randint(1, 10)
+            em = email.get(op_user)
+            fn = user.get(op_user)
+            ln = lastName.get(random.randint(1, 4))
+            wp = work.get(random.randint(1, 4))
+            otI = info.get(random.randint(1, 4))
+
+            up_data = {
+                u'emailId': em,
+                u'firstName': fn,
+                u'lastName': ln,
+                u'workPosition': wp,
+                u'otherInfo': otI
+            }
+            self.__db.upload_testUser(up_data)
+
     def run(self):
         self.register_this_date(self.__register_this_day, self.__today)
-        amount_week = self.__register_this_week-self.__register_this_day 
+        amount_week = self.__register_this_week - self.__register_this_day
         self.register_week_without_this_date(amount_week, self.__today)
-        amount_moth =  self.__register_this_moth- self.__register_this_week
+        amount_moth = self.__register_this_moth - self.__register_this_week
         self.register_this_month__without_this_week(
             amount_moth, self.__today)
 
@@ -91,7 +139,7 @@ class TestFirebase:
             else:
                 self.register_this_week(n_amount, after_moth)
                 n_amount = 0
-                print(start_moth)
+                # print(start_moth)
 
     def register_week_without_this_date(self, amount, this_date):
         n_amount = amount
@@ -138,7 +186,7 @@ class TestFirebase:
         up_data[u'firstName'] = user.get(op)
         # send data
         self.__cont_up += 1
-        # self.__db.upload_date_test(up_data)
+        self.__db.upload_date_test(up_data)
         # print(up_data)
         return up_data
 
@@ -221,10 +269,13 @@ class TestFirebase:
 
 
 if __name__ == '__main__':
-    aux = TestFirebase(1000, 500, 100)
-    date = datetime(2019, 6, 24)
+    aux = TestFirebase(100, 30, 10)
+    date = datetime(2019, 6, 27)
+    #aux.register_this_date(5,date)
     # print(aux.next_week_of_mouth(date))
+    aux.register_new_user(20)
+    aux.register_divice()
     aux.run()
 
-    print(aux.getCont())
+    # print(aux.getCont())
     # print(aux._start_of_this_week())

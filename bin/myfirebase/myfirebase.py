@@ -21,25 +21,27 @@ def my_mac():
     mac_aux = ''.join(('%012X' % mac)[i:i + 2]for i in range(0, 12, 2))
     return mac_aux
 
+
 class Users(object):
     """ Class that manages the users of the database.
         The attributes of the parameter database are passed.
     """
+
     def __init__(self, emailId, firstName, lastName, nameFile, m_div):
         self.emailId = emailId
         self.firstName = firstName
         self.lastName = lastName
         self.nameFile = nameFile
         self.m_div = m_div
-    
+
     def get_cout_footprint(self):
         mac = my_mac()
         count = len(self.m_div[mac])
         return count
-    
+
     def get_email(self):
         return self.emailId
-    
+
     def vect_characteristics(self):
         """
             Class method that consults the carecteristic vectors
@@ -62,7 +64,8 @@ class Users(object):
     def __repr__(self):
         return u'Users( emailId={}, firstName={}, lastName={}, nameFile={})'.format(
             self.emailId, self.firstName, self.lastName, self.nameFile)
-    
+
+
 class MyFirebase:
     """
         Class that manages the connection to the
@@ -72,6 +75,7 @@ class MyFirebase:
 
     def __init__(self):
         path = os.path.join(PATH_DIR, 'serviceAccountKey.json')
+        #path = os.path.join(PATH_DIR, 'doskey.json')
         file = open(path, 'r')
         try:
             self.app = firebase_admin.get_app()
@@ -85,6 +89,10 @@ class MyFirebase:
                 "storageBucket": "tfg-findegrado.appspot.com",
                 "databaseURL": "https://tfg-findegrado.firebaseio.com"
             })
+            #self.db_admin = admin.initialize_app(self.cred, {
+            #    "storageBucket": "dosjoder-46c0a.appspot.com",
+            #    "databaseURL": "https://dosjoder-46c0a.firebaseio.com"
+            #})
             self.db_fire = firestore.client()
 
     def vect_charasteristics_doc(self, nameFile):
@@ -106,6 +114,22 @@ class MyFirebase:
             return doc.vect_characteristics()
         except ValueError as e:
             # print("Vectors characteristic not foud")
+            return e
+
+    def upload_testUser(self, json):
+        try:
+            users_collection = self.db_fire.collection(u'users').document()
+            users_collection.set(json)
+        except Exception as e:
+            print('Exception message: ' + str(e))
+            return e
+
+    def upload_testMac(self, json):
+        try:
+            users_collection = self.db_fire.collection(u'device').document()
+            users_collection.set(json)
+        except Exception as e:
+            print('Exception message: ' + str(e))
             return e
 
     def upload_footprint(self, vect_characteristic, email):
@@ -131,9 +155,10 @@ class MyFirebase:
                 # print("User not foud")
                 return False
             else:
-                #print(up_data)
+                # print(up_data)
                 # print("Foud user")
-                users_collection = self.db_fire.collection(u'users').document(doc)
+                users_collection = self.db_fire.collection(
+                    u'users').document(doc)
                 users_collection.update(up_data)
                 return True
         except Exception as e:
@@ -150,7 +175,6 @@ class MyFirebase:
         except Exception as e:
             print('Exception message: ' + str(e))
             return (-1)
-        
 
     def _search_id_user(self, email):
         user = self.db_fire.collection("users").where(
@@ -199,29 +223,17 @@ class MyFirebase:
         upload.set(up_data)
         return up_data
 
-    def upload_date_test(self):
+    def upload_date_test(self, up_data):
         """Method to perform a loading test in the database."""
-        json_uno = {u'emailId': u"user1@gmail.com", u'firstName': u'user1'}
-        json_dos = {u'emailId': u"user2@gmail.com", u'firstName': u'user2'}
-        json_tres = {u'emailId': u"user3@gmail.com", u'firstName': u'user3'}
-        json_cuatro = {u'emailId': u"user4@gmail.com", u'firstName': u'user4'}
-        json_cinco = {u'emailId': u"user5@gmail.com", u'firstName': u'user5'}
-        for i in range(10):
-            aux.upload_date(json_uno)
-            aux.upload_date(json_dos)
-            aux.upload_date(json_tres)
-            aux.upload_date(json_cuatro)
-            aux.upload_date(json_cinco)
-
-
-
+        upload = self.db_fire.collection(u'passVerification').document()
+        upload.set(up_data)
 
 
 if __name__ == "__main__":
     aux = MyFirebase()
     val = aux.upload_footprint(u'vectordd_cjj', u'dios@gmail.com')
     v = aux.search_email('Ejemplo_ejmpl')
-    #print(v)
+    # print(v)
     # print(val)
     nameFile = "luis_dios"
     my_json = aux.vect_charasteristics_doc(nameFile)

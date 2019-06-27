@@ -9,7 +9,16 @@
         storageBucket: "tfg-findegrado.appspot.com",
         messagingSenderId: "281469807949"
     };
-
+    // Your web app's Firebase configuration
+    /*const config = {
+      apiKey: "AIzaSyAxW6tl3dFFm4H1ozmiE9f_ely5TYnKh-k",
+      authDomain: "dosjoder-46c0a.firebaseapp.com",
+      databaseURL: "https://dosjoder-46c0a.firebaseio.com",
+      projectId: "dosjoder-46c0a",
+      storageBucket: "",
+      messagingSenderId: "817627935482",
+      appId: "1:817627935482:web:86486e729b09d4e7"
+    };*/
     firebase.initializeApp(config);
     const firestore = firebase.firestore();
     const settings = { timestampsInSnapshots: true };
@@ -41,7 +50,7 @@
             document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
         }
     }
-    
+
 
 
 }());
