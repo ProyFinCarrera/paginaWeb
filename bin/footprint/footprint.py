@@ -190,7 +190,7 @@ class Footprint:
 
 if __name__ == "__main__":
   aux = Footprint()
-  #aux.clear_all_footprint();
+  aux.clear_all_footprint();
   #check , vec_aux = aux.save_footprint()
   #print (vec_aux)
   # aux.del_footprint({vec_aux:vec_aux})

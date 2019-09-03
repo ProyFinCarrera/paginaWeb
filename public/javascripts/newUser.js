@@ -67,10 +67,7 @@
     setTimeout( function videoOn() {
         let img = document.getElementById('canvas');
         img.src = 'http://localhost:8000/stream.mjpg';
-        img.onload() = function(){
-            
-        }
-    } ,5000)
+    } ,8000)
 
     socket.on("rec_img", function(images) {
         clearDiv();

@@ -314,14 +314,14 @@ router.get('/newUser', function(req, res, next) {
             });
             pyshell = null;
         }
-           if(aux_out!=true){
-            if (req.cookies.email == 'root@gmail.com') {
+            if(aux_out!=true){
+                if (req.cookies.email == 'root@gmail.com') {
 
-                res.render('newUser', { title: titleApp, iam: 'root'});
-            } else {
+                    res.render('newUser', { title: titleApp, iam: 'root'});
+                } else {
 
-                res.render('newUser', { title: titleApp, iam: 'other'});
-            }
+                    res.render('newUser', { title: titleApp, iam: 'other'});
+                }
             }else{
                   res.render('error', {
                 title: titleApp,

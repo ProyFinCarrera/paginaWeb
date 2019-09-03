@@ -32,7 +32,7 @@
         google.charts.setOnLoadCallback(draw4());
     });
 
-    function contPersonYearDay(year, month, day, name_day) {
+    function contPersonYearDay(year, month, day,name_day) {
         return new Promise(function(resolve, reject) {
             var mac = inputSelect.value
             let db = null
@@ -80,7 +80,7 @@
             new_day = day_week
             new_day = 24
             for (var i = 0; i < 7; i++) {
-                contPersonYearDay(year, month, new_day, dayWeek[i]).then(function(doc) {
+                contPersonYearDay(year, month, new_day,dayWeek[i]).then(function(doc) {
                     data.push(doc);
                     if (data.length == 7) {
                         resolve(data);
@@ -189,7 +189,7 @@
                   // console.log(dato.pop())
                 }
             })*/
-            data.addColumn('string', 'Divice');
+            data.addColumn('string', 'Device');
             data.addColumn('string', 'Hour');
             data.addRows(users);
             var table = new google.visualization.Table(document.getElementById('graphics'));
@@ -239,7 +239,7 @@
     }
 
     /*devuelvo persona con y hora*/
-    function personAccessToday(day, month, year) {
+    function personAccessToday(day, month, year,) {
         return new Promise(function(resolve, reject) {
             var mac = inputSelect.value
             let db = null
@@ -458,7 +458,7 @@
             var data = new google.visualization.DataTable();
             data.addColumn('string', 'Name');
             data.addColumn('string', 'Email');
-            data.addColumn('string', 'Divice');
+            data.addColumn('string', 'Device');
             data.addColumn('string', 'Date of pass');
             data.addColumn('string', 'Hour');
 
